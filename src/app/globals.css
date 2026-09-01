@@ -1,0 +1,113 @@
+@import 'tailwindcss';
+
+@theme inline {
+  --font-sans: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand-navy: #0b1535;
+  --color-brand-blue: #246bfd;
+  --color-brand-green: #34c759;
+  --color-brand-amber: #ffb020;
+  --color-brand-muted: #667085;
+  --color-brand-surface: #f7f9fc;
+  --color-brand-border: #e8ecf2;
+
+  --radius-brand-card: 1rem;
+  --radius-brand-panel: 1.5rem;
+}
+
+:root {
+  color-scheme: light;
+  --adiert-navy: #0b1535;
+  --adiert-blue: #246bfd;
+  --adiert-green: #34c759;
+  --adiert-amber: #ffb020;
+  --adiert-muted: #667085;
+  --adiert-surface: #f7f9fc;
+  --adiert-border: #e8ecf2;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: #ffffff;
+  color: var(--adiert-navy);
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@keyframes modal-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes mobile-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-modal-backdrop {
+  animation: modal-backdrop-in 160ms ease-out both;
+}
+
+.animate-modal-dialog {
+  animation: modal-dialog-in 200ms ease-out both;
+}
+
+.animate-mobile-menu-in {
+  animation: mobile-menu-in 180ms ease-out both;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
