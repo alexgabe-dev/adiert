@@ -56,7 +56,7 @@ export const LiveStatsBar: React.FC = () => {
 
           {/* Stat 4: Kampány célja with Progress Bar */}
           <div className="flex flex-col space-y-2 lg:px-6 last:lg:pr-0">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-2 text-xs font-semibold text-[#667085] uppercase tracking-wider">
                 <div className="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
                   <Target className="w-4 h-4" />

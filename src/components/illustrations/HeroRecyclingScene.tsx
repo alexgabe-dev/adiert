@@ -46,17 +46,7 @@ export const HeroRecyclingScene: React.FC = () => {
       </motion.div>
 
       {/* Subtle Eco / Heart Sparkle (Top Right) */}
-      <motion.div
-        animate={shouldReduceMotion ? undefined : { scale: [0.95, 1.05, 0.95], y: [-3, 3, -3] }}
-        transition={
-          shouldReduceMotion ? undefined : { duration: 3.5, repeat: Infinity, ease: 'easeInOut' }
-        }
-        className="absolute top-6 right-10 z-10 flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm border border-emerald-100 text-xs font-semibold text-emerald-700"
-      >
-        <span className="text-emerald-500 text-sm">♻️</span>
-        <span>MOHU REpont</span>
-        <span className="text-blue-500 ml-0.5">💙</span>
-      </motion.div>
+     
 
       {/* Main SVG Scene Container */}
       <svg
@@ -204,7 +194,7 @@ export const HeroRecyclingScene: React.FC = () => {
             fontFamily="system-ui, sans-serif"
             letterSpacing="1"
           >
-            REpont × Ádiért
+          
           </text>
 
           {/* Interactive Screen */}
@@ -316,10 +306,10 @@ export const HeroRecyclingScene: React.FC = () => {
               fontSize="6.5"
               fontWeight="800"
             >
-              REPONT BIZONYLAT
+              
             </text>
             <text x="292" y="388" textAnchor="middle" fill="#246BFD" fontSize="6" fontWeight="700">
-              ÁDIÉRT 💙
+              
             </text>
             <line
               x1="275"
