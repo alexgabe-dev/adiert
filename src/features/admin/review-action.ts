@@ -1,10 +1,10 @@
 'use server';
 
-import { headers } from 'next/headers';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { z } from 'zod';
 
 import { requireAdministratorRole } from '@/lib/auth/authorization';
+import { hasValidMutationOrigin } from '@/lib/security/origin';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 
 const optionalPositiveInteger = z.preprocess(
@@ -32,18 +32,6 @@ export interface ReviewActionState {
 }
 
 export const initialReviewActionState: ReviewActionState = { status: 'idle', message: '' };
-
-async function hasValidMutationOrigin() {
-  const requestHeaders = await headers();
-  const origin = requestHeaders.get('origin');
-  const host = requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host');
-  if (!origin || !host) return false;
-  try {
-    return new URL(origin).host === host;
-  } catch {
-    return false;
-  }
-}
 
 export async function reviewSubmissionAction(
   _previousState: ReviewActionState,

@@ -137,7 +137,7 @@ set request.jwt.claim.sub = '00000000-0000-4000-8000-000000000003';
 
 do $$
 declare
-  inserted_id uuid;
+  managed_count bigint;
 begin
   if not public.has_admin_role('reviewer') or not public.has_admin_role('admin') then
     raise exception 'Admin role hierarchy is incorrect';
@@ -146,12 +146,17 @@ begin
     raise exception 'Admin was granted super-admin privileges';
   end if;
 
-  insert into public.schools (name, slug, type, city, county, postal_code, address)
-  values ('Admin Managed School', 'admin-managed-school', 'other', 'City', 'County', '1000', 'Street')
-  returning id into inserted_id;
+  begin
+    insert into public.schools (name, slug, type, city, county, postal_code, address)
+    values ('Direct School', 'direct-school', 'other', 'City', 'County', '1000', 'Street');
+    raise exception 'Admin bypassed audited school operations';
+  exception when insufficient_privilege then null;
+  end;
 
-  if inserted_id is null then
-    raise exception 'Admin could not manage schools';
+  select count(*) into managed_count
+  from public.admin_list_schools('', '', '', null, null, 'all', 1, 5);
+  if managed_count = 0 then
+    raise exception 'Admin could not use authorized school operations';
   end if;
 
   begin
@@ -179,10 +184,21 @@ begin
     raise exception 'Super-admin cannot inspect administrator lifecycle records';
   end if;
 
-  update public.administrators
-  set display_name = 'Updated Inactive Admin'
-  where user_id = '00000000-0000-4000-8000-000000000005';
-  if not found then
+  begin
+    update public.administrators
+    set display_name = 'Direct update'
+    where user_id = '00000000-0000-4000-8000-000000000005';
+    raise exception 'Super-admin bypassed audited administrator operations';
+  exception when insufficient_privilege then null;
+  end;
+
+  perform public.admin_manage_administrator(
+    '00000000-0000-4000-8000-000000000005', 'admin', false
+  );
+  if not exists (
+    select 1 from public.administrators
+    where user_id = '00000000-0000-4000-8000-000000000005' and not active and role = 'admin'
+  ) then
     raise exception 'Super-admin could not manage administrators';
   end if;
 end;

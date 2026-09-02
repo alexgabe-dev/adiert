@@ -36,6 +36,22 @@ body {
   color: var(--adiert-navy);
 }
 
+.field {
+  min-height: 2.75rem;
+  width: 100%;
+  border: 1px solid #d7ddea;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.field:focus-visible {
+  border-color: var(--adiert-blue);
+  box-shadow: 0 0 0 3px rgb(36 107 253 / 14%);
+}
+
 button,
 a,
 input,
