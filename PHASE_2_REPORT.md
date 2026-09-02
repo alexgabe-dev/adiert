@@ -50,8 +50,8 @@ review mutation, OCR, or fraud-processing workflow was implemented.
 ## Authentication and `/admin`
 
 - Added Supabase SSR clients for browser, server-cookie, and privileged server-only contexts.
-- Added a fail-closed environment boundary. The service-role key is imported only behind
-  `server-only` and is never available from the browser client helper.
+- Added a fail-closed environment boundary. All Supabase settings are imported only by server
+  modules; the unused browser client helper has since been removed.
 - Added invite-only passwordless sign-in with `shouldCreateUser: false`, a PKCE callback, generic
   responses that do not reveal whether an email is invited, and session refresh through the Next.js
   proxy.

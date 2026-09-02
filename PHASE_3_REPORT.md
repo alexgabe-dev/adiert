@@ -147,7 +147,8 @@ secret scan.
 
 ## Deployment requirements and later scope
 
-- Deployment must provide valid public Supabase settings, `SUPABASE_SERVICE_ROLE_KEY`, and an
+- Deployment must provide valid server-only `SUPABASE_URL`, `SUPABASE_ANON_KEY`,
+  `SUPABASE_SERVICE_ROLE_KEY`, and an
   independent high-entropy `SUBMISSION_RATE_LIMIT_SECRET` of at least 32 characters. An optional
   server-only `SITE_URL` can override the canonical URL; Vercel otherwise supplies its production
   domain. Secrets remain server-only and uncommitted.

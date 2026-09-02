@@ -12,7 +12,7 @@ export function createPrivilegedSupabaseClient() {
   }
 
   return createClient(
-    supabaseEnvironment.NEXT_PUBLIC_SUPABASE_URL,
+    supabaseEnvironment.SUPABASE_URL,
     supabaseEnvironment.SUPABASE_SERVICE_ROLE_KEY,
     {
       auth: {

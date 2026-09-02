@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 
 import { getActiveAdministrator } from '@/lib/auth/authorization';
-import { getPublicSupabaseEnvironment } from '@/lib/supabase/config';
+import { getSupabaseEnvironment } from '@/lib/supabase/config';
 
 import { LoginForm } from './LoginForm';
 
@@ -12,7 +12,7 @@ export default async function AdminLoginPage() {
     redirect('/admin');
   }
 
-  const isConfigured = getPublicSupabaseEnvironment() !== null;
+  const isConfigured = getSupabaseEnvironment() !== null;
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#F7F9FC] px-4 py-12">

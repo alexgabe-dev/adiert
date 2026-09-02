@@ -8,14 +8,15 @@ outside the production server environment.
 
 Configure these variables in each deployment environment:
 
-- `NEXT_PUBLIC_SITE_URL`: canonical HTTPS application origin.
-- `NEXT_PUBLIC_SUPABASE_URL`: environment-specific Supabase project URL.
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: environment-specific public anon key.
+- `SITE_URL`: optional canonical HTTPS application origin; Vercel can derive this automatically.
+- `SUPABASE_URL`: server-only environment-specific Supabase project URL.
+- `SUPABASE_ANON_KEY`: server-only anon key used by SSR and authentication routes.
 - `SUPABASE_SERVICE_ROLE_KEY`: server-only environment-specific service-role key.
+- `SUBMISSION_RATE_LIMIT_SECRET`: server-only HMAC secret of at least 32 random characters.
 
-Only the first three values may be referenced by browser code. `SUPABASE_SERVICE_ROLE_KEY` is
-loaded only from a module guarded by `server-only`; the production build also scans browser assets
-and fails if the key or its variable name appears there.
+No environment binding is referenced by browser code. Supabase configuration is loaded only from
+server modules; the production build scans browser assets and fails if a Supabase variable name or
+configured value appears there.
 
 ## Reproducible migration
 

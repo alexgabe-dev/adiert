@@ -16,8 +16,8 @@ describe('resolveSiteUrl', () => {
     ).toBe('https://adiert.hu');
   });
 
-  it('accepts quoted legacy values without breaking an existing deployment', () => {
-    expect(resolveSiteUrl({ NEXT_PUBLIC_SITE_URL: ' "https://adiert.vercel.app" ' })).toBe(
+  it('accepts a quoted private value without breaking deployment', () => {
+    expect(resolveSiteUrl({ SITE_URL: ' "https://adiert.vercel.app" ' })).toBe(
       'https://adiert.vercel.app',
     );
   });
@@ -29,7 +29,7 @@ describe('resolveSiteUrl', () => {
   it('ignores an invalid manual value and uses the Vercel production domain', () => {
     expect(
       resolveSiteUrl({
-        NEXT_PUBLIC_SITE_URL: 'not a valid URL',
+        SITE_URL: 'not a valid URL',
         VERCEL_PROJECT_PRODUCTION_URL: 'adiert.vercel.app',
       }),
     ).toBe('https://adiert.vercel.app');

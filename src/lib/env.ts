@@ -2,7 +2,7 @@ import 'server-only';
 
 import { z } from 'zod';
 
-import { getPublicSupabaseEnvironment } from '@/lib/supabase/config';
+import { getSupabaseEnvironment } from '@/lib/supabase/config';
 
 function normalizeSiteUrl(value: string | undefined) {
   let candidate = value?.trim();
@@ -28,8 +28,7 @@ function normalizeSiteUrl(value: string | undefined) {
 }
 
 export function resolveSiteUrl(values: Readonly<Record<string, string | undefined>>) {
-  const configuredUrl =
-    normalizeSiteUrl(values.SITE_URL) ?? normalizeSiteUrl(values.NEXT_PUBLIC_SITE_URL);
+  const configuredUrl = normalizeSiteUrl(values.SITE_URL);
   if (configuredUrl) return configuredUrl;
 
   const vercelUrl =
@@ -48,10 +47,10 @@ const submissionSecurityEnvironmentSchema = z.object({
 });
 
 export function getPrivilegedSupabaseEnvironment() {
-  const publicEnvironment = getPublicSupabaseEnvironment();
+  const supabaseEnvironment = getSupabaseEnvironment();
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!publicEnvironment || !serviceRoleKey) {
+  if (!supabaseEnvironment || !serviceRoleKey) {
     return null;
   }
 
@@ -66,7 +65,7 @@ export function getPrivilegedSupabaseEnvironment() {
   }
 
   return Object.freeze({
-    ...publicEnvironment,
+    ...supabaseEnvironment,
     ...parsedPrivilegedEnvironment.data,
   });
 }

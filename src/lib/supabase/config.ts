@@ -1,26 +1,28 @@
+import 'server-only';
+
 import { z } from 'zod';
 
-const publicSupabaseEnvironmentSchema = z.object({
-  NEXT_PUBLIC_SUPABASE_URL: z.url(),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(20),
+const supabaseEnvironmentSchema = z.object({
+  SUPABASE_URL: z.url(),
+  SUPABASE_ANON_KEY: z.string().min(20),
 });
 
-export function getPublicSupabaseEnvironment() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+export function getSupabaseEnvironment() {
+  const url = process.env.SUPABASE_URL;
+  const anonKey = process.env.SUPABASE_ANON_KEY;
 
   if (!url && !anonKey) {
     return null;
   }
 
-  const parsedEnvironment = publicSupabaseEnvironmentSchema.safeParse({
-    NEXT_PUBLIC_SUPABASE_URL: url,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: anonKey,
+  const parsedEnvironment = supabaseEnvironmentSchema.safeParse({
+    SUPABASE_URL: url,
+    SUPABASE_ANON_KEY: anonKey,
   });
 
   if (!parsedEnvironment.success) {
     throw new Error(
-      `Invalid public Supabase configuration: ${z.prettifyError(parsedEnvironment.error)}`,
+      `Invalid server Supabase configuration: ${z.prettifyError(parsedEnvironment.error)}`,
     );
   }
 

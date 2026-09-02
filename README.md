@@ -38,13 +38,15 @@ Copy `.env.example` to `.env.local` and replace every placeholder. Each local, s
 production deployment must use a separate Supabase project.
 
 ```dotenv
-NEXT_PUBLIC_SITE_URL="http://localhost:3000"
-NEXT_PUBLIC_SUPABASE_URL="https://your-project-ref.supabase.co"
-NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
+SITE_URL="http://localhost:3000"
+SUPABASE_URL="https://your-project-ref.supabase.co"
+SUPABASE_ANON_KEY="your-anon-key"
 SUPABASE_SERVICE_ROLE_KEY="your-server-only-service-role-key"
+SUBMISSION_RATE_LIMIT_SECRET="your-server-only-random-secret"
 ```
 
-The service-role key is server-only and must never use a `NEXT_PUBLIC_` prefix. See
+All environment bindings are consumed only by server modules. The production build scans browser
+assets and fails if Supabase configuration or credential material appears there. See
 `docs/SUPABASE_ENVIRONMENTS.md` for migration, invite-only administrator, fixture, and environment
 setup.
 

@@ -3,10 +3,10 @@ import 'server-only';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
-import { getPublicSupabaseEnvironment } from '@/lib/supabase/config';
+import { getSupabaseEnvironment } from '@/lib/supabase/config';
 
 export async function createServerSupabaseClient() {
-  const supabaseEnvironment = getPublicSupabaseEnvironment();
+  const supabaseEnvironment = getSupabaseEnvironment();
 
   if (!supabaseEnvironment) {
     return null;
@@ -15,8 +15,8 @@ export async function createServerSupabaseClient() {
   const cookieStore = await cookies();
 
   return createServerClient(
-    supabaseEnvironment.NEXT_PUBLIC_SUPABASE_URL,
-    supabaseEnvironment.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    supabaseEnvironment.SUPABASE_URL,
+    supabaseEnvironment.SUPABASE_ANON_KEY,
     {
       cookies: {
         getAll() {

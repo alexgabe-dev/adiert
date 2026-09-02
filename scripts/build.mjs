@@ -8,10 +8,9 @@ const serviceRoleSentinel =
 
 const environment = {
   ...process.env,
-  NEXT_PUBLIC_SUPABASE_URL:
-    process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://phase2-build-check.invalid',
-  NEXT_PUBLIC_SUPABASE_ANON_KEY:
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? 'phase2_public_anon_key_for_build_validation_only',
+  SUPABASE_URL: process.env.SUPABASE_URL ?? 'https://phase2-build-check.invalid',
+  SUPABASE_ANON_KEY:
+    process.env.SUPABASE_ANON_KEY ?? 'phase2_server_anon_key_for_build_validation_only',
   SUPABASE_SERVICE_ROLE_KEY: serviceRoleSentinel,
 };
 
