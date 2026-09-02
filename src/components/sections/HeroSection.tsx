@@ -2,7 +2,15 @@ import React from 'react';
 import { ArrowRight, Trophy } from 'lucide-react';
 import { HeroRecyclingScene } from '../illustrations/HeroRecyclingScene';
 
-export const HeroSection: React.FC = () => {
+interface HeroSectionProps {
+  participatingSchoolCount: number;
+  dataAvailable: boolean;
+}
+
+export const HeroSection: React.FC<HeroSectionProps> = ({
+  participatingSchoolCount,
+  dataAvailable,
+}) => {
   return (
     <section id="rolunk" className="relative pt-28 pb-14 md:pt-36 md:pb-20 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -53,33 +61,37 @@ export const HeroSection: React.FC = () => {
               <div className="flex -space-x-2 overflow-hidden">
                 <div
                   className="w-8 h-8 rounded-full bg-amber-400 border-2 border-white flex items-center justify-center text-xs shadow-xs"
-                  title="Kossuth Lajos Ált. Isk."
+                  title="Résztvevő iskola"
                 >
                   🏫
                 </div>
                 <div
                   className="w-8 h-8 rounded-full bg-blue-500 border-2 border-white flex items-center justify-center text-xs shadow-xs"
-                  title="Petőfi Sándor Ált. Isk."
+                  title="Résztvevő iskola"
                 >
                   🎒
                 </div>
                 <div
                   className="w-8 h-8 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-xs shadow-xs"
-                  title="Arany János Iskola"
+                  title="Résztvevő iskola"
                 >
                   📚
                 </div>
                 <div
                   className="w-8 h-8 rounded-full bg-purple-500 border-2 border-white flex items-center justify-center text-xs shadow-xs"
-                  title="Radnóti Miklós Gimn."
+                  title="Résztvevő iskola"
                 >
                   ✏️
                 </div>
               </div>
 
               <div className="text-xs sm:text-sm text-[#0B1535] font-semibold flex items-center gap-1.5">
-                <span className="text-blue-600 font-extrabold">245 iskola</span>
-                <span className="text-[#667085] font-normal">már csatlakozott a gyűjtéshez</span>
+                <span className="text-blue-600 font-extrabold">
+                  {participatingSchoolCount.toLocaleString('hu-HU')} iskola
+                </span>
+                <span className="text-[#667085] font-normal">
+                  {dataAvailable ? 'vesz részt az aktív kampányban' : '— az élő adat nem elérhető'}
+                </span>
               </div>
             </div>
           </div>

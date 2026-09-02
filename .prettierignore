@@ -4,3 +4,6 @@ dist
 node_modules
 package-lock.json
 next-env.d.ts
+data/import/schools/import-report.json
+data/import/schools/normalized-schools.json
+supabase/migrations/20260902000400_real_school_dataset.sql

@@ -2,17 +2,27 @@
 
 import React, { useState } from 'react';
 import { Calculator, CheckCircle, Sparkles } from 'lucide-react';
-import { ACHIEVEMENTS } from '../../data/mockData';
 
-export const GamificationTeaser: React.FC = () => {
+interface GamificationTeaserProps {
+  approvedBottleCount: number;
+  dataAvailable: boolean;
+}
+
+export const GamificationTeaser: React.FC<GamificationTeaserProps> = ({
+  approvedBottleCount,
+  dataAvailable,
+}) => {
   const [calculatorBottles, setCalculatorBottles] = useState<number>(100);
 
   const milestones = [
-    { target: '10k', label: '10 000 db', completed: true, bonus: 'Közösségi jelvény' },
-    { target: '25k', label: '25 000 db', completed: true, bonus: 'Öko-oklevél' },
-    { target: '50k', label: '50 000 db', completed: true, bonus: 'Iskolai kupadöntő' },
-    { target: '100k', label: '100 000 db', completed: false, bonus: 'Országos Fődíj' },
-  ];
+    { target: 10_000, label: '10 000 db' },
+    { target: 25_000, label: '25 000 db' },
+    { target: 50_000, label: '50 000 db' },
+    { target: 100_000, label: '100 000 db' },
+  ].map((milestone) => ({
+    ...milestone,
+    completed: dataAvailable && approvedBottleCount >= milestone.target,
+  }));
 
   const calculatedAmount = calculatorBottles * 50;
 
@@ -28,8 +38,7 @@ export const GamificationTeaser: React.FC = () => {
           Minden palack közelebb visz
         </h2>
         <p className="text-base sm:text-lg text-[#667085]">
-          A visszaváltásokkal az iskolák nemcsak Ádinak segítenek, hanem exkluzív zöld
-          mérföldköveket és közösségi elismeréseket oldhatnak fel.
+          Kövesd az ellenőrzött bizonylatokból számított országos gyűjtési mérföldköveket.
         </p>
       </div>
 
@@ -40,7 +49,9 @@ export const GamificationTeaser: React.FC = () => {
             Országos Kampány Mérföldkövek
           </span>
           <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full w-fit">
-            Már 249 175 db összegyűjtve ✓
+            {dataAvailable
+              ? `${approvedBottleCount.toLocaleString('hu-HU')} db jóváhagyva`
+              : 'Az élő adat átmenetileg nem elérhető'}
           </span>
         </div>
 
@@ -57,7 +68,7 @@ export const GamificationTeaser: React.FC = () => {
             >
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold font-mono px-2 py-0.5 rounded bg-white shadow-2xs">
-                  {item.target}
+                  {item.target >= 1000 ? `${item.target / 1000}k` : item.target}
                 </span>
                 {item.completed ? (
                   <CheckCircle className="w-4 h-4 text-emerald-600" />
@@ -66,7 +77,9 @@ export const GamificationTeaser: React.FC = () => {
                 )}
               </div>
               <div className="text-lg font-extrabold mb-1">{item.label}</div>
-              <div className="text-xs text-[#667085]">{item.bonus}</div>
+              <div className="text-xs text-[#667085]">
+                {item.completed ? 'Igazolt országos mérföldkő' : 'Még nincs elérve'}
+              </div>
             </div>
           ))}
         </div>
@@ -74,28 +87,19 @@ export const GamificationTeaser: React.FC = () => {
 
       {/* Grid: Achievement Badges Showcase + Interactive Impact Calculator */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left: Achievement Badges Chips */}
+        {/* Left: Verified campaign status */}
         <div className="lg:col-span-7">
           <h3 className="text-sm font-bold uppercase tracking-wider text-[#667085] mb-4">
-            Elérhető jelvények az iskoláknak
+            Ellenőrzött kampányeredmény
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            {ACHIEVEMENTS.map((ach) => (
-              <div
-                key={ach.id}
-                className={`p-4 rounded-2xl border ${ach.bgColor} transition-transform hover:-translate-y-0.5`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="text-2xl shrink-0 p-1 bg-white rounded-xl shadow-2xs">
-                    {ach.icon}
-                  </div>
-                  <div>
-                    <h4 className={`text-sm font-bold ${ach.color}`}>{ach.title}</h4>
-                    <p className="text-xs text-[#667085] mt-0.5 leading-snug">{ach.description}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="rounded-3xl border border-emerald-200 bg-emerald-50/50 p-6 sm:p-8">
+            <div className="text-3xl font-black text-emerald-700 sm:text-4xl">
+              {approvedBottleCount.toLocaleString('hu-HU')} db
+            </div>
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-[#667085]">
+              Ez kizárólag a kézzel jóváhagyott bizonylatokon rögzített palackszám. Függőben lévő,
+              elutasított vagy további ellenőrzést igénylő beküldés nem része az értéknek.
+            </p>
           </div>
         </div>
 
@@ -140,13 +144,13 @@ export const GamificationTeaser: React.FC = () => {
           {/* Result Card */}
           <div className="bg-white rounded-2xl p-4 border border-blue-200/80 shadow-2xs">
             <div className="text-xs font-semibold text-[#667085] mb-1">
-              Ádinak felajánlott összeg & iskolai pont:
+              Becsült visszaváltási érték:
             </div>
             <div className="text-2xl sm:text-3xl font-black text-emerald-600">
               +{calculatedAmount.toLocaleString('hu-HU')} Ft
             </div>
             <div className="text-[11px] text-blue-600 font-semibold mt-1">
-              = {calculatorBottles} × 50 Ft közvetlen adomány
+              = {calculatorBottles} × 50 Ft becslés · nem hitelesített kampányadat
             </div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 'use server';
 
 import { headers } from 'next/headers';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { z } from 'zod';
 
 import { requireAdministratorRole } from '@/lib/auth/authorization';
@@ -111,5 +111,10 @@ export async function reviewSubmissionAction(
 
   revalidatePath('/admin/bekuldesek');
   revalidatePath(`/admin/bekuldesek/${parsed.data.submissionId}`);
+  if (parsed.data.intent === 'approved') {
+    revalidateTag('public-campaign', 'max');
+    revalidatePath('/');
+    revalidatePath('/iskolak/[slug]', 'page');
+  }
   return { status: 'success', message: 'A felülvizsgálat és az auditbejegyzés sikeresen mentve.' };
 }

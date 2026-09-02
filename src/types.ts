@@ -1,18 +1,3 @@
-export interface School {
-  id: string;
-  rank: number;
-  previousRank: number;
-  name: string;
-  city: string;
-  region: 'Budapest' | 'Pest megye' | 'Dunántúl' | 'Kelet-Magyarország';
-  type: 'Általános iskola' | 'Gimnázium' | 'Technikum' | 'Középiskola';
-  bottlesCount: number;
-  totalAmount: number;
-  badge?: string;
-  avatarColor: string;
-  studentCount?: number;
-}
-
 export interface StatMetric {
   id: string;
   label: string;
@@ -32,25 +17,6 @@ export interface HowItWorksStep {
   shortLabel: string;
   iconType: 'bottles' | 'repont' | 'camera' | 'upload' | 'trophy';
   highlight: string;
-}
-
-export interface NewsItem {
-  id: string;
-  date: string;
-  title: string;
-  excerpt: string;
-  readTime: string;
-  tag: string;
-  icon: string;
-}
-
-export interface Achievement {
-  id: string;
-  icon: string;
-  title: string;
-  description: string;
-  color: string;
-  bgColor: string;
 }
 
 export interface FaqItem {

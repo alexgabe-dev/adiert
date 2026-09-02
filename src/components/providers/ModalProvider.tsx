@@ -4,6 +4,8 @@ import dynamic from 'next/dynamic';
 import type { ReactNode } from 'react';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
+import type { SchoolSelection } from '@/features/public-data/types';
+
 const SubmitReceiptModal = dynamic(
   () =>
     import('@/components/modals/SubmitReceiptModal').then((module) => module.SubmitReceiptModal),
@@ -27,7 +29,7 @@ const SchoolRegisterModal = dynamic(
 );
 
 type ActiveModal =
-  | { type: 'submit'; schoolName: string }
+  | { type: 'submit'; school: SchoolSelection | null }
   | { type: 'guide' }
   | { type: 'leaderboard' }
   | { type: 'register' }
@@ -38,7 +40,7 @@ interface ModalActions {
   openGuide: () => void;
   openLeaderboard: () => void;
   openRegister: () => void;
-  openSubmit: (schoolName?: string) => void;
+  openSubmit: (school?: SchoolSelection) => void;
 }
 
 const ModalActionsContext = createContext<ModalActions | null>(null);
@@ -55,7 +57,7 @@ export function ModalProvider({ children }: ModalProviderProps) {
   const openLeaderboard = useCallback(() => setActiveModal({ type: 'leaderboard' }), []);
   const openRegister = useCallback(() => setActiveModal({ type: 'register' }), []);
   const openSubmit = useCallback(
-    (schoolName = '') => setActiveModal({ type: 'submit', schoolName }),
+    (school?: SchoolSelection) => setActiveModal({ type: 'submit', school: school ?? null }),
     [],
   );
 
@@ -68,7 +70,7 @@ export function ModalProvider({ children }: ModalProviderProps) {
     <ModalActionsContext.Provider value={actions}>
       {children}
       {activeModal?.type === 'submit' && (
-        <SubmitReceiptModal isOpen onClose={closeModal} defaultSchool={activeModal.schoolName} />
+        <SubmitReceiptModal isOpen onClose={closeModal} defaultSchool={activeModal.school} />
       )}
       {activeModal?.type === 'guide' && (
         <GuideModal isOpen onClose={closeModal} onOpenSubmitModal={openSubmit} />

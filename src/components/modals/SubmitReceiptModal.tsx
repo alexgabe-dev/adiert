@@ -1,21 +1,22 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AlertCircle, ArrowRight, Camera, CheckCircle2, Upload, X } from 'lucide-react';
 
 import { ModalDialog } from '@/components/ui/ModalDialog';
+import { SchoolCombobox } from '@/components/forms/SchoolCombobox';
 import { acceptedReceiptMimeTypes, MAX_RECEIPT_FILE_BYTES } from '@/features/submissions/constants';
+import type { SchoolSelection } from '@/features/public-data/types';
 import { launchConfetti } from '@/lib/confetti';
 
 interface SubmitReceiptModalProps {
   isOpen: boolean;
   onClose: () => void;
-  defaultSchool?: string;
+  defaultSchool?: SchoolSelection | null;
 }
 
 interface SubmissionOptions {
   campaign: { id: string; name: string };
-  schools: Array<{ id: string; name: string; city: string }>;
 }
 
 type Step = 'form' | 'submitting' | 'success';
@@ -36,28 +37,18 @@ const errorMessages: Record<string, string> = {
 function isSubmissionOptions(value: unknown): value is SubmissionOptions {
   if (!value || typeof value !== 'object') return false;
   const candidate = value as Partial<SubmissionOptions>;
-  return (
-    typeof candidate.campaign?.id === 'string' &&
-    typeof candidate.campaign.name === 'string' &&
-    Array.isArray(candidate.schools) &&
-    candidate.schools.every(
-      (school) =>
-        typeof school?.id === 'string' &&
-        typeof school.name === 'string' &&
-        typeof school.city === 'string',
-    )
-  );
+  return typeof candidate.campaign?.id === 'string' && typeof candidate.campaign.name === 'string';
 }
 
 export const SubmitReceiptModal: React.FC<SubmitReceiptModalProps> = ({
   isOpen,
   onClose,
-  defaultSchool = '',
+  defaultSchool = null,
 }) => {
   const [step, setStep] = useState<Step>('form');
   const [options, setOptions] = useState<SubmissionOptions | null>(null);
   const [optionsError, setOptionsError] = useState(false);
-  const [selectedSchoolId, setSelectedSchoolId] = useState('');
+  const [selectedSchool, setSelectedSchool] = useState<SchoolSelection | null>(defaultSchool);
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
@@ -74,8 +65,7 @@ export const SubmitReceiptModal: React.FC<SubmitReceiptModalProps> = ({
         const body: unknown = await response.json();
         if (!isSubmissionOptions(body)) throw new Error('options');
         setOptions(body);
-        const preferredSchool = body.schools.find((school) => school.name === defaultSchool);
-        setSelectedSchoolId(preferredSchool?.id ?? body.schools[0]?.id ?? '');
+        setSelectedSchool(defaultSchool);
       })
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === 'AbortError') return;
@@ -90,11 +80,6 @@ export const SubmitReceiptModal: React.FC<SubmitReceiptModalProps> = ({
       if (previewUrl) URL.revokeObjectURL(previewUrl);
     };
   }, [previewUrl]);
-
-  const selectedSchool = useMemo(
-    () => options?.schools.find((school) => school.id === selectedSchoolId) ?? null,
-    [options, selectedSchoolId],
-  );
 
   if (!isOpen) return null;
 
@@ -131,7 +116,7 @@ export const SubmitReceiptModal: React.FC<SubmitReceiptModalProps> = ({
       setErrorMessage(errorMessages.missing_image ?? 'Válassz ki egy képet.');
       return;
     }
-    if (!options || !selectedSchoolId) {
+    if (!options || !selectedSchool) {
       setErrorMessage('Válassz egy aktív iskolát.');
       return;
     }
@@ -139,7 +124,7 @@ export const SubmitReceiptModal: React.FC<SubmitReceiptModalProps> = ({
     setStep('submitting');
     const formData = new FormData();
     formData.set('receipt', receiptFile);
-    formData.set('school_id', selectedSchoolId);
+    formData.set('school_id', selectedSchool.id);
     formData.set('campaign_id', options.campaign.id);
 
     try {
@@ -278,21 +263,18 @@ export const SubmitReceiptModal: React.FC<SubmitReceiptModalProps> = ({
               >
                 Iskola kiválasztása <span className="text-rose-500">*</span>
               </label>
-              <select
-                id="receipt-school"
-                value={selectedSchoolId}
-                onChange={(event) => setSelectedSchoolId(event.target.value)}
-                disabled={!options || options.schools.length === 0}
-                required
-                className="w-full cursor-pointer rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs font-semibold text-[#0B1535] focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm"
-              >
-                {!options ? <option value="">Iskolák betöltése…</option> : null}
-                {options?.schools.map((school) => (
-                  <option key={school.id} value={school.id}>
-                    {school.name} ({school.city})
-                  </option>
-                ))}
-              </select>
+              {options ? (
+                <SchoolCombobox
+                  id="receipt-school"
+                  campaignId={options.campaign.id}
+                  value={selectedSchool}
+                  onChange={setSelectedSchool}
+                />
+              ) : (
+                <div className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-3 text-xs text-[#667085]">
+                  Iskolakereső betöltése…
+                </div>
+              )}
               {options ? (
                 <p className="mt-1 text-[11px] text-[#667085]">
                   Aktív kampány: {options.campaign.name}
@@ -323,7 +305,7 @@ export const SubmitReceiptModal: React.FC<SubmitReceiptModalProps> = ({
 
             <button
               type="submit"
-              disabled={!receiptFile || !selectedSchoolId || optionsError}
+              disabled={!receiptFile || !selectedSchool || optionsError}
               className="mt-2 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3.5 text-sm font-bold text-white shadow-xs transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 sm:text-base"
             >
               <span>Bizonylat beküldése ellenőrzésre</span>

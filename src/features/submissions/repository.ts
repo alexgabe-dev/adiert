@@ -35,11 +35,6 @@ export interface PublicSubmissionOptions {
     id: string;
     name: string;
   };
-  schools: Array<{
-    id: string;
-    name: string;
-    city: string;
-  }>;
 }
 
 export type CampaignSchoolValidation =
@@ -83,43 +78,8 @@ export async function getPublicSubmissionOptions(
     return null;
   }
 
-  const { data: participationData, error: participationError } = await client
-    .from('campaign_schools')
-    .select('school_id, active')
-    .eq('campaign_id', campaign.data.id)
-    .eq('active', true);
-
-  if (participationError) {
-    throw new SubmissionRepositoryError('query', participationError.code);
-  }
-
-  const participations = z.array(participationSchema).safeParse(participationData);
-  if (!participations.success || participations.data.length === 0) {
-    return { campaign: { id: campaign.data.id, name: campaign.data.name }, schools: [] };
-  }
-
-  const { data: schoolData, error: schoolError } = await client
-    .from('schools')
-    .select('id, name, city, active')
-    .in(
-      'id',
-      participations.data.map(({ school_id }) => school_id),
-    )
-    .eq('active', true)
-    .order('name', { ascending: true });
-
-  if (schoolError) {
-    throw new SubmissionRepositoryError('query', schoolError.code);
-  }
-
-  const schools = z.array(schoolSchema).safeParse(schoolData);
-  if (!schools.success) {
-    throw new SubmissionRepositoryError('query');
-  }
-
   return {
     campaign: { id: campaign.data.id, name: campaign.data.name },
-    schools: schools.data.map(({ id, name, city }) => ({ id, name, city })),
   };
 }
 

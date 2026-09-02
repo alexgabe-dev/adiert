@@ -1,0 +1,758 @@
+{
+  "source": {
+    "file": "data/import/schools/school_DATA.xlsx",
+    "sha256": "9a8a9033b6116a076c97f9df595c2f46c416b0c0c32849c373b7f8480b37b817",
+    "inspectedSheets": [
+      "Bács-Kiskun",
+      "Baranya",
+      "Békés",
+      "Borsod-Abaúj-Zemplén",
+      "Csongrád-Csanád",
+      "Fejér",
+      "Győr-Moson-Sopron",
+      "Hajdú-Bihar",
+      "Heves",
+      "Komárom-Esztergom",
+      "Nógrád",
+      "Pest",
+      "Szabolcs-Szatmár-Bereg",
+      "Somogy",
+      "Jász-Nagykun-Szolnok",
+      "Tolna",
+      "Vas",
+      "Veszprém",
+      "Zala",
+      "Budapest",
+      "Munka1"
+    ],
+    "dataSheets": 20,
+    "sourceRows": 2790,
+    "sheetStatistics": [
+      {
+        "sheet": "Bács-Kiskun",
+        "sourceRows": 156
+      },
+      {
+        "sheet": "Baranya",
+        "sourceRows": 128
+      },
+      {
+        "sheet": "Békés",
+        "sourceRows": 88
+      },
+      {
+        "sheet": "Borsod-Abaúj-Zemplén",
+        "sourceRows": 251
+      },
+      {
+        "sheet": "Csongrád-Csanád",
+        "sourceRows": 92
+      },
+      {
+        "sheet": "Fejér",
+        "sourceRows": 123
+      },
+      {
+        "sheet": "Győr-Moson-Sopron",
+        "sourceRows": 127
+      },
+      {
+        "sheet": "Hajdú-Bihar",
+        "sourceRows": 132
+      },
+      {
+        "sheet": "Heves",
+        "sourceRows": 99
+      },
+      {
+        "sheet": "Komárom-Esztergom",
+        "sourceRows": 94
+      },
+      {
+        "sheet": "Nógrád",
+        "sourceRows": 66
+      },
+      {
+        "sheet": "Pest",
+        "sourceRows": 301
+      },
+      {
+        "sheet": "Szabolcs-Szatmár-Bereg",
+        "sourceRows": 214
+      },
+      {
+        "sheet": "Somogy",
+        "sourceRows": 106
+      },
+      {
+        "sheet": "Jász-Nagykun-Szolnok",
+        "sourceRows": 107
+      },
+      {
+        "sheet": "Tolna",
+        "sourceRows": 69
+      },
+      {
+        "sheet": "Vas",
+        "sourceRows": 74
+      },
+      {
+        "sheet": "Veszprém",
+        "sourceRows": 114
+      },
+      {
+        "sheet": "Zala",
+        "sourceRows": 88
+      },
+      {
+        "sheet": "Budapest",
+        "sourceRows": 361
+      }
+    ]
+  },
+  "privacy": {
+    "privateColumnsExcluded": [
+      "contactName",
+      "phone",
+      "email",
+      "contacted",
+      "replied"
+    ],
+    "populatedPrivateCells": {
+      "contactName": 2788,
+      "phone": 2787,
+      "email": 2788,
+      "contacted": 0,
+      "replied": 0
+    }
+  },
+  "normalization": {
+    "unicode": "NFC",
+    "whitespace": "trimmed and collapsed",
+    "identity": "Hungarian locale lowercase of name + city + county",
+    "schoolType": "other (not inferred from names)",
+    "whitespaceNormalizedRows": 128,
+    "branchLikeSchoolsPreserved": 297
+  },
+  "invalidRows": [
+    {
+      "sheet": "Komárom-Esztergom",
+      "row": 56,
+      "county": "Komárom-Esztergom",
+      "city": "",
+      "name": "Süttői II. Rákóczi Ferenc Általános Iskola",
+      "missing": [
+        "city"
+      ]
+    }
+  ],
+  "countyMismatches": [],
+  "exactDuplicates": [
+    {
+      "identityKey": "bánhidai jókai mór általános iskola|tatabánya|komárom-esztergom",
+      "name": "Bánhidai Jókai Mór Általános Iskola",
+      "city": "Tatabánya",
+      "county": "Komárom-Esztergom",
+      "sources": [
+        {
+          "sheet": "Komárom-Esztergom",
+          "row": 75
+        },
+        {
+          "sheet": "Komárom-Esztergom",
+          "row": 95
+        }
+      ]
+    },
+    {
+      "identityKey": "dési huber istván általános iskola|szombathely|vas",
+      "name": "Dési Huber István Általános Iskola",
+      "city": "Szombathely",
+      "county": "Vas",
+      "sources": [
+        {
+          "sheet": "Vas",
+          "row": 16
+        },
+        {
+          "sheet": "Vas",
+          "row": 54
+        }
+      ]
+    },
+    {
+      "identityKey": "domonkos nővérek liszt ferenc ének-zenei általános iskolája|hódmezővásárhely|csongrád-csanád",
+      "name": "Domonkos Nővérek Liszt Ferenc Ének-zenei Általános Iskolája",
+      "city": "Hódmezővásárhely",
+      "county": "Csongrád-Csanád",
+      "sources": [
+        {
+          "sheet": "Csongrád-Csanád",
+          "row": 41
+        },
+        {
+          "sheet": "Csongrád-Csanád",
+          "row": 55
+        }
+      ]
+    },
+    {
+      "identityKey": "kenézlői általános iskola|kenézlő|borsod-abaúj-zemplén",
+      "name": "Kenézlői Általános Iskola",
+      "city": "Kenézlő",
+      "county": "Borsod-Abaúj-Zemplén",
+      "sources": [
+        {
+          "sheet": "Borsod-Abaúj-Zemplén",
+          "row": 117
+        },
+        {
+          "sheet": "Borsod-Abaúj-Zemplén",
+          "row": 170
+        }
+      ]
+    },
+    {
+      "identityKey": "kertvárosi általános iskola|tatabánya|komárom-esztergom",
+      "name": "Kertvárosi Általános Iskola",
+      "city": "Tatabánya",
+      "county": "Komárom-Esztergom",
+      "sources": [
+        {
+          "sheet": "Komárom-Esztergom",
+          "row": 63
+        },
+        {
+          "sheet": "Komárom-Esztergom",
+          "row": 78
+        }
+      ]
+    },
+    {
+      "identityKey": "molnár mózes általános iskola|bodroghalom|borsod-abaúj-zemplén",
+      "name": "Molnár Mózes Általános Iskola",
+      "city": "Bodroghalom",
+      "county": "Borsod-Abaúj-Zemplén",
+      "sources": [
+        {
+          "sheet": "Borsod-Abaúj-Zemplén",
+          "row": 169
+        },
+        {
+          "sheet": "Borsod-Abaúj-Zemplén",
+          "row": 203
+        }
+      ]
+    },
+    {
+      "identityKey": "nagykőrösi ii. rákóczi ferenc általános iskola|nagykőrös|pest",
+      "name": "Nagykőrösi II. Rákóczi Ferenc Általános Iskola",
+      "city": "Nagykőrös",
+      "county": "Pest",
+      "sources": [
+        {
+          "sheet": "Pest",
+          "row": 176
+        },
+        {
+          "sheet": "Pest",
+          "row": 242
+        }
+      ]
+    },
+    {
+      "identityKey": "nyársapáti mátyás király általános iskola|nyársapát|pest",
+      "name": "Nyársapáti Mátyás Király Általános Iskola",
+      "city": "Nyársapát",
+      "county": "Pest",
+      "sources": [
+        {
+          "sheet": "Pest",
+          "row": 237
+        },
+        {
+          "sheet": "Pest",
+          "row": 279
+        }
+      ]
+    },
+    {
+      "identityKey": "pácini általános iskola|pácin|borsod-abaúj-zemplén",
+      "name": "Pácini Általános Iskola",
+      "city": "Pácin",
+      "county": "Borsod-Abaúj-Zemplén",
+      "sources": [
+        {
+          "sheet": "Borsod-Abaúj-Zemplén",
+          "row": 122
+        },
+        {
+          "sheet": "Borsod-Abaúj-Zemplén",
+          "row": 172
+        }
+      ]
+    },
+    {
+      "identityKey": "pécsi református kollégium zengővárkonyi általános iskolája|zengővárkony|baranya",
+      "name": "Pécsi Református Kollégium Zengővárkonyi Általános Iskolája",
+      "city": "Zengővárkony",
+      "county": "Baranya",
+      "sources": [
+        {
+          "sheet": "Baranya",
+          "row": 76
+        },
+        {
+          "sheet": "Baranya",
+          "row": 80
+        }
+      ]
+    },
+    {
+      "identityKey": "pólya györgy általános iskola|tatabánya|komárom-esztergom",
+      "name": "Pólya György Általános Iskola",
+      "city": "Tatabánya",
+      "county": "Komárom-Esztergom",
+      "sources": [
+        {
+          "sheet": "Komárom-Esztergom",
+          "row": 21
+        },
+        {
+          "sheet": "Komárom-Esztergom",
+          "row": 93
+        }
+      ]
+    },
+    {
+      "identityKey": "szent kereszt katolikus általános iskola és óvoda|cegléd|pest",
+      "name": "Szent Kereszt Katolikus Általános Iskola és Óvoda",
+      "city": "Cegléd",
+      "county": "Pest",
+      "sources": [
+        {
+          "sheet": "Pest",
+          "row": 153
+        },
+        {
+          "sheet": "Pest",
+          "row": 234
+        }
+      ]
+    },
+    {
+      "identityKey": "szent margit gimnázium és általános iskola|tatabánya|komárom-esztergom",
+      "name": "Szent Margit Gimnázium és Általános Iskola",
+      "city": "Tatabánya",
+      "county": "Komárom-Esztergom",
+      "sources": [
+        {
+          "sheet": "Komárom-Esztergom",
+          "row": 25
+        },
+        {
+          "sheet": "Komárom-Esztergom",
+          "row": 94
+        }
+      ]
+    },
+    {
+      "identityKey": "tápiószelei blaskovich jános általános iskola|tápiószele|pest",
+      "name": "Tápiószelei Blaskovich János Általános Iskola",
+      "city": "Tápiószele",
+      "county": "Pest",
+      "sources": [
+        {
+          "sheet": "Pest",
+          "row": 129
+        },
+        {
+          "sheet": "Pest",
+          "row": 238
+        }
+      ]
+    },
+    {
+      "identityKey": "törteli szent istván király általános iskola|törtel|pest",
+      "name": "Törteli Szent István Király Általános Iskola",
+      "city": "Törtel",
+      "county": "Pest",
+      "sources": [
+        {
+          "sheet": "Pest",
+          "row": 4
+        },
+        {
+          "sheet": "Pest",
+          "row": 239
+        }
+      ]
+    },
+    {
+      "identityKey": "várkonyi istván általános iskola|cegléd|pest",
+      "name": "Várkonyi István Általános Iskola",
+      "city": "Cegléd",
+      "county": "Pest",
+      "sources": [
+        {
+          "sheet": "Pest",
+          "row": 156
+        },
+        {
+          "sheet": "Pest",
+          "row": 235
+        }
+      ]
+    }
+  ],
+  "ambiguousDuplicates": [
+    {
+      "nameKey": "batthyány lajos általános iskola",
+      "candidates": [
+        {
+          "id": "c263ee04-7caa-5601-bd74-5c8cbd3e97d1",
+          "name": "Batthyány Lajos Általános Iskola",
+          "city": "Jánosháza",
+          "county": "Vas"
+        },
+        {
+          "id": "e192147f-3796-5d33-ad43-6411d57c5990",
+          "name": "Batthyány Lajos Általános Iskola",
+          "city": "Szabadbattyán",
+          "county": "Fejér"
+        }
+      ]
+    },
+    {
+      "nameKey": "gárdonyi géza katolikus általános iskola és óvoda",
+      "candidates": [
+        {
+          "id": "3515db69-1cbd-503a-a55e-75afa2d1f045",
+          "name": "Gárdonyi Géza Katolikus Általános Iskola és Óvoda",
+          "city": "Balaton",
+          "county": "Heves"
+        },
+        {
+          "id": "302bd081-d389-57ab-bc3a-519a0eadea70",
+          "name": "Gárdonyi Géza Katolikus Általános Iskola és Óvoda",
+          "city": "Miskolc",
+          "county": "Borsod-Abaúj-Zemplén"
+        }
+      ]
+    },
+    {
+      "nameKey": "ii. jános pál katolikus általános iskola és óvoda",
+      "candidates": [
+        {
+          "id": "5b5da368-db67-5a4a-8dce-f62939ad2893",
+          "name": "II. János Pál Katolikus Általános Iskola és Óvoda",
+          "city": "Kecel",
+          "county": "Bács-Kiskun"
+        },
+        {
+          "id": "18f06426-5807-5792-91cc-0d99f9c2ae28",
+          "name": "II. János Pál Katolikus Általános Iskola és Óvoda",
+          "city": "Ózd",
+          "county": "Borsod-Abaúj-Zemplén"
+        }
+      ]
+    },
+    {
+      "nameKey": "kálvin téri református általános iskola",
+      "candidates": [
+        {
+          "id": "24bb96f3-c0d4-536a-978c-6ae833aa3957",
+          "name": "Kálvin Téri Református Általános Iskola",
+          "city": "Makó",
+          "county": "Csongrád-Csanád"
+        },
+        {
+          "id": "d272716b-d6a0-53ee-b1c7-19b7ab2586f1",
+          "name": "Kálvin Téri Református Általános Iskola",
+          "city": "Veresegyház",
+          "county": "Pest"
+        }
+      ]
+    },
+    {
+      "nameKey": "kazinczy ferenc református általános iskola és óvoda",
+      "candidates": [
+        {
+          "id": "a1c7259d-b40a-5d40-9dda-cc49d62eb74f",
+          "name": "Kazinczy Ferenc Református Általános Iskola és Óvoda",
+          "city": "Felsőzsolca",
+          "county": "Borsod-Abaúj-Zemplén"
+        },
+        {
+          "id": "f65d7a3f-eaa7-546a-ac42-6c8ccdf5a773",
+          "name": "Kazinczy Ferenc Református Általános Iskola és Óvoda",
+          "city": "Tiszaújváros",
+          "county": "Borsod-Abaúj-Zemplén"
+        }
+      ]
+    },
+    {
+      "nameKey": "magiszter óvoda, általános iskola, gimnázium, művészeti szakgimnázium, technikum, szakképző iskola és alapfokú művészeti iskola",
+      "candidates": [
+        {
+          "id": "5c0d16df-1862-59ba-980c-713099da338e",
+          "name": "Magiszter Óvoda, Általános Iskola, Gimnázium, Művészeti Szakgimnázium, Technikum, Szakképző Iskola és Alapfokú Művészeti Iskola",
+          "city": "Debrecen",
+          "county": "Hajdú-Bihar"
+        },
+        {
+          "id": "730387eb-860c-582c-b597-0a0f49bb2f0c",
+          "name": "Magiszter Óvoda, Általános Iskola, Gimnázium, Művészeti Szakgimnázium, Technikum, Szakképző Iskola és Alapfokú Művészeti Iskola",
+          "city": "Tiszavasvári",
+          "county": "Szabolcs-Szatmár-Bereg"
+        }
+      ]
+    },
+    {
+      "nameKey": "mátyás király katolikus általános iskola és óvoda",
+      "candidates": [
+        {
+          "id": "de5be5a5-5e18-53dd-8b79-8f825d2d6389",
+          "name": "Mátyás Király Katolikus Általános Iskola és Óvoda",
+          "city": "Hernádkak",
+          "county": "Borsod-Abaúj-Zemplén"
+        },
+        {
+          "id": "2a424cb9-2d80-563a-821e-034da99b1148",
+          "name": "Mátyás Király Katolikus Általános Iskola és Óvoda",
+          "city": "Kapaszer",
+          "county": "Békés"
+        }
+      ]
+    },
+    {
+      "nameKey": "néri szent fülöp katolikus általános iskola",
+      "candidates": [
+        {
+          "id": "9e9b142c-8e98-5714-8cec-18147c44c51c",
+          "name": "Néri Szent Fülöp Katolikus Általános Iskola",
+          "city": "Budapest",
+          "county": "Budapest"
+        },
+        {
+          "id": "0d19d3dc-6da3-58b9-aa2c-03683b3d5d2e",
+          "name": "Néri Szent Fülöp Katolikus Általános Iskola",
+          "city": "Fülöp",
+          "county": "Hajdú-Bihar"
+        }
+      ]
+    },
+    {
+      "nameKey": "szent anna katolikus általános iskola és óvoda",
+      "candidates": [
+        {
+          "id": "4b308f88-2747-5460-9455-a6634a101d7d",
+          "name": "Szent Anna Katolikus Általános Iskola és Óvoda",
+          "city": "Hangony",
+          "county": "Borsod-Abaúj-Zemplén"
+        },
+        {
+          "id": "8800bf26-fd2e-5942-8e57-f59bcc95e2d7",
+          "name": "Szent Anna Katolikus Általános Iskola és Óvoda",
+          "city": "Szany",
+          "county": "Győr-Moson-Sopron"
+        }
+      ]
+    },
+    {
+      "nameKey": "szent anna katolikus óvoda és általános iskola",
+      "candidates": [
+        {
+          "id": "4212054d-8624-5b6c-96b1-a8e5822cb3cd",
+          "name": "Szent Anna Katolikus Óvoda és Általános Iskola",
+          "city": "Geszteréd",
+          "county": "Szabolcs-Szatmár-Bereg"
+        },
+        {
+          "id": "7ae53252-4c90-5c5a-ae5a-a84d0da805c3",
+          "name": "Szent Anna Katolikus Óvoda és Általános Iskola",
+          "city": "Jánoshalma",
+          "county": "Bács-Kiskun"
+        }
+      ]
+    },
+    {
+      "nameKey": "szent erzsébet katolikus általános iskola és óvoda",
+      "candidates": [
+        {
+          "id": "a82a328d-5535-5183-99dc-da42da4a45b3",
+          "name": "Szent Erzsébet Katolikus Általános Iskola és Óvoda",
+          "city": "Pécel",
+          "county": "Pest"
+        },
+        {
+          "id": "3ab9340f-81dd-51b1-9fec-6d6d62d7a2d5",
+          "name": "Szent Erzsébet Katolikus Általános Iskola és Óvoda",
+          "city": "Szentes",
+          "county": "Csongrád-Csanád"
+        }
+      ]
+    },
+    {
+      "nameKey": "szent gellért katolikus általános iskola és gimnázium",
+      "candidates": [
+        {
+          "id": "5e30d491-2352-5164-ab5a-1e531fb0a548",
+          "name": "Szent Gellért Katolikus Általános Iskola és Gimnázium",
+          "city": "Budapest",
+          "county": "Budapest"
+        },
+        {
+          "id": "8fb3811f-b854-5f60-b3da-95e7d036e8c2",
+          "name": "Szent Gellért Katolikus Általános Iskola és Gimnázium",
+          "city": "Gyomaendrőd",
+          "county": "Békés"
+        }
+      ]
+    },
+    {
+      "nameKey": "szent gellért katolikus általános iskola és óvoda",
+      "candidates": [
+        {
+          "id": "e351786b-2279-5b90-843d-4e9f3eed2a81",
+          "name": "Szent Gellért Katolikus Általános Iskola és Óvoda",
+          "city": "Heves",
+          "county": "Heves"
+        },
+        {
+          "id": "16540c05-ddc7-55c6-9721-686d1185524a",
+          "name": "Szent Gellért Katolikus Általános Iskola és Óvoda",
+          "city": "Kiskunmajsa",
+          "county": "Bács-Kiskun"
+        }
+      ]
+    },
+    {
+      "nameKey": "szent györgy görögkatolikus általános iskola",
+      "candidates": [
+        {
+          "id": "7b45f682-edc9-5ca4-92ec-6fdbbcade208",
+          "name": "Szent György Görögkatolikus Általános Iskola",
+          "city": "Kazincbarcika",
+          "county": "Borsod-Abaúj-Zemplén"
+        },
+        {
+          "id": "12195221-97ee-5df2-875c-3dc62a1985a1",
+          "name": "Szent György Görögkatolikus Általános Iskola",
+          "city": "Kisvárda",
+          "county": "Szabolcs-Szatmár-Bereg"
+        }
+      ]
+    },
+    {
+      "nameKey": "szent imre katolikus általános iskola",
+      "candidates": [
+        {
+          "id": "8559f045-b08c-5504-b98e-855b748284d9",
+          "name": "Szent Imre Katolikus Általános Iskola",
+          "city": "Ráckeve",
+          "county": "Pest"
+        },
+        {
+          "id": "a3306ede-1ea8-5089-ad80-9f4d31acd559",
+          "name": "Szent Imre Katolikus Általános Iskola",
+          "city": "Siklós",
+          "county": "Baranya"
+        },
+        {
+          "id": "4c4d5544-bf39-5d1c-b408-9073629debbc",
+          "name": "Szent Imre Katolikus Általános Iskola",
+          "city": "Tenk",
+          "county": "Heves"
+        }
+      ]
+    },
+    {
+      "nameKey": "szent imre katolikus általános iskola és óvoda",
+      "candidates": [
+        {
+          "id": "dc976b49-aa2a-5cc4-bbe7-24b7c609402c",
+          "name": "Szent Imre Katolikus Általános Iskola és Óvoda",
+          "city": "Gödöllő",
+          "county": "Pest"
+        },
+        {
+          "id": "2ada314a-210a-5e06-a716-a1907699b18e",
+          "name": "Szent Imre Katolikus Általános Iskola és Óvoda",
+          "city": "Pusztaföldvár",
+          "county": "Békés"
+        }
+      ]
+    },
+    {
+      "nameKey": "szent imre római katolikus általános iskola és óvoda",
+      "candidates": [
+        {
+          "id": "ca500076-0cac-5c12-98b0-0ad4f8e77594",
+          "name": "Szent Imre Római Katolikus Általános Iskola és Óvoda",
+          "city": "Komárom",
+          "county": "Komárom-Esztergom"
+        },
+        {
+          "id": "f68efa4a-8285-57ad-ba54-33ca734101c4",
+          "name": "Szent Imre Római Katolikus Általános Iskola és Óvoda",
+          "city": "Miskolc",
+          "county": "Borsod-Abaúj-Zemplén"
+        }
+      ]
+    },
+    {
+      "nameKey": "szent istván katolikus általános iskola és óvoda",
+      "candidates": [
+        {
+          "id": "1a6b8b55-1f2b-58b1-b000-25718abe365e",
+          "name": "Szent István Katolikus Általános Iskola és Óvoda",
+          "city": "Mezőkövesd",
+          "county": "Borsod-Abaúj-Zemplén"
+        },
+        {
+          "id": "a4b7d0d1-9297-5b64-9040-36678e1e8b08",
+          "name": "Szent István Katolikus Általános Iskola és Óvoda",
+          "city": "Mezőtúr",
+          "county": "Jász-Nagykun-Szolnok"
+        }
+      ]
+    },
+    {
+      "nameKey": "szent istván katolikus óvoda és általános iskola",
+      "candidates": [
+        {
+          "id": "c084ee1d-a67d-5798-8ba5-111b31d50f72",
+          "name": "Szent István Katolikus Óvoda és Általános Iskola",
+          "city": "Kétsoprony",
+          "county": "Békés"
+        },
+        {
+          "id": "bc230b64-72bd-51b5-9341-e4daf0fcc48f",
+          "name": "Szent István Katolikus Óvoda és Általános Iskola",
+          "city": "Nagybaracska",
+          "county": "Bács-Kiskun"
+        }
+      ]
+    },
+    {
+      "nameKey": "szent lászló katolikus általános iskola",
+      "candidates": [
+        {
+          "id": "e097f3d8-0260-551d-bf36-96c40c3bf6c8",
+          "name": "Szent László Katolikus Általános Iskola",
+          "city": "Mórahalom",
+          "county": "Csongrád-Csanád"
+        },
+        {
+          "id": "f9667d90-3ca5-5d61-b51a-fab028ac7273",
+          "name": "Szent László Katolikus Általános Iskola",
+          "city": "Sárvár",
+          "county": "Vas"
+        }
+      ]
+    }
+  ],
+  "exactDuplicateRowsRemoved": 16,
+  "finalSchoolCount": 2773
+}

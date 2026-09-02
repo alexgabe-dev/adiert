@@ -5,7 +5,13 @@ set request.jwt.claim.sub = '';
 
 do $$
 begin
-  if (select count(*) from public.schools) <> 2 then
+  if not exists (
+    select 1 from public.schools
+    where id = '10000000-0000-4000-8000-000000000001'
+  ) or exists (
+    select 1 from public.schools
+    where id = '10000000-0000-4000-8000-000000000003'
+  ) then
     raise exception 'Anonymous school visibility is not active-only';
   end if;
   if (select count(*) from public.campaigns) <> 1 then

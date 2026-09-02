@@ -1,173 +1,258 @@
 'use client';
 
-import { Search, Trophy, X } from 'lucide-react';
-import React, { useState } from 'react';
+import { ChevronLeft, ChevronRight, LoaderCircle, Search, Trophy, X } from 'lucide-react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 import { ModalDialog } from '@/components/ui/ModalDialog';
-import { INITIAL_SCHOOLS } from '@/data/mockData';
+import type {
+  LeaderboardPage,
+  LeaderboardSchool,
+  SchoolSelection,
+} from '@/features/public-data/types';
+import { schoolTypeLabels } from '@/features/public-data/types';
 
 interface FullLeaderboardModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectSchool?: (schoolName: string) => void;
+  onSelectSchool?: (school: SchoolSelection) => void;
 }
 
-export const FullLeaderboardModal: React.FC<FullLeaderboardModalProps> = ({
+function isLeaderboardResponse(
+  value: unknown,
+): value is LeaderboardPage & { campaign: { id: string; name: string } | null } {
+  if (!value || typeof value !== 'object') return false;
+  const candidate = value as Partial<LeaderboardPage> & { campaign?: unknown };
+  return (
+    (candidate.campaign === null ||
+      (typeof candidate.campaign === 'object' && candidate.campaign !== null)) &&
+    Array.isArray(candidate.schools) &&
+    typeof candidate.totalCount === 'number' &&
+    typeof candidate.page === 'number' &&
+    typeof candidate.pageSize === 'number'
+  );
+}
+
+export function FullLeaderboardModal({
   isOpen,
   onClose,
   onSelectSchool,
-}) => {
-  const [search, setSearch] = useState('');
-  const [selectedRegion, setSelectedRegion] = useState('Mind');
+}: FullLeaderboardModalProps) {
+  const [query, setQuery] = useState('');
+  const [county, setCounty] = useState('');
+  const [city, setCity] = useState('');
+  const [schoolType, setSchoolType] = useState('');
+  const [page, setPage] = useState(1);
+  const [result, setResult] = useState<LeaderboardPage | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => {
+      setLoading(true);
+      setFailed(false);
+      const parameters = new URLSearchParams({ query, county, city, page: String(page) });
+      if (schoolType) parameters.set('type', schoolType);
+      void fetch(`/api/leaderboard?${parameters}`, { signal: controller.signal })
+        .then(async (response) => {
+          if (!response.ok) throw new Error('leaderboard');
+          const body: unknown = await response.json();
+          if (!isLeaderboardResponse(body)) throw new Error('leaderboard');
+          setResult({
+            schools: body.schools,
+            totalCount: body.totalCount,
+            page: body.page,
+            pageSize: body.pageSize,
+          });
+        })
+        .catch((error: unknown) => {
+          if (error instanceof DOMException && error.name === 'AbortError') return;
+          setFailed(true);
+          setResult(null);
+        })
+        .finally(() => setLoading(false));
+    }, 200);
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [city, county, isOpen, page, query, schoolType]);
 
   if (!isOpen) return null;
-
-  const filtered = INITIAL_SCHOOLS.filter((school) => {
-    const matchRegion = selectedRegion === 'Mind' || school.region === selectedRegion;
-    const matchSearch =
-      search === '' ||
-      school.name.toLowerCase().includes(search.toLowerCase()) ||
-      school.city.toLowerCase().includes(search.toLowerCase());
-    return matchRegion && matchSearch;
-  });
+  const totalPages = result ? Math.max(1, Math.ceil(result.totalCount / result.pageSize)) : 1;
+  const setFilter = (setter: (value: string) => void, value: string) => {
+    setter(value);
+    setPage(1);
+  };
 
   return (
     <ModalDialog
       labelId="full-leaderboard-title"
       onClose={onClose}
-      className="flex max-h-[92vh] max-w-3xl flex-col rounded-3xl p-6 sm:p-8"
+      className="flex max-h-[92vh] max-w-4xl flex-col rounded-3xl p-5 sm:p-8"
     >
       <div className="flex items-center justify-between border-b border-slate-100 pb-4">
         <div>
           <div className="flex items-center gap-2 text-xs font-bold tracking-wider text-amber-700 uppercase">
             <Trophy className="h-4 w-4 text-amber-500" aria-hidden="true" />
-            <span>Országos Bajnokság</span>
+            <span>Országos bajnokság</span>
           </div>
           <h3
             id="full-leaderboard-title"
             className="mt-1 text-xl font-extrabold text-[#0B1535] sm:text-2xl"
           >
-            Teljes Iskolai Ranglista
+            Teljes iskolai ranglista
           </h3>
         </div>
         <button
           type="button"
           onClick={onClose}
           data-autofocus
-          className="rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+          className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
           aria-label="Bezárás"
         >
           <X className="h-5 w-5" aria-hidden="true" />
         </button>
       </div>
 
-      <div className="my-4 grid grid-cols-1 gap-3 sm:grid-cols-12">
-        <div className="relative sm:col-span-8">
+      <div className="my-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+        <label className="relative sm:col-span-2 lg:col-span-1">
+          <span className="sr-only">Iskola keresése</span>
           <Search
             className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-slate-400"
             aria-hidden="true"
           />
-          <label htmlFor="leaderboard-search" className="sr-only">
-            Keresés iskola vagy város neve alapján
-          </label>
           <input
-            id="leaderboard-search"
             type="search"
-            placeholder="Keresés iskola vagy város neve alapján..."
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pr-4 pl-10 text-xs text-[#0B1535] focus:ring-2 focus:ring-blue-500 focus:outline-none sm:text-sm"
+            placeholder="Iskola keresése…"
+            value={query}
+            onChange={(event) => setFilter(setQuery, event.target.value)}
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pr-3 pl-10 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none sm:text-sm"
           />
-        </div>
-
-        <div className="sm:col-span-4">
-          <label htmlFor="leaderboard-region" className="sr-only">
-            Régió szűrése
-          </label>
-          <select
-            id="leaderboard-region"
-            value={selectedRegion}
-            onChange={(event) => setSelectedRegion(event.target.value)}
-            className="w-full cursor-pointer rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-semibold text-[#0B1535] focus:ring-2 focus:ring-blue-500 focus:outline-none sm:text-sm"
-          >
-            <option value="Mind">Minden régió</option>
-            <option value="Budapest">Budapest</option>
-            <option value="Pest megye">Pest megye</option>
-            <option value="Dunántúl">Dunántúl</option>
-            <option value="Kelet-Magyarország">Kelet-Magyarország</option>
-          </select>
-        </div>
+        </label>
+        <input
+          aria-label="Vármegye szűrése"
+          placeholder="Vármegye"
+          value={county}
+          onChange={(event) => setFilter(setCounty, event.target.value)}
+          className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none sm:text-sm"
+        />
+        <input
+          aria-label="Település szűrése"
+          placeholder="Település"
+          value={city}
+          onChange={(event) => setFilter(setCity, event.target.value)}
+          className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none sm:text-sm"
+        />
+        <select
+          aria-label="Iskolatípus szűrése"
+          value={schoolType}
+          onChange={(event) => setFilter(setSchoolType, event.target.value)}
+          className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none sm:text-sm"
+        >
+          <option value="">Minden rögzített típus</option>
+          {Object.entries(schoolTypeLabels).map(([value, label]) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </select>
       </div>
 
-      <div className="flex-1 divide-y divide-slate-100 overflow-y-auto pr-1">
-        {filtered.length > 0 ? (
-          filtered.map((school) => (
-            <button
+      <div className="relative min-h-48 flex-1 divide-y divide-slate-100 overflow-y-auto pr-1">
+        {loading ? (
+          <div
+            className="absolute inset-0 z-10 flex items-center justify-center bg-white/75"
+            role="status"
+          >
+            <LoaderCircle
+              className="h-6 w-6 animate-spin text-blue-600"
+              aria-label="Ranglista betöltése"
+            />
+          </div>
+        ) : null}
+        {failed ? (
+          <div className="py-12 text-center text-sm text-[#667085]">
+            A ranglista most nem tölthető be.
+          </div>
+        ) : result && result.schools.length === 0 ? (
+          <div className="py-12 text-center text-sm text-[#667085]">
+            Nincs jóváhagyott találat a szűrésre.
+          </div>
+        ) : (
+          result?.schools.map((school: LeaderboardSchool) => (
+            <div
               key={school.id}
-              type="button"
-              onClick={() => {
-                onSelectSchool?.(school.name);
-                onClose();
-              }}
-              className="group flex w-full items-center justify-between gap-3 rounded-xl px-3 py-3 text-left transition-colors hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
-              aria-label={`${school.name} kiválasztása beküldéshez`}
+              className="flex items-center justify-between gap-3 rounded-xl px-2 py-3 hover:bg-slate-50"
             >
-              <span className="flex min-w-0 items-center gap-3">
-                <span
-                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-extrabold ${
-                    school.rank === 1
-                      ? 'bg-amber-400 text-amber-950 shadow-2xs'
-                      : school.rank === 2
-                        ? 'bg-slate-200 text-slate-800'
-                        : school.rank === 3
-                          ? 'bg-amber-100 text-amber-900'
-                          : 'bg-slate-100 text-slate-600'
-                  }`}
-                >
+              <Link
+                href={`/iskolak/${school.slug}`}
+                onClick={onClose}
+                className="flex min-w-0 flex-1 items-center gap-3 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+              >
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-xs font-extrabold text-slate-700">
                   {school.rank}.
                 </span>
-
                 <span className="min-w-0">
-                  <span className="block truncate text-xs font-bold text-[#0B1535] transition-colors group-hover:text-blue-600 sm:text-sm">
+                  <span className="block truncate text-xs font-bold text-[#0B1535] sm:text-sm">
                     {school.name}
                   </span>
-                  <span className="flex items-center gap-2 text-[11px] text-[#667085]">
-                    <span>{school.city}</span>
-                    <span>•</span>
-                    <span>{school.region}</span>
-                    <span>•</span>
-                    <span>{school.type}</span>
+                  <span className="block truncate text-[11px] text-[#667085]">
+                    {school.city} · {school.county}
                   </span>
                 </span>
-              </span>
-
+              </Link>
               <span className="shrink-0 text-right">
                 <span className="block text-xs font-extrabold text-[#0B1535] sm:text-sm">
-                  {school.totalAmount.toLocaleString('hu-HU')} Ft
+                  {school.approvedAmount.toLocaleString('hu-HU')} Ft
                 </span>
                 <span className="block text-[11px] text-[#667085]">
-                  {school.bottlesCount.toLocaleString('hu-HU')} db
+                  {school.approvedBottleCount.toLocaleString('hu-HU')} db
                 </span>
               </span>
-            </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onSelectSchool?.(school);
+                  onClose();
+                }}
+                className="shrink-0 rounded-lg bg-blue-50 px-2.5 py-2 text-[11px] font-bold text-blue-700 hover:bg-blue-100 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+              >
+                Kiválasztás
+              </button>
+            </div>
           ))
-        ) : (
-          <div className="py-12 text-center text-xs text-[#667085] sm:text-sm">
-            Nincs találat a keresési feltételek alapján.
-          </div>
         )}
       </div>
 
-      <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-4 text-xs text-[#667085]">
-        <span>Összesen {filtered.length} iskola listázva</span>
-        <button
-          type="button"
-          onClick={onClose}
-          className="rounded-xl bg-slate-100 px-4 py-2 font-semibold text-[#0B1535] transition-colors hover:bg-slate-200"
-        >
-          Bezárás
-        </button>
+      <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-4 text-xs text-[#667085]">
+        <span>{result?.totalCount ?? 0} jóváhagyott eredmény</span>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            disabled={page <= 1 || loading}
+            onClick={() => setPage((value) => Math.max(1, value - 1))}
+            className="rounded-lg border border-slate-200 p-2 disabled:opacity-40"
+            aria-label="Előző oldal"
+          >
+            <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+          </button>
+          <span>
+            {page} / {totalPages}
+          </span>
+          <button
+            type="button"
+            disabled={page >= totalPages || loading}
+            onClick={() => setPage((value) => value + 1)}
+            className="rounded-lg border border-slate-200 p-2 disabled:opacity-40"
+            aria-label="Következő oldal"
+          >
+            <ChevronRight className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
       </div>
     </ModalDialog>
   );
-};
+}

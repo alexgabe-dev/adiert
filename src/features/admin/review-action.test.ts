@@ -7,13 +7,17 @@ vi.mock('server-only', () => ({}));
 const dependencies = vi.hoisted(() => ({
   requestHeaders: new Headers(),
   revalidatePath: vi.fn(),
+  revalidateTag: vi.fn(),
   requireAdministratorRole: vi.fn(),
   createServerSupabaseClient: vi.fn(),
   rpc: vi.fn(),
 }));
 
 vi.mock('next/headers', () => ({ headers: async () => dependencies.requestHeaders }));
-vi.mock('next/cache', () => ({ revalidatePath: dependencies.revalidatePath }));
+vi.mock('next/cache', () => ({
+  revalidatePath: dependencies.revalidatePath,
+  revalidateTag: dependencies.revalidateTag,
+}));
 vi.mock('@/lib/auth/authorization', () => ({
   requireAdministratorRole: dependencies.requireAdministratorRole,
 }));
@@ -97,6 +101,7 @@ describe('reviewSubmissionAction', () => {
     });
     expect(dependencies.revalidatePath).toHaveBeenCalledWith('/admin/bekuldesek');
     expect(dependencies.revalidatePath).toHaveBeenCalledWith(`/admin/bekuldesek/${submissionId}`);
+    expect(dependencies.revalidateTag).toHaveBeenCalledWith('public-campaign', 'max');
   });
 
   it('reports an optimistic-lock conflict without claiming success', async () => {

@@ -16,6 +16,9 @@ const databaseTests = readdirSync(databaseTestsDirectory)
   .sort()
   .map((name) => join(databaseTestsDirectory, name));
 const tests = [join(databaseTestsDirectory, '000_bootstrap.sql'), ...migrations, ...databaseTests];
+const schoolDatasetMigration = migrations.find((file) =>
+  file.endsWith('20260902000400_real_school_dataset.sql'),
+);
 
 function run(command, args, options = {}) {
   const result = spawnSync(command, args, {
@@ -126,6 +129,12 @@ try {
       readFileSync(file);
       process.stdout.write(`\nRunning ${file.slice(root.length + 1)}\n`);
       run('psql', [testUrl, '-X', '-v', 'ON_ERROR_STOP=1', '-f', file]);
+      if (file === schoolDatasetMigration) {
+        process.stdout.write(
+          '\nRe-running the generated school dataset migration for idempotency\n',
+        );
+        run('psql', [testUrl, '-X', '-v', 'ON_ERROR_STOP=1', '-f', file]);
+      }
     }
     process.stdout.write('\nVerifying that development fixtures fail closed\n');
     runExpectedFailure(

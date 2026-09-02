@@ -1,8 +1,18 @@
 import React from 'react';
 import { Coins, Recycle, School as SchoolIcon, Target } from 'lucide-react';
-import { CAMPAIGN_STATS } from '../../data/mockData';
+import type { CampaignSummary } from '@/features/public-data/types';
 
-export const LiveStatsBar: React.FC = () => {
+interface LiveStatsBarProps {
+  campaign: CampaignSummary | null;
+  dataAvailable: boolean;
+}
+
+export const LiveStatsBar: React.FC<LiveStatsBarProps> = ({ campaign, dataAvailable }) => {
+  const approvedAmount = campaign?.approvedAmount ?? 0;
+  const approvedBottles = campaign?.approvedBottleCount ?? 0;
+  const targetAmount = campaign?.targetAmount ?? 0;
+  const progressPercentage =
+    targetAmount > 0 ? Math.min(100, Math.round((approvedAmount / targetAmount) * 100)) : 0;
   return (
     <section className="relative z-10 -mt-2 sm:-mt-4 mb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div
@@ -19,7 +29,7 @@ export const LiveStatsBar: React.FC = () => {
               <span>Összegyűjtött összeg</span>
             </div>
             <div className="text-2xl sm:text-3xl font-extrabold text-[#0B1535] tracking-tight">
-              {CAMPAIGN_STATS.formattedAmount}
+              {approvedAmount.toLocaleString('hu-HU')} Ft
             </div>
             <div className="text-xs text-emerald-600 font-medium flex items-center gap-1">
               <span>↑ 100% Ádi kezelésére</span>
@@ -35,7 +45,7 @@ export const LiveStatsBar: React.FC = () => {
               <span>Visszaváltott palackok</span>
             </div>
             <div className="text-2xl sm:text-3xl font-extrabold text-[#0B1535] tracking-tight">
-              {CAMPAIGN_STATS.formattedBottles}
+              {approvedBottles.toLocaleString('hu-HU')} db
             </div>
             <div className="text-xs text-[#667085]">PET palack és aludoboz</div>
           </div>
@@ -49,7 +59,7 @@ export const LiveStatsBar: React.FC = () => {
               <span>Résztvevő iskolák</span>
             </div>
             <div className="text-2xl sm:text-3xl font-extrabold text-[#0B1535] tracking-tight">
-              {CAMPAIGN_STATS.participatingSchools}
+              {(campaign?.participatingSchoolCount ?? 0).toLocaleString('hu-HU')}
             </div>
             <div className="text-xs text-blue-600 font-medium">Országszerte versenyezve</div>
           </div>
@@ -64,21 +74,21 @@ export const LiveStatsBar: React.FC = () => {
                 <span>Kampány célja</span>
               </div>
               <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-                {CAMPAIGN_STATS.progressPercentage}% elérve
+                {progressPercentage}% elérve
               </span>
             </div>
 
             <div className="text-2xl sm:text-3xl font-extrabold text-[#0B1535] tracking-tight">
-              {CAMPAIGN_STATS.formattedGoal}
+              {targetAmount > 0 ? `${targetAmount.toLocaleString('hu-HU')} Ft` : 'Nincs aktív cél'}
             </div>
 
             {/* Subtle Progress Bar */}
             <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
               <div
                 className="bg-gradient-to-r from-blue-500 to-emerald-500 h-2.5 rounded-full transition-all duration-1000 ease-out"
-                style={{ width: `${CAMPAIGN_STATS.progressPercentage}%` }}
+                style={{ width: `${progressPercentage}%` }}
                 role="progressbar"
-                aria-valuenow={CAMPAIGN_STATS.progressPercentage}
+                aria-valuenow={progressPercentage}
                 aria-valuemin={0}
                 aria-valuemax={100}
               />
@@ -86,6 +96,11 @@ export const LiveStatsBar: React.FC = () => {
           </div>
         </div>
       </div>
+      {!dataAvailable ? (
+        <p role="status" className="mt-2 text-center text-xs text-[#667085]">
+          Az ellenőrzött kampányadatok átmenetileg nem érhetők el.
+        </p>
+      ) : null}
     </section>
   );
 };

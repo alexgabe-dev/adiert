@@ -605,8 +605,10 @@ grant execute on function public.campaign_leaderboard(uuid) to anon, authenticat
 grant execute on function public.campaign_school_totals(uuid) to service_role;
 grant execute on function public.campaign_leaderboard(uuid) to service_role;
 
-alter table storage.buckets enable row level security;
-alter table storage.objects enable row level security;
+-- Supabase-managed Storage tables already have RLS enabled. Hosted projects keep
+-- these tables under the storage service owner, so project migrations must not
+-- attempt to alter their RLS setting. The isolated database test bootstrap
+-- enables RLS before applying this migration.
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
