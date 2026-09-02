@@ -42,7 +42,7 @@ export async function signInAction(
     };
   }
 
-  const callbackUrl = new URL('/auth/callback', environment.NEXT_PUBLIC_SITE_URL).toString();
+  const callbackUrl = new URL('/auth/callback', environment.SITE_URL).toString();
   const { error } = await supabase.auth.signInWithOtp({
     email: parsedForm.data.email,
     options: {

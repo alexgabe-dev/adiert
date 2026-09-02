@@ -27,7 +27,7 @@ vi.mock('@/lib/supabase/admin', () => ({
 }));
 
 vi.mock('@/lib/env', () => ({
-  environment: { NEXT_PUBLIC_SITE_URL: 'http://localhost:3000' },
+  environment: { SITE_URL: 'http://localhost:3000' },
   getSubmissionSecurityEnvironment: () => ({
     SUBMISSION_RATE_LIMIT_SECRET: 'a-secret-that-is-definitely-at-least-32-characters',
   }),

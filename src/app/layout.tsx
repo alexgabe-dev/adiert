@@ -14,7 +14,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(environment.NEXT_PUBLIC_SITE_URL),
+  metadataBase: new URL(environment.SITE_URL),
   title: {
     default: 'Ádiért — Iskolai Palackgyűjtő Kampány',
     template: '%s | Ádiért',

@@ -38,7 +38,7 @@ function requestHasValidOrigin(request: NextRequest) {
 
   try {
     const origin = new URL(originHeader).origin;
-    const canonicalOrigin = new URL(environment.NEXT_PUBLIC_SITE_URL).origin;
+    const canonicalOrigin = new URL(environment.SITE_URL).origin;
     return origin === request.nextUrl.origin || origin === canonicalOrigin;
   } catch {
     return false;

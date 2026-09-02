@@ -147,9 +147,10 @@ secret scan.
 
 ## Deployment requirements and later scope
 
-- Deployment must provide valid public Supabase settings, `SUPABASE_SERVICE_ROLE_KEY`, a canonical
-  `NEXT_PUBLIC_SITE_URL`, and an independent high-entropy `SUBMISSION_RATE_LIMIT_SECRET` of at least
-  32 characters. Secrets remain server-only and uncommitted.
+- Deployment must provide valid public Supabase settings, `SUPABASE_SERVICE_ROLE_KEY`, and an
+  independent high-entropy `SUBMISSION_RATE_LIMIT_SECRET` of at least 32 characters. An optional
+  server-only `SITE_URL` can override the canonical URL; Vercel otherwise supplies its production
+  domain. Secrets remain server-only and uncommitted.
 - The deployment proxy must supply trustworthy client-address headers for the IP layer. Device and
   global ceilings remain additional controls.
 - No OCR or automatic fraud-processing capability exists in this phase. Detected fields remain null
