@@ -10,13 +10,12 @@ const migrations = readdirSync(migrationsDirectory)
   .filter((name) => name.endsWith('.sql'))
   .sort()
   .map((name) => join(migrationsDirectory, name));
-const tests = [
-  join(root, 'supabase', 'tests', '000_bootstrap.sql'),
-  ...migrations,
-  join(root, 'supabase', 'tests', '001_schema_and_constraints.sql'),
-  join(root, 'supabase', 'tests', '002_rls_and_roles.sql'),
-  join(root, 'supabase', 'tests', '003_storage_and_aggregates.sql'),
-];
+const databaseTestsDirectory = join(root, 'supabase', 'tests');
+const databaseTests = readdirSync(databaseTestsDirectory)
+  .filter((name) => name.endsWith('.sql') && name !== '000_bootstrap.sql')
+  .sort()
+  .map((name) => join(databaseTestsDirectory, name));
+const tests = [join(databaseTestsDirectory, '000_bootstrap.sql'), ...migrations, ...databaseTests];
 
 function run(command, args, options = {}) {
   const result = spawnSync(command, args, {

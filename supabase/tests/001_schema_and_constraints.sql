@@ -18,6 +18,7 @@ begin
       'submissions',
       'submission_flags',
       'submission_reviews',
+      'submission_rate_limits',
       'news'
     )
     and not c.relrowsecurity;

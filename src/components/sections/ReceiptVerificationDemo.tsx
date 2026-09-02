@@ -38,7 +38,7 @@ export const ReceiptVerificationDemo: React.FC = () => {
         <div className="lg:col-span-6 flex flex-col items-start">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/70 text-emerald-800 text-xs font-bold tracking-wider uppercase mb-4">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-            <span>BIZONYLAT ÉS HITELESSÉG</span>
+            <span>MINTA FOLYAMAT · KÉZI ELLENŐRZÉS</span>
           </div>
 
           <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0B1535] tracking-tight mb-4">
@@ -47,7 +47,8 @@ export const ReceiptVerificationDemo: React.FC = () => {
 
           <p className="text-base sm:text-lg text-[#667085] leading-relaxed mb-6 font-normal">
             A visszaváltás után töltsd fel a bizonylatot, hogy a gyűjtésed biztonságosan és
-            ellenőrzötten bekerülhessen az iskolád eredményébe.
+            ellenőrzötten bekerülhessen az iskolád eredményébe. Az alábbi illusztráció minta, nem
+            élő automatikus felismerés.
           </p>
 
           {/* Quick interactive stepper toggles */}
@@ -80,8 +81,8 @@ export const ReceiptVerificationDemo: React.FC = () => {
                 ✓
               </div>
               <p className="text-sm text-[#0B1535]">
-                <strong className="font-semibold">MOHU REpont kompatibilitás:</strong> az automata
-                által kinyomtatott tranzakciós bizonylatot a rendszerünk azonnal felismeri.
+                <strong className="font-semibold">Biztonságos beküldés:</strong> a rendszer a
+                támogatott képet ellenőrzi és privát tárhelyen tárolja a kézi felülvizsgálatig.
               </p>
             </div>
             <div className="flex items-start gap-3">
@@ -170,7 +171,7 @@ export const ReceiptVerificationDemo: React.FC = () => {
                     </div>
                   </div>
                   <span className="text-[11px] font-semibold text-amber-700 bg-amber-100/80 px-2 py-1 rounded-md">
-                    ~2 perc
+                    Minta
                   </span>
                 </motion.div>
               ) : (
@@ -206,7 +207,7 @@ export const ReceiptVerificationDemo: React.FC = () => {
             {/* Bottom Status Caption */}
             <div className="text-center mt-4">
               <span className="text-[11px] text-[#667085]">
-                Közvetlen jóváírás az iskola profilján és a ranglistán
+                Az eredmény csak adminisztrátori jóváhagyás után változik
               </span>
             </div>
           </div>

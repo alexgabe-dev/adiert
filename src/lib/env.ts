@@ -22,6 +22,10 @@ const privilegedEnvironmentSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(20),
 });
 
+const submissionSecurityEnvironmentSchema = z.object({
+  SUBMISSION_RATE_LIMIT_SECRET: z.string().min(32),
+});
+
 export function getPrivilegedSupabaseEnvironment() {
   const publicEnvironment = getPublicSupabaseEnvironment();
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -44,4 +48,16 @@ export function getPrivilegedSupabaseEnvironment() {
     ...publicEnvironment,
     ...parsedPrivilegedEnvironment.data,
   });
+}
+
+export function getSubmissionSecurityEnvironment() {
+  const parsedSubmissionSecurityEnvironment = submissionSecurityEnvironmentSchema.safeParse({
+    SUBMISSION_RATE_LIMIT_SECRET: process.env.SUBMISSION_RATE_LIMIT_SECRET,
+  });
+
+  if (!parsedSubmissionSecurityEnvironment.success) {
+    return null;
+  }
+
+  return Object.freeze(parsedSubmissionSecurityEnvironment.data);
 }

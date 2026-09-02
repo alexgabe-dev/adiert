@@ -4,6 +4,8 @@ import { afterEach } from 'vitest';
 import { cleanup } from '@testing-library/react';
 
 afterEach(() => {
-  cleanup();
-  document.body.style.overflow = '';
+  if (typeof document !== 'undefined') {
+    cleanup();
+    document.body.style.overflow = '';
+  }
 });
