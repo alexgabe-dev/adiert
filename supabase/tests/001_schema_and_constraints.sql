@@ -19,7 +19,8 @@ begin
       'submission_flags',
       'submission_reviews',
       'submission_rate_limits',
-      'news'
+      'news',
+      'admin_audit_log'
     )
     and not c.relrowsecurity;
 

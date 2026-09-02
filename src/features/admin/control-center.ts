@@ -76,11 +76,21 @@ const auditSchema = z.object({
   created_at: z.iso.datetime({ offset: true }),
 });
 
+const recentReviewSchema = z.object({
+  id: z.uuid(),
+  submission_id: z.uuid(),
+  reviewer_id: z.uuid(),
+  from_status: z.enum(['pending', 'needs_review', 'approved', 'rejected']),
+  to_status: z.enum(['pending', 'needs_review', 'approved', 'rejected']),
+  created_at: z.iso.datetime({ offset: true }),
+});
+
 export type AdminCampaign = z.infer<typeof campaignSchema> & { participatingSchoolCount: number };
 export type AdminSchool = z.infer<typeof schoolRowSchema>;
 export type AdminNewsItem = z.infer<typeof newsSchema>;
-export type AdminAdministrator = z.infer<typeof administratorSchema>;
+export type AdminAdministrator = z.infer<typeof administratorSchema> & { email: string | null };
 export type AdminAuditItem = z.infer<typeof auditSchema>;
+export type AdminRecentReview = z.infer<typeof recentReviewSchema>;
 
 export class AdminControlQueryError extends Error {
   constructor() {
@@ -92,7 +102,9 @@ export class AdminControlQueryError extends Error {
 export async function listCampaigns(client: SupabaseClient): Promise<AdminCampaign[]> {
   const { data, error } = await client
     .from('campaigns')
-    .select('id, name, slug, description, target_amount, start_date, end_date, active, created_at, updated_at')
+    .select(
+      'id, name, slug, description, target_amount, start_date, end_date, active, created_at, updated_at',
+    )
     .order('created_at', { ascending: false });
   const campaigns = z.array(campaignSchema).safeParse(data);
   if (error || !campaigns.success) throw new AdminControlQueryError();
@@ -107,7 +119,8 @@ export async function listCampaigns(client: SupabaseClient): Promise<AdminCampai
       .eq('active', true);
     const parsed = z.array(z.object({ campaign_id: z.uuid() })).safeParse(participations);
     if (participationError || !parsed.success) throw new AdminControlQueryError();
-    for (const row of parsed.data) counts.set(row.campaign_id, (counts.get(row.campaign_id) ?? 0) + 1);
+    for (const row of parsed.data)
+      counts.set(row.campaign_id, (counts.get(row.campaign_id) ?? 0) + 1);
   }
   return campaigns.data.map((campaign) => ({
     ...campaign,
@@ -155,7 +168,9 @@ export async function getSchool(client: SupabaseClient, id: string) {
     .select('id, name, slug, type, city, county, postal_code, address, active')
     .eq('id', id)
     .maybeSingle();
-  const parsed = schoolRowSchema.omit({ campaign_count: true, participating: true, total_count: true }).safeParse(data);
+  const parsed = schoolRowSchema
+    .omit({ campaign_count: true, participating: true, total_count: true })
+    .safeParse(data);
   if (error) throw new AdminControlQueryError();
   return parsed.success ? parsed.data : null;
 }
@@ -174,24 +189,54 @@ export async function getNews(client: SupabaseClient, id: string) {
   return (await listNews(client)).find((item) => item.id === id) ?? null;
 }
 
-export async function listAdministrators(client: SupabaseClient): Promise<AdminAdministrator[]> {
+export async function listAdministrators(
+  client: SupabaseClient,
+  privilegedClient: SupabaseClient | null,
+): Promise<AdminAdministrator[]> {
   const { data, error } = await client
     .from('administrators')
     .select('user_id, role, active, display_name, created_at, updated_at')
     .order('created_at');
   const parsed = z.array(administratorSchema).safeParse(data);
   if (error || !parsed.success) throw new AdminControlQueryError();
-  return parsed.data;
+  if (!privilegedClient)
+    return parsed.data.map((administrator) => ({ ...administrator, email: null }));
+
+  return Promise.all(
+    parsed.data.map(async (administrator) => {
+      const { data: userData, error: userError } = await privilegedClient.auth.admin.getUserById(
+        administrator.user_id,
+      );
+      return {
+        ...administrator,
+        email: userError ? null : (userData.user?.email ?? null),
+      };
+    }),
+  );
 }
 
 export async function listAudit(client: SupabaseClient, page = 1, pageSize = 30) {
   const offset = (page - 1) * pageSize;
   const { data, error, count } = await client
     .from('admin_audit_log')
-    .select('id, actor_user_id, action, target_type, target_id, target_label, result, metadata, created_at', { count: 'exact' })
+    .select(
+      'id, actor_user_id, action, target_type, target_id, target_label, result, metadata, created_at',
+      { count: 'exact' },
+    )
     .order('created_at', { ascending: false })
     .range(offset, offset + pageSize - 1);
   const parsed = z.array(auditSchema).safeParse(data);
   if (error || !parsed.success) throw new AdminControlQueryError();
   return { items: parsed.data, total: count ?? 0, page, pageSize };
+}
+
+export async function listRecentReviews(client: SupabaseClient, limit = 5) {
+  const { data, error } = await client
+    .from('submission_reviews')
+    .select('id, submission_id, reviewer_id, from_status, to_status, created_at')
+    .order('created_at', { ascending: false })
+    .limit(Math.max(1, Math.min(limit, 10)));
+  const parsed = z.array(recentReviewSchema).safeParse(data);
+  if (error || !parsed.success) throw new AdminControlQueryError();
+  return parsed.data;
 }
