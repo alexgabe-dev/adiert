@@ -46,7 +46,6 @@ export const HeroRecyclingScene: React.FC = () => {
       </motion.div>
 
       {/* Subtle Eco / Heart Sparkle (Top Right) */}
-     
 
       {/* Main SVG Scene Container */}
       <svg
@@ -193,9 +192,7 @@ export const HeroRecyclingScene: React.FC = () => {
             fontWeight="700"
             fontFamily="system-ui, sans-serif"
             letterSpacing="1"
-          >
-          
-          </text>
+          ></text>
 
           {/* Interactive Screen */}
           <rect
@@ -305,12 +302,15 @@ export const HeroRecyclingScene: React.FC = () => {
               fill="#0B1535"
               fontSize="6.5"
               fontWeight="800"
-            >
-              
-            </text>
-            <text x="292" y="388" textAnchor="middle" fill="#246BFD" fontSize="6" fontWeight="700">
-              
-            </text>
+            ></text>
+            <text
+              x="292"
+              y="388"
+              textAnchor="middle"
+              fill="#246BFD"
+              fontSize="6"
+              fontWeight="700"
+            ></text>
             <line
               x1="275"
               y1="393"

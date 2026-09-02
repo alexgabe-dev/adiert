@@ -1,0 +1,47 @@
+import { redirect } from 'next/navigation';
+import Link from 'next/link';
+
+import { getActiveAdministrator } from '@/lib/auth/authorization';
+import { getPublicSupabaseEnvironment } from '@/lib/supabase/config';
+
+import { LoginForm } from './LoginForm';
+
+export default async function AdminLoginPage() {
+  const administrator = await getActiveAdministrator();
+  if (administrator) {
+    redirect('/admin');
+  }
+
+  const isConfigured = getPublicSupabaseEnvironment() !== null;
+
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-[#F7F9FC] px-4 py-12">
+      <section className="w-full max-w-md rounded-3xl border border-[#E8ECF2] bg-white p-7 shadow-xl shadow-slate-200/60 sm:p-10">
+        <Link
+          href="/"
+          className="inline-flex rounded-lg text-sm font-bold text-[#246BFD] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#246BFD]"
+        >
+          ← Vissza a nyilvános oldalra
+        </Link>
+        <div className="mt-8">
+          <p className="text-sm font-extrabold tracking-widest text-[#246BFD] uppercase">Ádiért</p>
+          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-[#0B1535]">
+            Adminisztráció
+          </h1>
+          <p className="mt-3 text-sm leading-6 text-[#667085]">
+            Csak meghívott, aktív adminisztrátorok léphetnek be. A rendszer e-mailben küld egy
+            egyszer használható belépési hivatkozást.
+          </p>
+        </div>
+
+        {isConfigured ? (
+          <LoginForm />
+        ) : (
+          <p role="status" className="mt-8 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            A Supabase-kapcsolat ebben a környezetben nincs beállítva.
+          </p>
+        )}
+      </section>
+    </main>
+  );
+}

@@ -4,23 +4,26 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/build.mjs",
     "start": "next start",
-    "typecheck": "next typegen && tsc --noEmit",
+    "typecheck": "node scripts/typecheck.mjs",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
+    "test:db": "node scripts/run-database-tests.mjs",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
-    "check": "npm run format:check && npm run typecheck && npm run lint && npm run test && npm run build"
+    "check": "npm run format:check && npm run typecheck && npm run lint && npm run test && npm run test:db && npm run build"
   },
   "engines": {
     "node": ">=20.9.0"
   },
   "packageManager": "npm@11.12.1",
   "dependencies": {
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.109.0",
     "canvas-confetti": "^1.9.4",
     "lucide-react": "^0.546.0",
     "motion": "^12.43.0",

@@ -1,6 +1,7 @@
-# Ádiért frontend
+# Ádiért
 
-Production application foundation for the Ádiért Hungarian school bottle-return charity campaign.
+Production application and Supabase foundation for the Ádiért Hungarian school bottle-return
+charity campaign.
 
 ## Requirements
 
@@ -24,17 +25,28 @@ npm run typecheck
 npm run lint
 npm run format:check
 npm run test
+npm run test:db
 npm run build
 ```
 
-`npm run check` runs type checking, linting, tests, and the production build in sequence.
+`npm run check` runs formatting, type checking, linting, application tests, isolated database/RLS/
+Storage tests, and the production build in sequence.
 
 ## Environment
 
-Environment variables are validated in `src/lib/env.ts`. Phase 1 only defines the canonical public site URL:
+Copy `.env.example` to `.env.local` and replace every placeholder. Each local, staging, and
+production deployment must use a separate Supabase project.
 
 ```dotenv
 NEXT_PUBLIC_SITE_URL="http://localhost:3000"
+NEXT_PUBLIC_SUPABASE_URL="https://your-project-ref.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
+SUPABASE_SERVICE_ROLE_KEY="your-server-only-service-role-key"
 ```
 
-No Supabase, authentication, backend, or OCR configuration is part of Phase 1.
+The service-role key is server-only and must never use a `NEXT_PUBLIC_` prefix. See
+`docs/SUPABASE_ENVIRONMENTS.md` for migration, invite-only administrator, fixture, and environment
+setup.
+
+Phase 2 deliberately does not implement public receipt persistence, OCR, fraud processing, or the
+admin review workflow. Those belong to later phases in `IMPLEMENTATION_PLAN.md`.
