@@ -27,7 +27,11 @@ interface AdminShellProps {
   children: ReactNode;
 }
 
-const roleLabels = { reviewer: 'Reviewer', admin: 'Admin', super_admin: 'Super Admin' } as const;
+const roleLabels = {
+  reviewer: 'Ellenőrző',
+  admin: 'Főadmin',
+  super_admin: 'Rendszergazda',
+} as const;
 const items: Array<{
   href: Route;
   label: string;
@@ -43,6 +47,8 @@ const items: Array<{
     exact: true,
   },
   { href: '/admin/bekuldesek', label: 'Beküldések', icon: FileCheck, role: 'reviewer' as const },
+  { href: '/admin/jelentkezesek', label: 'Jelentkezések', icon: School, role: 'admin' },
+  { href: '/admin/ertesitesek', label: 'Értesítések', icon: History, role: 'admin' },
   { href: '/admin/iskolak', label: 'Iskolák', icon: School, role: 'admin' as const },
   { href: '/admin/kampanyok', label: 'Kampányok', icon: Trophy, role: 'admin' as const },
   { href: '/admin/hirek', label: 'Hírek', icon: Newspaper, role: 'admin' as const },

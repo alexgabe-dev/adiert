@@ -2,6 +2,7 @@
 
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { z } from 'zod';
+import { scheduleNotifications } from '@/features/teacher/notifications';
 
 import { requireAdministratorRole } from '@/lib/auth/authorization';
 import { hasValidMutationOrigin } from '@/lib/security/origin';
@@ -63,8 +64,11 @@ export async function reviewSubmissionAction(
   ) {
     return { status: 'error', message: 'A jóváhagyáshoz összeg és palackszám szükséges.' };
   }
-  if (parsed.data.intent === 'rejected' && !parsed.data.reason) {
-    return { status: 'error', message: 'Az elutasításhoz indoklás szükséges.' };
+  if (['rejected', 'needs_review'].includes(parsed.data.intent) && !parsed.data.reason) {
+    return {
+      status: 'error',
+      message: 'Az elutasításhoz és a javításkéréshez indoklás szükséges.',
+    };
   }
 
   const supabase = await createServerSupabaseClient();
@@ -99,10 +103,11 @@ export async function reviewSubmissionAction(
 
   revalidatePath('/admin/bekuldesek');
   revalidatePath(`/admin/bekuldesek/${parsed.data.submissionId}`);
-  if (parsed.data.intent === 'approved') {
-    revalidateTag('public-campaign', 'max');
-    revalidatePath('/');
-    revalidatePath('/iskolak/[slug]', 'page');
-  }
+  revalidateTag('public-campaign', 'max');
+  revalidatePath('/');
+  revalidatePath('/iskolak/[slug]', 'page');
+  revalidatePath('/tanar');
+  revalidatePath('/admin/iskolak');
+  scheduleNotifications();
   return { status: 'success', message: 'A felülvizsgálat és az auditbejegyzés sikeresen mentve.' };
 }

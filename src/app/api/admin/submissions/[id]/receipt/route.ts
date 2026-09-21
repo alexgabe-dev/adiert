@@ -28,7 +28,22 @@ export async function GET(_request: NextRequest, context: ReceiptRouteContext) {
   }
 
   try {
-    const path = await getReceiptPathForReview(authenticatedClient, id);
+    const revision = _request.nextUrl.searchParams.get('revision');
+    if (revision && !z.uuid().safeParse(revision).success)
+      return new NextResponse(null, { status: 404 });
+    let path: string | null;
+    if (revision) {
+      const result = await authenticatedClient
+        .from('submission_revisions')
+        .select('receipt_image_path')
+        .eq('id', revision)
+        .eq('submission_id', id)
+        .maybeSingle();
+      if (result.error) return new NextResponse(null, { status: 404 });
+      path = result.data?.receipt_image_path ?? null;
+    } else {
+      path = await getReceiptPathForReview(authenticatedClient, id);
+    }
     if (!path) return new NextResponse(null, { status: 404 });
     const { data, error } = await privilegedClient.storage
       .from(RECEIPT_BUCKET)

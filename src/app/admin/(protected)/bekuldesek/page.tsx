@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { z } from 'zod';
 
 import {
   listAdminSubmissions,
@@ -11,7 +12,7 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 const pageSize = 20;
 const statusLabels: Record<SubmissionStatus | 'all', string> = {
   pending: 'Függőben',
-  needs_review: 'További ellenőrzés',
+  needs_review: 'Javítást kérünk',
   approved: 'Jóváhagyott',
   rejected: 'Elutasított',
   all: 'Mind',
@@ -44,11 +45,15 @@ export default async function AdminSubmissionsPage({ searchParams }: AdminSubmis
       ? (requestedStatus as SubmissionStatus | 'all')
       : 'pending';
   const schoolSearch = (firstValue(parameters.school) ?? '').trim().slice(0, 100);
+  const dateFrom = z.iso.date().safeParse(firstValue(parameters.from)).data;
+  const dateTo = z.iso.date().safeParse(firstValue(parameters.to)).data;
   const requestedPage = Number(firstValue(parameters.page));
   const page = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
   const result = await listAdminSubmissions(supabase, {
     status,
     schoolSearch,
+    dateFrom,
+    dateTo,
     page,
     pageSize,
   });
@@ -70,7 +75,10 @@ export default async function AdminSubmissionsPage({ searchParams }: AdminSubmis
         {(['pending', 'needs_review', 'approved', 'rejected', 'all'] as const).map((value) => (
           <Link
             key={value}
-            href={{ pathname: '/admin/bekuldesek', query: { status: value, school: schoolSearch } }}
+            href={{
+              pathname: '/admin/bekuldesek',
+              query: { status: value, school: schoolSearch, from: dateFrom, to: dateTo },
+            }}
             className={`rounded-full px-3 py-2 text-xs font-bold ${
               status === value ? 'bg-[#0B1535] text-white' : 'border border-slate-200 bg-white'
             }`}
@@ -93,6 +101,14 @@ export default async function AdminSubmissionsPage({ searchParams }: AdminSubmis
           placeholder="Keresés iskola neve alapján"
           className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
         />
+        <label className="text-xs text-slate-500">
+          Visszaváltás ettől
+          <input name="from" type="date" defaultValue={dateFrom} className="field" />
+        </label>
+        <label className="text-xs text-slate-500">
+          Eddig
+          <input name="to" type="date" defaultValue={dateTo} className="field" />
+        </label>
         <button
           type="submit"
           className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-blue-700"
@@ -125,7 +141,8 @@ export default async function AdminSubmissionsPage({ searchParams }: AdminSubmis
                     </div>
                     <p className="mt-1 text-xs text-[#667085]">
                       {submission.schoolCity ? `${submission.schoolCity} · ` : ''}
-                      {submission.campaignName}
+                      {submission.campaignName} · {submission.submittedBottleCount ?? '—'} beküldött
+                      palack
                     </p>
                     <p className="mt-1 font-mono text-[10px] text-slate-400">
                       {submission.publicReference}
@@ -159,7 +176,7 @@ export default async function AdminSubmissionsPage({ searchParams }: AdminSubmis
           <Link
             href={{
               pathname: '/admin/bekuldesek',
-              query: { status, school: schoolSearch, page: page - 1 },
+              query: { status, school: schoolSearch, from: dateFrom, to: dateTo, page: page - 1 },
             }}
             className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold"
           >
@@ -175,7 +192,7 @@ export default async function AdminSubmissionsPage({ searchParams }: AdminSubmis
           <Link
             href={{
               pathname: '/admin/bekuldesek',
-              query: { status, school: schoolSearch, page: page + 1 },
+              query: { status, school: schoolSearch, from: dateFrom, to: dateTo, page: page + 1 },
             }}
             className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold"
           >

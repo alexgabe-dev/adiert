@@ -11,7 +11,8 @@ create extension pgcrypto with schema extensions;
 create schema auth;
 create table auth.users (
   id uuid primary key,
-  email text unique
+  email text unique,
+  email_confirmed_at timestamptz
 );
 
 create function auth.uid()

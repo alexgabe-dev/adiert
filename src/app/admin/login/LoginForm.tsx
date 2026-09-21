@@ -2,13 +2,15 @@
 
 import { useActionState } from 'react';
 
-import { initialSignInState, signInAction } from './actions';
+import { signInAction } from './actions';
+import { initialSignInState } from './shared';
 
-export function LoginForm() {
+export function LoginForm({ localPassword = false }: { localPassword?: boolean }) {
   const [state, formAction, pending] = useActionState(signInAction, initialSignInState);
 
   return (
     <form action={formAction} className="mt-8 space-y-5">
+      <input type="hidden" name="mode" value={localPassword ? 'password' : 'email'} />
       <div>
         <label htmlFor="admin-email" className="mb-2 block text-sm font-bold text-[#0B1535]">
           Admin e-mail-cím
@@ -24,12 +26,28 @@ export function LoginForm() {
         />
       </div>
 
+      {localPassword && (
+        <label className="block text-sm font-bold text-[#0B1535]">
+          Jelszó
+          <input
+            name="password"
+            type="password"
+            required
+            autoComplete="current-password"
+            className="field mt-2"
+          />
+        </label>
+      )}
       <button
         type="submit"
         disabled={pending}
         className="w-full rounded-xl bg-[#246BFD] px-5 py-3 font-extrabold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#246BFD] disabled:cursor-wait disabled:opacity-60"
       >
-        {pending ? 'Küldés…' : 'Belépési hivatkozás kérése'}
+        {pending
+          ? 'Egy pillanat…'
+          : localPassword
+            ? 'Belépek az adminfelületre'
+            : 'Belépési hivatkozás kérése'}
       </button>
 
       {state.message ? (

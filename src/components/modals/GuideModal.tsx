@@ -38,14 +38,22 @@ export function GuideModal({ isOpen, onClose, onOpenSubmitModal }: GuideModalPro
       <section className="mt-8">
         <h3 className="text-xl font-bold">A fotó feltöltése ezen az oldalon</h3>
         <ol className="mt-4 list-decimal space-y-3 pl-5 text-sm leading-relaxed text-slate-600">
-          <li>Nyisd meg a „Gyűjtés beküldése” felületet.</li>
+          <li>
+            Lépj be a saját tanári fiókodba. Feltölteni csak jóváhagyott iskolai tagsággal lehet.
+          </li>
           <li>
             Válaszd ki az automata képernyőjéről készült éles fotót. A teljes visszaváltott
             darabszám legyen olvasható. JPEG, PNG vagy WebP kép tölthető fel, legfeljebb 10 MB
             méretben.
           </li>
-          <li>Keresd meg és válaszd ki az iskoládat.</li>
-          <li>Küldd be a képet ellenőrzésre, és őrizd meg a kapott hivatkozást.</li>
+          <li>
+            Add meg a darabszámot és a visszaváltás dátumát. Az iskola a tagságod alapján
+            automatikusan ki van választva.
+          </li>
+          <li>
+            Ellenőrizd az összegzést, majd küldd be a gyűjtést. Állapotát a Beküldések menüben
+            követheted.
+          </li>
           <li>
             A jóváhagyott palackszám az iskola összesített eredményében és a ranglistán jelenik meg.
           </li>

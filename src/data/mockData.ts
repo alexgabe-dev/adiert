@@ -20,14 +20,14 @@ export const FAQS: FaqItem[] = [
     category: 'Képfeltöltés',
     question: 'Miről kell fotót készíteni?',
     answer:
-      'Az automata képernyőjéről, az összes palack bedobása után, még a fizetés előtt. A visszaváltott darabszám jól látszódjon. Ezt a képet töltsd fel az iskolához; az eredmény csak kézi jóváhagyás után változik.',
+      'Az automata képernyőjéről, az összes palack bedobása után, még a fizetés előtt. A visszaváltott darabszám jól látszódjon. Belépés után ezt a képet töltsd fel az iskoládhoz, a darabszámmal és a dátummal együtt; az eredmény csak kézi jóváhagyás után változik.',
   },
   {
     id: 'faq-4',
     category: 'Iskoláknak',
     question: 'Hogyan regisztrálhat az iskola?',
     answer:
-      'Az általános iskolák a www.palackverseny.hu oldalon regisztrálhatnak. Szükség van az irányítószámra, a településre, az iskola hivatalos nevére, a kapcsolattartó nevére és e-mail-címére. A megerősítési kód kérése és az iskola regisztrálása után az e-mail-címet is meg kell erősíteni.',
+      'Az Iskolai regisztráció gombbal hozz létre saját fiókot, erősítsd meg az e-mail-címedet, majd add meg az iskola és a kapcsolattartó adatait. A szervezők jóváhagyásáról e-mailt kapsz. Ezután az iskola adminjaként legfeljebb 10 további tanárt hívhatsz meg.',
   },
   {
     id: 'faq-5',

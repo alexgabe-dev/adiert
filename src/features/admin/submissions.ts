@@ -7,6 +7,7 @@ export const submissionStatuses = ['pending', 'needs_review', 'approved', 'rejec
 export type SubmissionStatus = (typeof submissionStatuses)[number];
 
 const submissionListRowSchema = z.object({
+  submitted_bottle_count: z.number().int().nullable().optional(),
   id: z.uuid(),
   public_reference: z.uuid(),
   school_id: z.uuid(),
@@ -29,6 +30,11 @@ const campaignSchema = z.object({
 });
 
 const submissionDetailSchema = z.object({
+  submitted_bottle_count: z.number().int().nullable().optional(),
+  submitted_by: z.uuid().nullable().optional(),
+  returned_on: z.string().nullable().optional(),
+  teacher_note: z.string().nullable().optional(),
+  feedback: z.string().nullable().optional(),
   id: z.uuid(),
   public_reference: z.uuid(),
   school_id: z.uuid(),
@@ -73,6 +79,7 @@ const reviewSchema = z.object({
 });
 
 export interface AdminSubmissionListItem {
+  submittedBottleCount: number | null;
   id: string;
   publicReference: string;
   schoolName: string;
@@ -85,6 +92,12 @@ export interface AdminSubmissionListItem {
 }
 
 export interface AdminSubmissionDetail extends AdminSubmissionListItem {
+  schoolId: string;
+  submittedBottleCount: number | null;
+  submittedBy: string | null;
+  returnedOn: string | null;
+  teacherNote: string | null;
+  feedback: string | null;
   detectedAmount: number | null;
   detectedBottleCount: number | null;
   detectedReceiptIdentifier: string | null;
@@ -142,7 +155,14 @@ async function findSchoolIds(client: SupabaseClient, search: string) {
 
 export async function listAdminSubmissions(
   client: SupabaseClient,
-  input: { status: SubmissionStatus | 'all'; schoolSearch: string; page: number; pageSize: number },
+  input: {
+    status: SubmissionStatus | 'all';
+    schoolSearch: string;
+    page: number;
+    pageSize: number;
+    dateFrom?: string;
+    dateTo?: string;
+  },
 ) {
   const schoolIds = await findSchoolIds(client, input.schoolSearch);
   if (schoolIds?.length === 0) return { items: [], total: 0 };
@@ -150,10 +170,12 @@ export async function listAdminSubmissions(
   let query = client
     .from('submissions')
     .select(
-      'id, public_reference, school_id, campaign_id, status, fraud_score, created_at, version',
+      'id, public_reference, school_id, campaign_id, status, fraud_score, created_at, version, submitted_bottle_count',
       { count: 'exact' },
     );
   if (input.status !== 'all') query = query.eq('status', input.status);
+  if (input.dateFrom) query = query.gte('returned_on', input.dateFrom);
+  if (input.dateTo) query = query.lte('returned_on', input.dateTo);
   if (schoolIds) query = query.in('school_id', schoolIds);
 
   const offset = (input.page - 1) * input.pageSize;
@@ -169,6 +191,7 @@ export async function listAdminSubmissions(
   ]);
 
   const items: AdminSubmissionListItem[] = rows.data.map((row) => ({
+    submittedBottleCount: row.submitted_bottle_count ?? null,
     id: row.id,
     publicReference: row.public_reference,
     schoolName: schools.get(row.school_id)?.name ?? 'Ismeretlen iskola',
@@ -190,7 +213,7 @@ export async function getAdminSubmission(
   const { data, error } = await client
     .from('submissions')
     .select(
-      'id, public_reference, school_id, campaign_id, status, detected_amount, detected_bottle_count, detected_receipt_identifier, detected_receipt_date, approved_amount, approved_bottle_count, receipt_identifier, receipt_date, rejection_reason, fraud_score, ocr_status, created_at, reviewed_at, reviewed_by, version',
+      'submitted_bottle_count, submitted_by, returned_on, teacher_note, feedback, id, public_reference, school_id, campaign_id, status, detected_amount, detected_bottle_count, detected_receipt_identifier, detected_receipt_date, approved_amount, approved_bottle_count, receipt_identifier, receipt_date, rejection_reason, fraud_score, ocr_status, created_at, reviewed_at, reviewed_by, version',
     )
     .eq('id', submissionId)
     .maybeSingle();
@@ -233,6 +256,12 @@ export async function getAdminSubmission(
     fraudScore: row.fraud_score,
     createdAt: row.created_at,
     version: row.version,
+    schoolId: row.school_id,
+    submittedBottleCount: row.submitted_bottle_count ?? null,
+    submittedBy: row.submitted_by ?? null,
+    returnedOn: row.returned_on ?? null,
+    teacherNote: row.teacher_note ?? null,
+    feedback: row.feedback ?? null,
     detectedAmount: row.detected_amount,
     detectedBottleCount: row.detected_bottle_count,
     detectedReceiptIdentifier: row.detected_receipt_identifier,

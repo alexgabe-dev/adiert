@@ -149,7 +149,7 @@ export function AdiStorySection() {
           </div>
         </div>
         <p className="mt-5 max-w-4xl text-xs leading-relaxed text-slate-500">
-          Ádi története a család tájékoztatása alapján. A betegségről bővebben:{' '}
+          A betegségről bővebben:{' '}
           <a
             href="https://www.nhs.uk/conditions/muscular-dystrophy/"
             target="_blank"

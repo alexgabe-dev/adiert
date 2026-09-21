@@ -56,13 +56,13 @@ export const RETURN_METHODS = [
 ];
 
 export const REGISTRATION_STEPS = [
-  'Nyisd meg a www.palackverseny.hu oldalt.',
+  'Nyisd meg az Iskolai regisztráció felületet, hozz létre saját fiókot, és erősítsd meg az e-mail-címedet.',
   'Add meg az iskola irányítószámát.',
   'Add meg a települést vagy várost.',
   'Írd be az iskola hivatalos nevét.',
   'Add meg a kapcsolattartó nevét.',
   'Add meg a hozzáféréshez használt e-mail-címet.',
-  'Kérj megerősítési kódot.',
+  'Ellenőrizd a megadott adatokat.',
   'Válaszd az „Iskola regisztrálása” lehetőséget.',
-  'Erősítsd meg az e-mail-címet a kapott üzenet alapján.',
+  'Várd meg a szervezők jóváhagyását; a döntésről e-mailt kapsz.',
 ];

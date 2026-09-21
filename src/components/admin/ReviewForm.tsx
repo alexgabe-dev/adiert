@@ -1,12 +1,13 @@
 'use client';
 
-import { useActionState, useEffect } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { initialReviewActionState, reviewSubmissionAction } from '@/features/admin/review-action';
 import type { SubmissionStatus } from '@/features/admin/submissions';
 
 interface ReviewFormProps {
+  canCorrect?: boolean;
   submissionId: string;
   version: number;
   status: SubmissionStatus;
@@ -17,6 +18,7 @@ interface ReviewFormProps {
 }
 
 export function ReviewForm({
+  canCorrect = false,
   submissionId,
   version,
   status,
@@ -30,16 +32,17 @@ export function ReviewForm({
     initialReviewActionState,
   );
   const router = useRouter();
+  const [bottles, setBottles] = useState(detectedBottleCount?.toString() ?? '');
   const isFinal = status === 'approved' || status === 'rejected';
 
   useEffect(() => {
     if (state.status === 'success') router.refresh();
   }, [router, state.status]);
 
-  if (isFinal) {
+  if (isFinal && !canCorrect) {
     return (
       <p className="rounded-xl bg-slate-100 px-4 py-3 text-sm text-slate-700">
-        Ez a beküldés végleges állapotban van. Phase 3-ban visszafordítás nem engedélyezett.
+        A beküldés lezárult. Korrekciót a főadmin végezhet, indoklással.
       </p>
     );
   }
@@ -60,7 +63,8 @@ export function ReviewForm({
             type="number"
             min="1"
             step="1"
-            defaultValue={detectedAmount ?? ''}
+            value={bottles ? Number(bottles) * 50 : (detectedAmount ?? '')}
+            readOnly
             className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
@@ -74,7 +78,8 @@ export function ReviewForm({
             type="number"
             min="1"
             step="1"
-            defaultValue={detectedBottleCount ?? ''}
+            value={bottles}
+            onChange={(e) => setBottles(e.target.value)}
             className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
@@ -117,7 +122,7 @@ export function ReviewForm({
           name="reason"
           rows={3}
           maxLength={500}
-          placeholder="Elutasításnál kötelező; további ellenőrzésnél ajánlott."
+          placeholder="Javításkérésnél, elutasításnál, mennyiségi eltérésnél és korrekciónál kötelező."
           className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none"
         />
       </div>
@@ -133,7 +138,7 @@ export function ReviewForm({
         </p>
       ) : null}
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="sticky bottom-0 z-20 grid gap-2 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-lg backdrop-blur sm:grid-cols-3">
         <button
           type="submit"
           name="intent"
@@ -156,10 +161,10 @@ export function ReviewForm({
           type="submit"
           name="intent"
           value="needs_review"
-          disabled={pending || status === 'needs_review'}
+          disabled={pending}
           className="rounded-xl bg-amber-500 px-4 py-3 text-sm font-extrabold text-white hover:bg-amber-600 disabled:opacity-50"
         >
-          További ellenőrzés
+          Javítást kérek
         </button>
       </div>
     </form>

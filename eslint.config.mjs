@@ -7,5 +7,5 @@ export default defineConfig([
   ...nextVitals,
   ...nextTypeScript,
   eslintConfigPrettier,
-  globalIgnores(['.next/**', 'coverage/**', 'dist/**', 'out/**', 'next-env.d.ts']),
+  globalIgnores(['.kilo/**', '.next/**', 'coverage/**', 'dist/**', 'out/**', 'next-env.d.ts']),
 ]);

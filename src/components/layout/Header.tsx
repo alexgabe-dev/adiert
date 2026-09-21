@@ -24,6 +24,7 @@ export const Header: React.FC = () => {
     { label: 'Ranglista', href: '#ranglista' },
     { label: 'Iskoláknak', href: '#iskolaknak' },
     { label: 'GYIK', href: '#gyik' },
+    { label: 'Tanári belépés', href: '/tanar' },
   ];
 
   return (
@@ -51,7 +52,7 @@ export const Header: React.FC = () => {
         </a>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-1 lg:gap-2" aria-label="Fő navigáció">
+        <nav className="hidden lg:flex items-center gap-1 lg:gap-2" aria-label="Fő navigáció">
           {navLinks.map((link) => (
             <a
               key={link.href}
@@ -77,7 +78,7 @@ export const Header: React.FC = () => {
         </div>
 
         {/* Mobile Menu Button */}
-        <div className="flex md:hidden items-center gap-2">
+        <div className="flex lg:hidden items-center gap-2">
           <button
             type="button"
             onClick={() => openSubmit()}
@@ -103,7 +104,7 @@ export const Header: React.FC = () => {
       {mobileMenuOpen && (
         <div
           id="mobile-navigation"
-          className="animate-mobile-menu-in space-y-3 border-b border-slate-200 bg-white px-4 pt-3 pb-6 shadow-lg md:hidden"
+          className="animate-mobile-menu-in space-y-3 border-b border-slate-200 bg-white px-4 pt-3 pb-6 shadow-lg lg:hidden"
         >
           <nav className="flex flex-col space-y-1">
             {navLinks.map((link) => (

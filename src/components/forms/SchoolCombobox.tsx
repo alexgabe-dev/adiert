@@ -13,6 +13,7 @@ interface SchoolComboboxProps {
   value: SchoolSelection | null;
   onChange: (school: SchoolSelection | null) => void;
   disabled?: boolean;
+  rememberSelection?: boolean;
 }
 
 function isSearchResponse(value: unknown): value is { results: SchoolSelection[] } {
@@ -31,7 +32,14 @@ function isSearchResponse(value: unknown): value is { results: SchoolSelection[]
   );
 }
 
-export function SchoolCombobox({ id, campaignId, value, onChange, disabled }: SchoolComboboxProps) {
+export function SchoolCombobox({
+  id,
+  campaignId,
+  value,
+  onChange,
+  disabled,
+  rememberSelection = true,
+}: SchoolComboboxProps) {
   const listboxId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState(value?.name ?? '');
@@ -42,7 +50,7 @@ export function SchoolCombobox({ id, campaignId, value, onChange, disabled }: Sc
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    if (value || disabled) return;
+    if (value || disabled || !rememberSelection) return;
     const recentId = window.localStorage.getItem(RECENT_SCHOOL_KEY);
     if (!recentId) return;
     const controller = new AbortController();
@@ -61,7 +69,7 @@ export function SchoolCombobox({ id, campaignId, value, onChange, disabled }: Sc
       })
       .catch(() => undefined);
     return () => controller.abort();
-  }, [campaignId, disabled, onChange, value]);
+  }, [campaignId, disabled, onChange, value, rememberSelection]);
 
   useEffect(() => {
     const normalizedQuery = query.trim();

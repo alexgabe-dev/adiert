@@ -35,6 +35,13 @@ export default async function AdminPage() {
     ? !(await privileged.storage.getBucket('receipt-images')).error
     : false;
   const canOperate = administratorHasRole(administrator.role, 'admin');
+  const { count: applicationCount, error: applicationError } = canOperate
+    ? await client
+        .from('school_applications')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'pending')
+    : { count: 0, error: null };
+  if (applicationError) throw new Error('A jelentkezések nem tölthetők be.');
   const kpis = [
     {
       label: 'Jóváhagyott összeg',
@@ -69,6 +76,14 @@ export default async function AdminPage() {
       <p className="mt-2 text-sm text-[#667085]">
         A legfontosabb kampány- és ellenőrzési állapot egy helyen.
       </p>
+      {canOperate && (
+        <Link
+          href="/admin/jelentkezesek"
+          className="mt-6 block rounded-2xl border border-blue-200 bg-blue-50 p-5 text-sm font-bold text-blue-800"
+        >
+          {applicationCount ?? 0} iskolai jelentkezés vár jóváhagyásra →
+        </Link>
+      )}
       <div className="mt-7 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {kpis.map(({ label, value, icon: Icon }) => (
           <div key={label} className="rounded-2xl border border-[#E8ECF2] bg-white p-5">

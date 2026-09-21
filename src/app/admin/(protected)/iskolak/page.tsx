@@ -24,6 +24,23 @@ export default async function SchoolsPage({ searchParams }: SchoolsPageProps) {
   const requestedPage = Number(first(parameters.page));
   const page = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
   const result = await listSchools(client, { query, city, county, active, page, pageSize: 25 });
+  const { data: cardRows, error: cardError } = await client.rpc('admin_school_cards', {
+    p_ids: result.items.map((s) => s.id),
+  });
+  if (cardError) throw new Error('Az iskolai összesítések nem tölthetők be.');
+  const cards = new Map(
+    (
+      (cardRows ?? []) as {
+        school_id: string;
+        owner_name: string | null;
+        owner_email: string | null;
+        teacher_count: number;
+        approved: number;
+        pending_count: number;
+        pending_bottles: number;
+      }[]
+    ).map((c) => [c.school_id, c]),
+  );
   const pageCount = Math.max(1, Math.ceil(result.total / result.pageSize));
   const linkQuery = { q: query, city, county, state: state ?? 'all' };
 
@@ -121,7 +138,18 @@ export default async function SchoolsPage({ searchParams }: SchoolsPageProps) {
                     </p>
                   </div>
                   <p className="text-xs text-[#667085]">
-                    {school.campaign_count} aktív kampánykapcsolat
+                    <span className="block font-bold text-blue-700">
+                      {Number(cards.get(school.id)?.approved ?? 0).toLocaleString('hu-HU')}{' '}
+                      jóváhagyott palack
+                    </span>
+                    <span className="mt-1 block">
+                      {cards.get(school.id)?.pending_count ?? 0} beküldés vár ·{' '}
+                      {cards.get(school.id)?.teacher_count ?? 0} tanár
+                    </span>
+                    <span className="mt-1 block">
+                      {cards.get(school.id)?.owner_name ?? 'Nincs kapcsolattartó'}
+                    </span>
+                    <span className="block break-all">{cards.get(school.id)?.owner_email}</span>
                   </p>
                 </Link>
               </li>

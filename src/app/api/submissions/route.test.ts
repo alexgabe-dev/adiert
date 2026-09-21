@@ -1,178 +1,143 @@
 // @vitest-environment node
-
 import { NextRequest } from 'next/server';
 import sharp from 'sharp';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-
 vi.mock('server-only', () => ({}));
-
-const dependencies = vi.hoisted(() => ({
-  enforceSubmissionRateLimits: vi.fn(),
-  createPendingReceiptSubmission: vi.fn(),
-  createPrivilegedSupabaseClient: vi.fn(() => ({ kind: 'service-role-client' })),
+const d = vi.hoisted(() => ({
+  session: vi.fn(),
+  save: vi.fn(),
+  rate: vi.fn(),
+  options: vi.fn(),
+  client: {},
 }));
-
-vi.mock('@/features/submissions/rate-limit', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@/features/submissions/rate-limit')>()),
-  enforceSubmissionRateLimits: dependencies.enforceSubmissionRateLimits,
+vi.mock('@/features/teacher/server', () => ({ teacherSession: d.session }));
+vi.mock('@/features/teacher/upload', async (original) => ({
+  ...(await original<typeof import('@/features/teacher/upload')>()),
+  saveTeacherUpload: d.save,
 }));
-
-vi.mock('@/features/submissions/service', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@/features/submissions/service')>()),
-  createPendingReceiptSubmission: dependencies.createPendingReceiptSubmission,
+vi.mock('@/features/submissions/rate-limit', async (original) => ({
+  ...(await original<typeof import('@/features/submissions/rate-limit')>()),
+  enforceSubmissionRateLimits: d.rate,
 }));
-
-vi.mock('@/lib/supabase/admin', () => ({
-  createPrivilegedSupabaseClient: dependencies.createPrivilegedSupabaseClient,
+vi.mock('@/features/submissions/repository', async (original) => ({
+  ...(await original<typeof import('@/features/submissions/repository')>()),
+  getPublicSubmissionOptions: d.options,
 }));
-
+vi.mock('@/lib/supabase/admin', () => ({ createPrivilegedSupabaseClient: () => d.client }));
 vi.mock('@/lib/env', () => ({
   environment: { SITE_URL: 'http://localhost:3000' },
   getSubmissionSecurityEnvironment: () => ({
-    SUBMISSION_RATE_LIMIT_SECRET: 'a-secret-that-is-definitely-at-least-32-characters',
+    SUBMISSION_RATE_LIMIT_SECRET: 'a-secret-with-at-least-thirty-two-characters',
   }),
 }));
-
-import { MAX_RECEIPT_FILE_BYTES } from '@/features/submissions/constants';
-import { SubmissionRateLimitError } from '@/features/submissions/rate-limit';
-import { SubmissionValidationError } from '@/features/submissions/service';
-import { POST } from '@/app/api/submissions/route';
-
-const campaignId = '11111111-1111-4111-8111-111111111111';
+import { POST } from './route';
+import { TeacherUploadError } from '@/features/teacher/upload';
+const userId = '11111111-1111-4111-8111-111111111111';
 const schoolId = '22222222-2222-4222-8222-222222222222';
-const idempotencyKey = '33333333-3333-4333-8333-333333333333';
-const publicReference = '44444444-4444-4444-8444-444444444444';
+const campaignId = '33333333-3333-4333-8333-333333333333';
+const key = '44444444-4444-4444-8444-444444444444';
 let jpeg: Buffer;
-
-function formRequest(formData: FormData, extraHeaders?: Record<string, string>) {
+function form() {
+  const f = new FormData();
+  f.set('receipt', new Blob([jpeg], { type: 'image/jpeg' }), 'private.jpg');
+  f.set('count', '100');
+  f.set('date', '2026-01-01');
+  f.set('note', '');
+  return f;
+}
+function request(f = form(), headers: Record<string, string> = {}) {
   return new NextRequest('http://localhost:3000/api/submissions', {
     method: 'POST',
-    body: formData,
-    headers: {
-      origin: 'http://localhost:3000',
-      'sec-fetch-site': 'same-origin',
-      'idempotency-key': idempotencyKey,
-      ...extraHeaders,
-    },
+    body: f,
+    headers: { origin: 'http://localhost:3000', 'idempotency-key': key, ...headers },
   });
 }
-
-function validForm() {
-  const form = new FormData();
-  form.set('campaign_id', campaignId);
-  form.set('school_id', schoolId);
-  form.set('receipt', new Blob([jpeg], { type: 'image/jpeg' }), 'untrusted-name.jpg');
-  return form;
-}
-
-describe('POST /api/submissions', () => {
+describe('authenticated school uploads', () => {
   beforeAll(async () => {
-    jpeg = await sharp({
-      create: { width: 500, height: 700, channels: 3, background: '#ffffff' },
-    })
+    jpeg = await sharp({ create: { width: 500, height: 700, channels: 3, background: '#fff' } })
       .jpeg()
       .toBuffer();
   });
-
   beforeEach(() => {
     vi.clearAllMocks();
-    dependencies.enforceSubmissionRateLimits.mockResolvedValue(undefined);
-    dependencies.createPendingReceiptSubmission.mockResolvedValue({
-      publicReference,
-      duplicate: false,
-    });
+    d.session.mockResolvedValue({ user: { id: userId }, membership: { school_id: schoolId } });
+    d.options.mockResolvedValue({ campaign: { id: campaignId } });
+    d.rate.mockResolvedValue(undefined);
+    d.save.mockResolvedValue({ publicReference: key, duplicate: false });
   });
-
-  it('accepts a valid image and creates only a pending submission', async () => {
-    const response = await POST(formRequest(validForm()));
-
-    expect(response.status).toBe(201);
-    await expect(response.json()).resolves.toEqual({ publicReference, status: 'pending' });
-    expect(dependencies.createPendingReceiptSubmission).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({ campaignId, schoolId }),
+  it('rejects cross-origin before authentication', async () => {
+    expect((await POST(request(form(), { origin: 'https://evil.example' }))).status).toBe(403);
+    expect(d.session).not.toHaveBeenCalled();
+  });
+  it('requires a signed-in account', async () => {
+    d.session.mockResolvedValue(null);
+    expect((await POST(request())).status).toBe(401);
+    expect(d.save).not.toHaveBeenCalled();
+  });
+  it('requires approved membership', async () => {
+    d.session.mockResolvedValue({ user: { id: userId }, membership: null });
+    expect((await POST(request())).status).toBe(403);
+  });
+  it('derives school, actor and campaign on the server', async () => {
+    const res = await POST(request());
+    expect(res.status).toBe(201);
+    expect(d.save).toHaveBeenCalledWith(
+      d.client,
+      expect.objectContaining({ schoolId, userId, campaignId, count: 100, date: '2026-01-01' }),
     );
-    const input = dependencies.createPendingReceiptSubmission.mock.calls[0]?.[1];
-    expect(input).not.toHaveProperty('approved_amount');
-    expect(input).not.toHaveProperty('status');
-    expect(input.image.contentType).toBe('image/jpeg');
-    expect(response.headers.get('set-cookie')).toContain('HttpOnly');
+    expect(d.save.mock.calls[0]?.[1]).not.toHaveProperty('approvedAmount');
   });
-
-  it.each(['campaign', 'school', 'participation'] as const)(
-    'rejects an invalid %s selection',
-    async (reason) => {
-      dependencies.createPendingReceiptSubmission.mockRejectedValue(
-        new SubmissionValidationError(reason),
-      );
-      const response = await POST(formRequest(validForm()));
-      expect(response.status).toBe(400);
-      await expect(response.json()).resolves.toEqual({ error: 'invalid_selection' });
-    },
-  );
-
-  it('rejects a missing receipt', async () => {
-    const form = new FormData();
-    form.set('campaign_id', campaignId);
-    form.set('school_id', schoolId);
-    const response = await POST(formRequest(form));
-    expect(response.status).toBe(400);
-    expect(dependencies.createPendingReceiptSubmission).not.toHaveBeenCalled();
-  });
-
-  it('rejects an unsupported file signature', async () => {
-    const form = validForm();
-    form.set('receipt', new Blob(['%PDF malicious'], { type: 'image/jpeg' }), 'receipt.jpg');
-    const response = await POST(formRequest(form));
-    expect(response.status).toBe(415);
-    await expect(response.json()).resolves.toEqual({ error: 'unsupported_type' });
-  });
-
-  it('rejects an oversized request before parsing its body', async () => {
-    const response = await POST(
-      formRequest(validForm(), { 'content-length': String(MAX_RECEIPT_FILE_BYTES + 600_000) }),
-    );
-    expect(response.status).toBe(413);
-    expect(dependencies.enforceSubmissionRateLimits).not.toHaveBeenCalled();
-  });
-
-  it.each(['status', 'approved_amount', 'approved_bottle_count', 'student_name'])(
-    'rejects the client-controlled %s field',
+  it.each(['school_id', 'campaign_id', 'approved_amount', 'status', 'submitted_by'])(
+    'rejects spoofed field %s',
     async (field) => {
-      const form = validForm();
-      form.set(field, 'approved');
-      const response = await POST(formRequest(form));
-      expect(response.status).toBe(400);
-      expect(dependencies.createPendingReceiptSubmission).not.toHaveBeenCalled();
+      const f = form();
+      f.set(field, 'attacker');
+      expect((await POST(request(f))).status).toBe(400);
+      expect(d.save).not.toHaveBeenCalled();
     },
   );
-
-  it('rejects cross-origin requests before consuming rate-limit capacity', async () => {
-    const request = formRequest(validForm());
-    request.headers.set('origin', 'https://attacker.example');
-    request.headers.set('sec-fetch-site', 'cross-site');
-    const response = await POST(request);
-    expect(response.status).toBe(403);
-    expect(dependencies.enforceSubmissionRateLimits).not.toHaveBeenCalled();
+  it('rejects duplicated form fields', async () => {
+    const f = form();
+    f.append('count', '999');
+    expect((await POST(request(f))).status).toBe(400);
   });
-
-  it('returns the same reference for an idempotent retry', async () => {
-    dependencies.createPendingReceiptSubmission.mockResolvedValue({
-      publicReference,
-      duplicate: true,
-    });
-    const response = await POST(formRequest(validForm()));
-    expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toEqual({ publicReference, status: 'pending' });
+  it('requires an explanation below 50 bottles', async () => {
+    const f = form();
+    f.set('count', '20');
+    expect((await POST(request(f))).status).toBe(400);
+    f.set('note', 'Az automata megtelt.');
+    expect((await POST(request(f))).status).toBe(201);
   });
-
-  it('returns 429 with a bounded retry instruction when rate limited', async () => {
-    dependencies.enforceSubmissionRateLimits.mockRejectedValue(
-      new SubmissionRateLimitError('limited', 120),
-    );
-    const response = await POST(formRequest(validForm()));
-    expect(response.status).toBe(429);
-    expect(response.headers.get('retry-after')).toBe('120');
-    expect(dependencies.createPendingReceiptSubmission).not.toHaveBeenCalled();
+  it('rejects missing and invalid images', async () => {
+    const f = form();
+    f.delete('receipt');
+    expect((await POST(request(f))).status).toBe(400);
+    f.set('receipt', new Blob(['not-image'], { type: 'image/jpeg' }), 'photo.jpg');
+    expect((await POST(request(f))).status).toBe(400);
+  });
+  it('requires an idempotency key', async () => {
+    expect((await POST(request(form(), { 'idempotency-key': 'bad' }))).status).toBe(400);
+  });
+  it('requires revision version', async () => {
+    const f = form();
+    f.set('revision', key);
+    expect((await POST(request(f))).status).toBe(400);
+  });
+  it('reports revoked membership checked inside the transaction', async () => {
+    d.save.mockRejectedValue(new TeacherUploadError('42501'));
+    expect((await POST(request())).status).toBe(403);
+  });
+  it('reports simultaneous review/resubmission conflict', async () => {
+    d.save.mockRejectedValue(new TeacherUploadError('40001'));
+    expect((await POST(request())).status).toBe(409);
+  });
+  it('handles idempotent retries', async () => {
+    d.save.mockResolvedValue({ publicReference: key, duplicate: true });
+    expect((await POST(request())).status).toBe(200);
+  });
+  it('fails closed when no campaign exists', async () => {
+    d.options.mockResolvedValue(null);
+    expect((await POST(request())).status).toBe(409);
+    expect(d.save).not.toHaveBeenCalled();
   });
 });

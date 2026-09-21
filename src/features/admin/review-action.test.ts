@@ -3,6 +3,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('server-only', () => ({}));
+vi.mock('@/features/teacher/notifications', () => ({
+  scheduleNotifications: vi.fn(),
+}));
 
 const dependencies = vi.hoisted(() => ({
   requestHeaders: new Headers(),
@@ -106,7 +109,9 @@ describe('reviewSubmissionAction', () => {
 
   it('reports an optimistic-lock conflict without claiming success', async () => {
     dependencies.rpc.mockResolvedValue({ error: { code: '40001' } });
-    const result = await reviewSubmissionAction(initialReviewActionState, form('needs_review'));
+    const data = form('needs_review');
+    data.set('reason', 'A fotó nem olvasható.');
+    const result = await reviewSubmissionAction(initialReviewActionState, data);
     expect(result.status).toBe('error');
     expect(result.message).toContain('más módosította');
     expect(dependencies.revalidatePath).not.toHaveBeenCalled();

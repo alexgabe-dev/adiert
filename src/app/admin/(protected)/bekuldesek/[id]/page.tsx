@@ -9,7 +9,7 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 
 const statusLabels: Record<SubmissionStatus, string> = {
   pending: 'Függőben',
-  needs_review: 'További ellenőrzés',
+  needs_review: 'Javítást kérünk',
   approved: 'Jóváhagyott',
   rejected: 'Elutasított',
 };
@@ -29,7 +29,7 @@ function formatAmount(value: number | null) {
 }
 
 export default async function AdminSubmissionPage({ params }: AdminSubmissionPageProps) {
-  await requireAdministratorRole('reviewer');
+  const administrator = await requireAdministratorRole('reviewer');
   const { id } = await params;
   if (!z.uuid().safeParse(id).success) notFound();
 
@@ -38,6 +38,19 @@ export default async function AdminSubmissionPage({ params }: AdminSubmissionPag
   const submission = await getAdminSubmission(supabase, id);
   if (!submission) notFound();
 
+  const { data: sender } = submission.submittedBy
+    ? await supabase
+        .from('school_memberships')
+        .select('display_name,email')
+        .eq('user_id', submission.submittedBy)
+        .maybeSingle()
+    : { data: null };
+  const { data: revisions, error: revisionError } = await supabase
+    .from('submission_revisions')
+    .select('id,version,bottle_count,created_at')
+    .eq('submission_id', id)
+    .order('created_at', { ascending: false });
+  if (revisionError) throw new Error('A korábbi változatok nem tölthetők be.');
   return (
     <section>
       <Link href="/admin/bekuldesek" className="text-sm font-bold text-blue-600 hover:underline">
@@ -60,25 +73,45 @@ export default async function AdminSubmissionPage({ params }: AdminSubmissionPag
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-[#E8ECF2] bg-white p-4 shadow-sm sm:p-5">
-          <h2 className="text-lg font-extrabold">Privát bizonylatkép</h2>
+          <h2 className="text-lg font-extrabold">Beküldött képernyőfotó</h2>
           <p className="mt-1 text-xs text-[#667085]">
-            A kép jogosultság-ellenőrzött, rövid élettartamú aláírt hozzáféréssel töltődik be.
+            A fotóra kattintva új lapon nagyíthatod a képet.
           </p>
           <div className="mt-4 flex min-h-80 items-center justify-center overflow-hidden rounded-xl bg-slate-100">
             {/* Private receipts intentionally bypass the public Next image optimizer. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={`/api/admin/submissions/${submission.id}/receipt`}
-              alt="Privát bizonylatkép kézi ellenőrzéshez"
-              referrerPolicy="no-referrer"
-              className="max-h-[70vh] w-full object-contain"
-            />
+
+            <a
+              href={`/api/admin/submissions/${submission.id}/receipt`}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Képernyőfotó nagyítása"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`/api/admin/submissions/${submission.id}/receipt`}
+                alt="Privát bizonylatkép kézi ellenőrzéshez"
+                referrerPolicy="no-referrer"
+                className="max-h-[70vh] w-full object-contain"
+              />
+            </a>
           </div>
         </div>
 
         <div className="space-y-6">
           <div className="rounded-2xl border border-[#E8ECF2] bg-white p-5 shadow-sm">
             <h2 className="text-lg font-extrabold">Beküldési adatok</h2>
+            <div className="my-4 rounded-xl bg-blue-50 p-4">
+              <p className="text-2xl font-extrabold">
+                {submission.submittedBottleCount ?? '—'} beküldött palack
+              </p>
+              <p className="mt-2 text-sm">
+                {submission.returnedOn} · {sender?.display_name ?? 'Korábbi beküldés'}
+              </p>
+              {submission.teacherNote && <p className="mt-2 text-sm">{submission.teacherNote}</p>}
+              {submission.feedback && (
+                <p className="mt-2 text-sm font-semibold">Visszajelzés: {submission.feedback}</p>
+              )}
+            </div>
             <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
               <div>
                 <dt className="text-[#667085]">Iskola</dt>
@@ -148,27 +181,50 @@ export default async function AdminSubmissionPage({ params }: AdminSubmissionPag
       <div className="mt-6 rounded-2xl border border-[#E8ECF2] bg-white p-5 shadow-sm">
         <h2 className="text-xl font-extrabold">Kézi felülvizsgálat</h2>
         <p className="mt-1 text-sm text-[#667085]">
-          A jóváhagyott értékek kizárólag ebből a szerveroldalon engedélyezett tranzakcióból
-          származhatnak.
+          Ellenőrizd a képen látható mennyiséget. Eltérésnél vagy javításkérésnél írj rövid, érthető
+          indoklást.
         </p>
         <div className="mt-5">
           <ReviewForm
+            canCorrect={administrator.role !== 'reviewer'}
             submissionId={submission.id}
             version={submission.version}
             status={submission.status}
             detectedAmount={submission.detectedAmount}
-            detectedBottleCount={submission.detectedBottleCount}
+            detectedBottleCount={
+              submission.approvedBottleCount ??
+              submission.submittedBottleCount ??
+              submission.detectedBottleCount
+            }
             detectedReceiptIdentifier={submission.detectedReceiptIdentifier}
-            detectedReceiptDate={submission.detectedReceiptDate}
+            detectedReceiptDate={submission.returnedOn ?? submission.detectedReceiptDate}
           />
         </div>
       </div>
 
+      {!!revisions?.length && (
+        <section className="mt-6 rounded-2xl bg-white p-5">
+          <h2 className="font-bold">Korábbi feltöltések</h2>
+          <div className="mt-3 flex flex-wrap gap-3">
+            {revisions.map((r) => (
+              <a
+                key={r.id}
+                href={`/api/admin/submissions/${submission.id}/receipt?revision=${r.id}`}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-xl border border-slate-200 px-4 py-3 text-sm text-blue-600"
+              >
+                {r.version}. változat · {r.bottle_count} palack
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-[#E8ECF2] bg-white p-5 shadow-sm">
           <h2 className="text-lg font-extrabold">Jelzések</h2>
           {submission.flags.length === 0 ? (
-            <p className="mt-3 text-sm text-[#667085]">Nincs schema-backed kockázati jelzés.</p>
+            <p className="mt-3 text-sm text-[#667085]">Nincs ismétlődésre utaló jelzés.</p>
           ) : (
             <ul className="mt-3 space-y-3">
               {submission.flags.map((flag) => (

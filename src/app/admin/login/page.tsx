@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import { getActiveAdministrator } from '@/lib/auth/authorization';
 import { getSupabaseEnvironment } from '@/lib/supabase/config';
+import { localTestLoginEnabled } from '@/lib/auth/local-test-login';
 
 import { LoginForm } from './LoginForm';
 
@@ -13,6 +14,7 @@ export default async function AdminLoginPage() {
   }
 
   const isConfigured = getSupabaseEnvironment() !== null;
+  const localPassword = localTestLoginEnabled();
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#F7F9FC] px-4 py-12">
@@ -29,13 +31,14 @@ export default async function AdminLoginPage() {
             Adminisztráció
           </h1>
           <p className="mt-3 text-sm leading-6 text-[#667085]">
-            Csak meghívott, aktív adminisztrátorok léphetnek be. A rendszer e-mailben küld egy
-            egyszer használható belépési hivatkozást.
+            {localPassword
+              ? 'Helyi tesztkörnyezet. Lépj be a tesztadmin e-mail-címével és jelszavával.'
+              : 'Csak meghívott, aktív adminisztrátorok léphetnek be. A rendszer e-mailben küld egy egyszer használható belépési hivatkozást.'}
           </p>
         </div>
 
         {isConfigured ? (
-          <LoginForm />
+          <LoginForm localPassword={localPassword} />
         ) : (
           <p role="status" className="mt-8 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900">
             A Supabase-kapcsolat ebben a környezetben nincs beállítva.
