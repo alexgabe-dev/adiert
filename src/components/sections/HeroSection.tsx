@@ -1,107 +1,90 @@
-import React from 'react';
-import { ArrowRight, Trophy } from 'lucide-react';
-import { HeroRecyclingScene } from '../illustrations/HeroRecyclingScene';
+import Image from 'next/image';
+import { ArrowDown, ArrowRight, Heart, School } from 'lucide-react';
 
 interface HeroSectionProps {
   participatingSchoolCount: number;
   dataAvailable: boolean;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({
-  participatingSchoolCount,
-  dataAvailable,
-}) => {
+export function HeroSection({ participatingSchoolCount, dataAvailable }: HeroSectionProps) {
   return (
-    <section id="rolunk" className="relative pt-28 pb-14 md:pt-36 md:pb-20 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
-          {/* Left Column: Copy & CTAs */}
-          <div className="lg:col-span-7 flex flex-col items-start text-left">
-            {/* Eyebrow */}
-            <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold tracking-wide uppercase mb-5">
-              <span>PALACKBÓL SEGÍTSÉG</span>
-              <span className="text-sm">♻️</span>
-            </div>
-
-            {/* Main Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-[62px] font-extrabold text-[#0B1535] leading-[1.12] tracking-tight mb-5">
-              Minden palack számít. <span className="text-blue-600 block sm:inline">Ádiért.</span>
-            </h1>
-
-            {/* Supporting Text */}
-            <p className="text-lg sm:text-xl text-[#667085] leading-relaxed max-w-2xl mb-8 font-normal">
-              Váltsd vissza a palackokat az Ádiért QR-kóddal, fotózd le a bizonylatot, és segíts az
-              iskoládnak feljebb jutni az országos ranglistán.
-            </p>
-
-            {/* CTAs */}
-            <div className="w-full sm:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 mb-8">
-              <a
-                href="#hogyan-mukodik"
-                id="hero-how-it-works-btn"
-                className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-base px-6 py-3.5 rounded-xl shadow-xs transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer text-center"
-              >
-                <span>Hogyan működik?</span>
-                <ArrowRight className="w-4.5 h-4.5" />
-              </a>
-
-              <a
-                href="#ranglista"
-                id="hero-leaderboard-btn"
-                className="inline-flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[#0B1535] font-semibold text-base px-6 py-3.5 rounded-xl transition-colors duration-150 cursor-pointer text-center"
-              >
-                <Trophy className="w-4.5 h-4.5 text-amber-500" />
-                <span>Nézd meg a ranglistát</span>
-              </a>
-            </div>
-
-            {/* Social Proof */}
-            <div className="flex items-center gap-3 pt-2 border-t border-slate-100 w-full max-w-lg">
-              {/* Playful School Avatars */}
-              <div className="flex -space-x-2 overflow-hidden">
-                <div
-                  className="w-8 h-8 rounded-full bg-amber-400 border-2 border-white flex items-center justify-center text-xs shadow-xs"
-                  title="Résztvevő iskola"
-                >
-                  🏫
-                </div>
-                <div
-                  className="w-8 h-8 rounded-full bg-blue-500 border-2 border-white flex items-center justify-center text-xs shadow-xs"
-                  title="Résztvevő iskola"
-                >
-                  🎒
-                </div>
-                <div
-                  className="w-8 h-8 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-xs shadow-xs"
-                  title="Résztvevő iskola"
-                >
-                  📚
-                </div>
-                <div
-                  className="w-8 h-8 rounded-full bg-purple-500 border-2 border-white flex items-center justify-center text-xs shadow-xs"
-                  title="Résztvevő iskola"
-                >
-                  ✏️
-                </div>
-              </div>
-
-              <div className="text-xs sm:text-sm text-[#0B1535] font-semibold flex items-center gap-1.5">
-                <span className="text-blue-600 font-extrabold">
-                  {participatingSchoolCount.toLocaleString('hu-HU')} iskola
-                </span>
-                <span className="text-[#667085] font-normal">
-                  {dataAvailable ? 'vesz részt az aktív kampányban' : '— az élő adat nem elérhető'}
-                </span>
-              </div>
-            </div>
+    <section
+      id="rolunk"
+      className="relative overflow-hidden bg-[#F7F8FA] pt-28 pb-12 md:pt-36 md:pb-20"
+    >
+      <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8">
+        <div>
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white px-3.5 py-2 text-xs font-bold uppercase tracking-widest text-blue-700">
+            <Heart className="h-3.5 w-3.5" aria-hidden="true" /> Együtt Ádiért
           </div>
-
-          {/* Right Column: Visual System Illustration */}
-          <div className="lg:col-span-5 flex items-center justify-center">
-            <HeroRecyclingScene />
+          <h1 className="max-w-xl text-4xl leading-[1.08] font-extrabold tracking-tight sm:text-6xl lg:text-[68px]">
+            Egy kis segítség.
+            <br />
+            <span className="text-blue-600">Egy nagy esély.</span>
+          </h1>
+          <p className="mt-6 max-w-lg text-lg leading-relaxed text-slate-600">
+            Ő Ádi. Egy mosolygós kisfiú, aki Duchenne-féle izomdisztrófiával él. Családja a
+            génterápiás kezelésére gyűjt. Te is melléjük állhatsz — akár a visszaváltott
+            palackjaiddal.
+          </p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <a
+              id="hero-how-it-works-btn"
+              href="#hogyan-mukodik"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-4 font-bold text-white shadow-sm transition-colors hover:bg-blue-700"
+            >
+              Segítek Ádinak <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </a>
+            <a
+              href="#adi-tortenete"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-4 font-semibold transition-colors hover:bg-slate-50"
+            >
+              Ismerd meg Ádit <ArrowDown className="h-4 w-4" aria-hidden="true" />
+            </a>
+          </div>
+          <div className="mt-8 flex items-center gap-3 border-t border-slate-200 pt-5 text-sm text-slate-600">
+            <School className="h-5 w-5 shrink-0 text-blue-600" aria-hidden="true" />
+            <p>
+              {dataAvailable ? (
+                <>
+                  <strong className="text-[#0B1535]">
+                    {participatingSchoolCount.toLocaleString('hu-HU')} iskola
+                  </strong>{' '}
+                  az aktív kampányban. Minden palack számít.
+                </>
+              ) : (
+                'Iskolák és családok összefogása. Minden palack számít.'
+              )}
+            </p>
           </div>
         </div>
+        <figure className="relative mx-auto w-full max-w-lg pb-6 lg:max-w-none">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-[#E5E5E5] sm:aspect-[5/6]">
+            <Image
+              src="/pics/optimized/adi-hero.webp"
+              alt="Ádi mosolyogva a kamerába néz, és előremutat a kezével"
+              fill
+              priority
+              sizes="(min-width: 1024px) 560px, (min-width: 640px) 512px, calc(100vw - 32px)"
+              className="object-cover object-[50%_42%]"
+            />
+            <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-slate-950/55 to-transparent" />
+            <div className="absolute right-6 bottom-9 left-6 text-white">
+              <p className="text-3xl font-extrabold tracking-tight">Major Ádám</p>
+              <p className="mt-1 text-sm text-white/90">Akiért most összefogunk.</p>
+            </div>
+          </div>
+          <figcaption className="absolute right-4 -bottom-1 flex items-center gap-3 rounded-2xl border border-blue-100 bg-white px-5 py-4 shadow-lg sm:right-6">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+              <Heart className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <div>
+              <p className="text-sm font-bold">A palackod is segítség.</p>
+              <p className="mt-0.5 text-xs text-slate-500">Sok apró lépés, egy közös cél.</p>
+            </div>
+          </figcaption>
+        </figure>
       </div>
     </section>
   );
-};
+}

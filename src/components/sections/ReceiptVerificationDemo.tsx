@@ -46,9 +46,9 @@ export const ReceiptVerificationDemo: React.FC = () => {
           </h2>
 
           <p className="text-base sm:text-lg text-[#667085] leading-relaxed mb-6 font-normal">
-            A visszaváltás után töltsd fel a bizonylatot, hogy a gyűjtésed biztonságosan és
-            ellenőrzötten bekerülhessen az iskolád eredményébe. Az alábbi illusztráció minta, nem
-            élő automatikus felismerés.
+            Még a fizetés előtt fotózd le az automata képernyőjét úgy, hogy a visszaváltott
+            darabszám jól olvasható legyen. A képet az iskolához feltöltve küldheted be
+            ellenőrzésre. Az illusztráció mintát mutat.
           </p>
 
           {/* Quick interactive stepper toggles */}
@@ -102,7 +102,7 @@ export const ReceiptVerificationDemo: React.FC = () => {
             className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm px-5 py-3 rounded-xl shadow-xs transition-colors cursor-pointer"
           >
             <Camera className="w-4 h-4" />
-            <span>Bizonylat feltöltése most</span>
+            <span>Képernyőfotó feltöltése</span>
           </button>
         </div>
 
@@ -113,7 +113,7 @@ export const ReceiptVerificationDemo: React.FC = () => {
             <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100 text-xs text-[#667085]">
               <div className="flex items-center gap-1.5 font-bold text-[#0B1535]">
                 <Camera className="w-4 h-4 text-blue-600" />
-                <span>Bizonylat előnézet</span>
+                <span>Képernyőfotó előnézete</span>
               </div>
               <span className="font-mono text-[11px]">#REP-84920</span>
             </div>
@@ -123,7 +123,7 @@ export const ReceiptVerificationDemo: React.FC = () => {
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-medium text-slate-500 flex items-center gap-1">
                   <Receipt className="w-3.5 h-3.5 text-slate-400" />
-                  📸 Bizonylat feltöltve
+                  📸 Képernyőfotó feltöltve
                 </span>
                 <span className="text-[11px] font-mono text-slate-400">2026.03.02 • 14:28</span>
               </div>
@@ -192,7 +192,7 @@ export const ReceiptVerificationDemo: React.FC = () => {
                         Állapot: Elfogadva ✓
                       </div>
                       <div className="text-sm font-extrabold text-emerald-950 flex items-center gap-1">
-                        <span>+2 500 Ft az iskoládnak</span>
+                        <span>+50 palack az iskola eredményéhez</span>
                         <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />
                       </div>
                     </div>

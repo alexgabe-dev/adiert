@@ -1,87 +1,53 @@
-import { FaqItem, HowItWorksStep } from '../types';
-
-export const HOW_IT_WORKS_STEPS: HowItWorksStep[] = [
-  {
-    stepNumber: 1,
-    title: 'Gyűjts össze palackokat!',
-    shortLabel: 'Gyűjtés',
-    description:
-      'Vond be az osztálytársaidat, barátaidat és családodat! Gyűjtsetek össze minél több 50 Ft-os visszaváltási emblémás PET palackot és aludobozt.',
-    iconType: 'bottles',
-    highlight: '50 Ft / palack',
-  },
-  {
-    stepNumber: 2,
-    title: 'Váltsd vissza őket!',
-    shortLabel: 'REpont automata',
-    description:
-      'Menj el a legközelebbi REpont automatához (pl. Spar, Aldi, Lidl, Tesco), és helyezd be az ép, sértetlen palackokat egyenként.',
-    iconType: 'repont',
-    highlight: 'Országszerte elérhető',
-  },
-  {
-    stepNumber: 3,
-    title: 'Fotózd le a bizonylatot!',
-    shortLabel: 'QR & Bizonylat',
-    description:
-      'A gépnél olvasd be az Ádiért QR-kódot a jóváíráshoz, majd nyomd meg a Bizonylat kérése gombot, és készíts egy éles fotót a papírról.',
-    iconType: 'camera',
-    highlight: 'Ádiért QR-kód',
-  },
-  {
-    stepNumber: 4,
-    title: 'Töltsd fel és válaszd ki az iskolád!',
-    shortLabel: 'Feltöltés',
-    description:
-      'Nyisd meg az adiert.hu-t, töltsd fel a bizonylat fotóját másodpercek alatt, és jelöld be a saját iskoládat az egyszerű keresőben.',
-    iconType: 'upload',
-    highlight: 'Gyors űrlap',
-  },
-  {
-    stepNumber: 5,
-    title: 'Segíts Ádinak és az iskoládnak!',
-    shortLabel: 'Pontszerzés',
-    description:
-      'Az ellenőrzés után az összeg azonnal hozzáadódik az iskolád eredményéhez. Figyeld a ranglistát és lépjetek feljebb a dobogóra!',
-    iconType: 'trophy',
-    highlight: '+Pontok az iskolának',
-  },
-];
+import { FaqItem } from '../types';
 
 export const FAQS: FaqItem[] = [
   {
     id: 'faq-1',
     category: 'Általános',
-    question: 'Mi a kampány lényege és kihez kerül a támogatás?',
+    question: 'Hogyan segít a palackgyűjtés Ádinak?',
     answer:
-      'A kampányban a magyarországi REpont automatáknál visszaváltott 50 Ft-os palackok díját ajánljuk fel Ádi gyógykezelésére. Az Ádiért QR-kód beolvasásával az összeg közvetlenül a hivatalos alapítványi számlára kerül, a bizonylat feltöltésével pedig a diák iskolája pontokat kap a versenyben.',
+      'A visszaváltási díjat Ádi egyedi QR-kódjával és a „Banki utalás” lehetőséggel ajánljuk fel. Minden alkalommal ellenőrizd a „Szia Alapítvány” feliratot. Az automata képernyőjéről készült fotó alapján, ellenőrzés után kerül be a gyűjtés az iskola eredményébe.',
   },
   {
     id: 'faq-2',
     category: 'Visszaváltás',
-    question: 'Milyen palackokat és dobozokat lehet visszaváltani?',
+    question: 'Mikor kell beolvasni a QR-kódot?',
     answer:
-      'Minden olyan műanyag, üveg vagy fém (alumínium) italcsomagolást, amelyen szerepel a visszaváltási logó és az 50 Ft felirat. Fontos, hogy a palackok ne legyenek összenyomva, és a vonalkód sértetlenül olvasható legyen a gép számára.',
+      'Ez automatától függ. Az egyik módszernél előbb bedobod a palackokat és lefotózod a képernyőt, majd a „Fizetés” → „Banki utalás” után olvasod be a QR-kódot. A másiknál a QR-kód beolvasása és a „Szia Alapítvány” felirat megjelenése az első lépés, ezt követi a bedobálás, a fotózás és a banki utalás. Az első alkalom előtt ellenőrizd, hogyan működik az automatád.',
   },
   {
     id: 'faq-3',
-    category: 'Bizonylat',
-    question: 'Hogyan történik a bizonylat ellenőrzése?',
+    category: 'Képfeltöltés',
+    question: 'Miről kell fotót készíteni?',
     answer:
-      'A feltöltött fotón ellenőrizzük a REpont automata bizonylatszámát, az összeget, a dátumot és az Ádiért QR tranzakciós azonosítót. A jóváhagyás átlagosan 2-4 órán belül megtörténik, és az összeg azonnal láthatóvá válik az iskola adatlapján.',
+      'Az automata képernyőjéről, az összes palack bedobása után, még a fizetés előtt. A visszaváltott darabszám jól látszódjon. Ezt a képet töltsd fel az iskolához; az eredmény csak kézi jóváhagyás után változik.',
   },
   {
     id: 'faq-4',
     category: 'Iskoláknak',
-    question: 'Hogyan csatlakozhat egy új iskola a ranglistához?',
+    question: 'Hogyan regisztrálhat az iskola?',
     answer:
-      'Bármely magyarországi alap- és középfokú iskola ingyenesen regisztrálhat. A regisztráció után biztosítunk letölthető és nyomtatható A4-es plakátokat, QR-kódos gyűjtődoboz matricákat és digitális anyagokat az iskola közösségének.',
+      'Az általános iskolák a www.palackverseny.hu oldalon regisztrálhatnak. Szükség van az irányítószámra, a településre, az iskola hivatalos nevére, a kapcsolattartó nevére és e-mail-címére. A megerősítési kód kérése és az iskola regisztrálása után az e-mail-címet is meg kell erősíteni.',
   },
   {
     id: 'faq-5',
     category: 'Visszaváltás',
-    question: 'Mit tegyek, ha nem működik az automata vagy elfelejtettem lefotózni a bizonylatot?',
+    question: 'Mi van, ha nem jelenik meg a „Szia Alapítvány” felirat?',
     answer:
-      'Ha az automata nem adott ki papírt vagy elveszett a bizonylat, a REpont applikációban a korábbi tranzakciók képernyőképe is feltölthető. Technikai hiba esetén ügyfélszolgálatunk az info@adiert.hu címen készséggel segít.',
+      'Ne tekintsd megfelelően célzott adománynak a visszaváltást. Ellenőrizd, hogy Ádi egyedi QR-kódját használod, és kérj segítséget a helyszínen a lezárás előtt. Utólag a lezárt visszaváltás már nem irányítható át Ádi támogatására a versenyben.',
+  },
+  {
+    id: 'faq-6',
+    category: 'Gyűjtés',
+    question: 'Hány palackkal induljunk visszaváltani?',
+    answer:
+      'Kérjük, először gyűjtsetek össze legalább 50 darabot. Így kevesebb képet kell kezelnie és feltöltenie a kapcsolattartó tanárnak. A visszaváltást a gyerekek tanári kísérettel, illetve a segítő szülők is elvégezhetik.',
+  },
+  {
+    id: 'faq-7',
+    category: 'Visszaváltás',
+    question: 'Mi történik, ha elmaradt a képernyő lefotózása?',
+    answer:
+      'A feltöltéshez jól olvasható képernyőfotó szükséges. Ha ez elmaradt, egyeztess a szervezőkkel az info@adiert.hu címen; a gyűjtés beszámítása nem automatikus.',
   },
 ];

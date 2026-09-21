@@ -14,7 +14,7 @@ export function SchoolProfileCta({ school }: { school: SchoolSelection }) {
       className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
     >
       <Camera className="h-4 w-4" aria-hidden="true" />
-      Bizonylat beküldése ehhez az iskolához
+      Képernyőfotó beküldése ehhez az iskolához
     </button>
   );
 }

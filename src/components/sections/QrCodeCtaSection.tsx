@@ -39,8 +39,8 @@ export const QrCodeCtaSection: React.FC = () => {
             </h2>
 
             <p className="text-base sm:text-lg text-blue-50 leading-relaxed max-w-xl mb-8 font-normal">
-              Olvasd be a kódot a REpont automatánál a visszaváltás megkezdésekor, így a
-              visszaváltási díj (50 Ft / palack) közvetlenül Ádi támogatását segíti.
+              Automatától függően a visszaváltás elején vagy a „Banki utalás” kiválasztása után
+              olvasd be Ádi egyedi QR-kódját. Mindig várd meg a „Szia Alapítvány” feliratot!
             </p>
 
             {/* CTA buttons */}

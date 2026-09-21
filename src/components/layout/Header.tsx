@@ -19,7 +19,7 @@ export const Header: React.FC = () => {
   }, []);
 
   const navLinks = [
-    { label: 'Rólunk', href: '#rolunk' },
+    { label: 'Ádi története', href: '#adi-tortenete' },
     { label: 'Hogyan működik?', href: '#hogyan-mukodik' },
     { label: 'Ranglista', href: '#ranglista' },
     { label: 'Iskoláknak', href: '#iskolaknak' },

@@ -11,8 +11,8 @@ export const Footer: React.FC = () => {
               Ádiért<span className="text-blue-600">.</span>
             </div>
             <p className="text-xs leading-relaxed max-w-xs">
-              Gamifikált iskolai palackgyűjtő és adományozó kampány a MOHU REpont hálózatán
-              keresztül.
+              Iskolák és családok összefogása Ádi kezeléséért. Visszaváltott palackokból valódi
+              segítség a MOHU REpont hálózatán keresztül.
             </p>
           </div>
 
@@ -21,8 +21,8 @@ export const Footer: React.FC = () => {
             <h4 className="text-xs font-bold uppercase tracking-wider text-[#0B1535]">Navigáció</h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <a href="#rolunk" className="hover:text-blue-600 transition-colors">
-                  Rólunk
+                <a href="#adi-tortenete" className="hover:text-blue-600 transition-colors">
+                  Ádi története
                 </a>
               </li>
               <li>

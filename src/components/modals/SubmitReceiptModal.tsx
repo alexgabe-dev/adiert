@@ -26,7 +26,7 @@ const errorMessages: Record<string, string> = {
   invalid_request: 'A beküldés adatai érvénytelenek. Ellenőrizd az űrlapot.',
   invalid_selection: 'A kiválasztott iskola vagy kampány már nem aktív.',
   invalid_dimensions: 'A kép mérete vagy felbontása nem megfelelő.',
-  missing_image: 'Válassz ki egy bizonylatképet.',
+  missing_image: 'Válassz ki egy fotót az automata képernyőjéről.',
   oversized_file: 'A kép mérete legfeljebb 10 MB lehet.',
   rate_limited: 'Túl sok beküldési kísérlet érkezett. Próbáld újra később.',
   submission_failed: 'A beküldést most nem sikerült menteni. Próbáld újra.',
@@ -186,17 +186,17 @@ export const SubmitReceiptModal: React.FC<SubmitReceiptModalProps> = ({
             <span>Gyűjtés beküldése</span>
           </div>
           <h3 id="submit-receipt-title" className="mb-2 text-2xl font-extrabold text-[#0B1535]">
-            Bizonylat feltöltése
+            Képernyőfotó feltöltése
           </h3>
           <p id="submit-receipt-description" className="mb-6 text-xs text-[#667085] sm:text-sm">
-            Tölts fel egy éles bizonylatfotót, majd válaszd ki az iskolát. A beküldés kézi
-            ellenőrzésre kerül.
+            Tölts fel egy éles fotót az automata képernyőjéről, amelyen jól látszik a visszaváltott
+            darabszám, majd válaszd ki az iskolát. A képet még a fizetés előtt készítsd el.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="mb-1.5 block text-xs font-bold text-[#0B1535]">
-                REpont bizonylat fotója <span className="text-rose-500">*</span>
+                Az automata képernyőjének fotója <span className="text-rose-500">*</span>
               </label>
               {receiptFile && previewUrl ? (
                 <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
@@ -205,12 +205,12 @@ export const SubmitReceiptModal: React.FC<SubmitReceiptModalProps> = ({
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={previewUrl}
-                      alt="A kiválasztott bizonylat előnézete"
+                      alt="A kiválasztott képernyőfotó előnézete"
                       className="h-14 w-14 rounded-xl bg-white object-cover"
                     />
                     <div className="min-w-0 flex-1">
                       <div className="text-xs font-bold text-emerald-950">
-                        Bizonylat kiválasztva
+                        Képernyőfotó kiválasztva
                       </div>
                       <div className="truncate text-[11px] text-emerald-700">
                         {(receiptFile.size / 1024 / 1024).toFixed(2)} MB · ellenőrzés a beküldéskor
@@ -299,8 +299,8 @@ export const SubmitReceiptModal: React.FC<SubmitReceiptModalProps> = ({
             ) : null}
 
             <p className="text-[11px] leading-5 text-[#667085]">
-              A böngésző nem küld összeget, palackszámot vagy jóváhagyási állapotot. Ezeket
-              kizárólag az adminisztrátori ellenőrzés rögzítheti.
+              Kérjük, legalább 50 darabot gyűjtsetek össze egy visszaváltáshoz. A fotón látható
+              palackszám ellenőrzés és jóváhagyás után kerül az iskola eredményéhez.
             </p>
 
             <button
@@ -308,7 +308,7 @@ export const SubmitReceiptModal: React.FC<SubmitReceiptModalProps> = ({
               disabled={!receiptFile || !selectedSchool || optionsError}
               className="mt-2 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3.5 text-sm font-bold text-white shadow-xs transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 sm:text-base"
             >
-              <span>Bizonylat beküldése ellenőrzésre</span>
+              <span>Fotó beküldése ellenőrzésre</span>
               <ArrowRight className="h-4 w-4" />
             </button>
           </form>
@@ -322,8 +322,7 @@ export const SubmitReceiptModal: React.FC<SubmitReceiptModalProps> = ({
             Biztonságos feltöltés folyamatban…
           </h4>
           <p id="submit-receipt-description" className="text-xs text-[#667085]">
-            A szerver ellenőrzi és biztonságos formátumba alakítja a képet, majd függőben lévő
-            beküldést hoz létre.
+            A fotó feltöltése folyamatban van. Kérjük, várd meg a visszaigazolást.
           </p>
         </div>
       )}
@@ -340,7 +339,7 @@ export const SubmitReceiptModal: React.FC<SubmitReceiptModalProps> = ({
             id="submit-receipt-description"
             className="mb-6 max-w-sm text-xs text-[#667085] sm:text-sm"
           >
-            A bizonylatot biztonságosan fogadtuk, és kézi ellenőrzésre vár. Ez még nem jelent
+            A képernyőfotót biztonságosan fogadtuk, és kézi ellenőrzésre vár. Ez még nem jelent
             jóváhagyott adományt, és az iskola eredménye még nem változott.
           </p>
 

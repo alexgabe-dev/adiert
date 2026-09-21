@@ -38,7 +38,7 @@ export const GamificationTeaser: React.FC<GamificationTeaserProps> = ({
           Minden palack közelebb visz
         </h2>
         <p className="text-base sm:text-lg text-[#667085]">
-          Kövesd az ellenőrzött bizonylatokból számított országos gyűjtési mérföldköveket.
+          Kövesd az ellenőrzött képernyőfotókból számított országos gyűjtési mérföldköveket.
         </p>
       </div>
 
@@ -97,7 +97,7 @@ export const GamificationTeaser: React.FC<GamificationTeaserProps> = ({
               {approvedBottleCount.toLocaleString('hu-HU')} db
             </div>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-[#667085]">
-              Ez kizárólag a kézzel jóváhagyott bizonylatokon rögzített palackszám. Függőben lévő,
+              Ez kizárólag a kézzel jóváhagyott képernyőfotókon rögzített palackszám. Függőben lévő,
               elutasított vagy további ellenőrzést igénylő beküldés nem része az értéknek.
             </p>
           </div>

@@ -4,6 +4,7 @@ import { Header } from '@/components/layout/Header';
 import { FaqSection } from '@/components/sections/FaqSection';
 import { GamificationTeaser } from '@/components/sections/GamificationTeaser';
 import { HeroSection } from '@/components/sections/HeroSection';
+import { AdiStorySection } from '@/components/sections/AdiStorySection';
 import { HowItWorksSection } from '@/components/sections/HowItWorksSection';
 import { LeaderboardSection } from '@/components/sections/LeaderboardSection';
 import { LiveStatsBar } from '@/components/sections/LiveStatsBar';
@@ -26,6 +27,7 @@ export default async function HomePage() {
             dataAvailable={data.available}
           />
           <LiveStatsBar campaign={data.campaign} dataAvailable={data.available} />
+          <AdiStorySection />
           <HowItWorksSection />
           <ReceiptVerificationDemo />
           <LeaderboardSection schools={data.leaderboard} dataAvailable={data.available} />

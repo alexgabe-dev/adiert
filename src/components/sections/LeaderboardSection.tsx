@@ -79,7 +79,7 @@ export function LeaderboardSection({ schools, dataAvailable }: LeaderboardSectio
               Top iskolák
             </h2>
             <p className="mt-1 text-sm text-[#667085] sm:text-base">
-              Kizárólag jóváhagyott bizonylatok alapján, determinisztikus országos sorrendben.
+              Kizárólag jóváhagyott képernyőfotók alapján, determinisztikus országos sorrendben.
             </p>
           </div>
         </div>
@@ -93,7 +93,7 @@ export function LeaderboardSection({ schools, dataAvailable }: LeaderboardSectio
             <Trophy className="mx-auto mb-3 h-8 w-8 text-amber-400" aria-hidden="true" />
             <h3 className="font-bold text-[#0B1535]">Még nincs jóváhagyott ranglistaeredmény</h3>
             <p className="mt-1 text-sm text-[#667085]">
-              Az első ellenőrzött bizonylat jóváhagyása után itt jelenik meg a sorrend.
+              Az első ellenőrzött képernyőfotó jóváhagyása után itt jelenik meg a sorrend.
             </p>
           </div>
         ) : (

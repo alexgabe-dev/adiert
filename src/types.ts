@@ -23,7 +23,7 @@ export interface FaqItem {
   id: string;
   question: string;
   answer: string;
-  category: 'Általános' | 'Visszaváltás' | 'Iskoláknak' | 'Bizonylat';
+  category: 'Általános' | 'Visszaváltás' | 'Iskoláknak' | 'Képfeltöltés' | 'Gyűjtés';
 }
 
 export interface VerificationDemoState {
