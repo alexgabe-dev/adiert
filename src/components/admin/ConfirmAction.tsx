@@ -1,6 +1,7 @@
 'use client';
 
 import { useId, useState } from 'react';
+import { useFormStatus } from 'react-dom';
 
 import { ModalDialog } from '@/components/ui/ModalDialog';
 
@@ -69,15 +70,23 @@ export function ConfirmAction({
             >
               Mégse
             </button>
-            <button
-              type="submit"
-              className={`min-h-11 rounded-xl px-4 text-sm font-extrabold text-white ${tone === 'danger' ? 'bg-rose-600 hover:bg-rose-700' : 'bg-blue-600 hover:bg-blue-700'}`}
-            >
-              {confirmLabel}
-            </button>
+            <ConfirmSubmit label={confirmLabel} tone={tone} />
           </form>
         </ModalDialog>
       ) : null}
     </>
+  );
+}
+
+function ConfirmSubmit({ label, tone }: { label: string; tone: 'primary' | 'danger' }) {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className={`min-h-11 rounded-xl px-4 text-sm font-extrabold text-white disabled:opacity-50 ${tone === 'danger' ? 'bg-rose-600 hover:bg-rose-700' : 'bg-blue-600 hover:bg-blue-700'}`}
+    >
+      {pending ? 'Mentés…' : label}
+    </button>
   );
 }

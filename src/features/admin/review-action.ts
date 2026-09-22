@@ -7,6 +7,7 @@ import { scheduleNotifications } from '@/features/teacher/notifications';
 import { requireAdministratorRole } from '@/lib/auth/authorization';
 import { hasValidMutationOrigin } from '@/lib/security/origin';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import type { ReviewActionState } from './review-state';
 
 const optionalPositiveInteger = z.preprocess(
   (value) => (value === '' || value === null ? undefined : value),
@@ -26,13 +27,6 @@ const reviewActionSchema = z.object({
   ),
   reason: z.string().trim().max(500).optional(),
 });
-
-export interface ReviewActionState {
-  status: 'idle' | 'error' | 'success';
-  message: string;
-}
-
-export const initialReviewActionState: ReviewActionState = { status: 'idle', message: '' };
 
 export async function reviewSubmissionAction(
   _previousState: ReviewActionState,
@@ -109,5 +103,13 @@ export async function reviewSubmissionAction(
   revalidatePath('/tanar');
   revalidatePath('/admin/iskolak');
   scheduleNotifications();
-  return { status: 'success', message: 'A felülvizsgálat és az auditbejegyzés sikeresen mentve.' };
+  return {
+    status: 'success',
+    message:
+      parsed.data.intent === 'approved'
+        ? 'A gyűjtést jóváhagytad. Az iskola eredménye frissült.'
+        : parsed.data.intent === 'needs_review'
+          ? 'Javítást kértél. A tanár a beküldésnél látja a visszajelzésedet.'
+          : 'A beküldést elutasítottad. Az indoklást a tanár is látja.',
+  };
 }

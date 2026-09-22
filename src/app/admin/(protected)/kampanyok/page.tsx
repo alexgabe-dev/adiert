@@ -27,7 +27,7 @@ export default async function CampaignsPage({ searchParams }: Props) {
         Tervezés, részvétel és biztonságos aktiválás egy helyen.
       </p>
       <AdminFlash success={first(params.success)} error={first(params.error)} />
-      <div className="mt-7 grid gap-6 xl:grid-cols-[1fr_420px]">
+      <div className="mt-7 grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
         <div className="space-y-3">
           {campaigns.length ? (
             campaigns.map((campaign) => {
@@ -80,7 +80,7 @@ export default async function CampaignsPage({ searchParams }: Props) {
           <form action={saveCampaignAction} className="mt-5 space-y-4">
             <input type="hidden" name="campaign_id" value="" />
             <Field label="Név" name="name" required />
-            <Field label="Slug" name="slug" placeholder="adiert-2026" required />
+            <Field label="URL-ben szereplő név" name="slug" placeholder="adiert-2026" required />
             <div>
               <label className="mb-1.5 block text-sm font-bold" htmlFor="campaign-description">
                 Leírás
@@ -94,7 +94,7 @@ export default async function CampaignsPage({ searchParams }: Props) {
               />
             </div>
             <Field label="Célösszeg (Ft)" name="target_amount" type="number" min="1" required />
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Field label="Kezdés" name="start_date" type="date" required />
               <Field label="Zárás" name="end_date" type="date" required />
             </div>

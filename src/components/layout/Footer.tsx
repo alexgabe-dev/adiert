@@ -55,18 +55,18 @@ export const Footer: React.FC = () => {
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-blue-600 transition-colors">
-                  Adatvédelem
+                <a href="/tanar/belepes" className="hover:text-blue-600 transition-colors">
+                  Tanári belépés
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-blue-600 transition-colors">
-                  ÁSZF
+                <a href="/tanar/regisztracio" className="hover:text-blue-600 transition-colors">
+                  Iskolai regisztráció
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-blue-600 transition-colors">
-                  Impresszum
+                <a href="/admin/login" className="hover:text-blue-600 transition-colors">
+                  Szervezői belépés
                 </a>
               </li>
             </ul>

@@ -27,6 +27,28 @@ function ModalHarness() {
 }
 
 describe('ModalDialog', () => {
+  it('keeps the input focused when its parent updates while typing', async () => {
+    function EditingDialog() {
+      const [value, setValue] = useState('');
+      return (
+        <ModalDialog labelId="editing-title" onClose={() => setValue('')}>
+          <h2 id="editing-title">Szerkesztés</h2>
+          <input
+            aria-label="Megjegyzés"
+            value={value}
+            onChange={(event) => setValue(event.target.value)}
+          />
+        </ModalDialog>
+      );
+    }
+    const user = userEvent.setup();
+    render(<EditingDialog />);
+    const input = screen.getByRole('textbox', { name: 'Megjegyzés' });
+    await user.type(input, 'Pontosítás');
+    expect(input).toHaveValue('Pontosítás');
+    expect(input).toHaveFocus();
+  });
+
   it('exposes dialog semantics, locks scroll, closes with Escape, and restores focus', async () => {
     const user = userEvent.setup();
     render(<ModalHarness />);

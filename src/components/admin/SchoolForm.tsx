@@ -15,7 +15,7 @@ export function SchoolForm({ action, school }: SchoolFormProps) {
       {school ? <input type="hidden" name="school_id" value={school.id} /> : null}
       {school ? <input type="hidden" name="active" value={String(school.active)} /> : null}
       <Field label="Hivatalos név" name="name" defaultValue={school?.name} maxLength={240} />
-      <Field label="Slug" name="slug" defaultValue={school?.slug} maxLength={180} />
+      <Field label="URL-ben szereplő név" name="slug" defaultValue={school?.slug} maxLength={180} />
       <div>
         <label htmlFor="school-type" className="mb-1.5 block text-sm font-bold">
           Intézménytípus

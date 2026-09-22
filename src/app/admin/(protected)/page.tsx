@@ -23,7 +23,7 @@ export default async function AdminPage() {
       client
         .from('submissions')
         .select('id', { count: 'exact', head: true })
-        .in('status', ['pending', 'needs_review']),
+        .eq('status', 'pending'),
       client.from('schools').select('id', { count: 'exact', head: true }).eq('active', true),
       listRecentReviews(client, 5),
     ]);
@@ -67,16 +67,14 @@ export default async function AdminPage() {
 
   return (
     <section>
-      <p className="text-xs font-extrabold tracking-[0.16em] text-blue-600 uppercase">
-        Operatív áttekintés
-      </p>
+      <p className="text-xs font-extrabold tracking-[0.16em] text-blue-600 uppercase">Áttekintés</p>
       <h1 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">
         Jó napot, {administrator.displayName ?? 'Admin'}!
       </h1>
       <p className="mt-2 text-sm text-[#667085]">
         A legfontosabb kampány- és ellenőrzési állapot egy helyen.
       </p>
-      {canOperate && (
+      {canOperate && (applicationCount ?? 0) > 0 && (
         <Link
           href="/admin/jelentkezesek"
           className="mt-6 block rounded-2xl border border-blue-200 bg-blue-50 p-5 text-sm font-bold text-blue-800"
@@ -227,7 +225,7 @@ export default async function AdminPage() {
       <div className="mt-6 rounded-2xl border border-[#E8ECF2] bg-white">
         <div className="border-b border-[#E8ECF2] px-5 py-4">
           <h2 className="font-extrabold">Legutóbbi felülvizsgálatok</h2>
-          <p className="mt-0.5 text-xs text-[#667085]">Változtathatatlan beküldés-auditesemények</p>
+          <p className="mt-0.5 text-xs text-[#667085]">A beküldések legutóbbi ellenőrzései</p>
         </div>
         {recentReviews.length ? (
           <ol className="divide-y divide-slate-100">

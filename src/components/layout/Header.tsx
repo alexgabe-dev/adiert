@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { Camera, Menu, X, ArrowRight, Heart } from 'lucide-react';
 
 import { useModalActions } from '@/components/providers/ModalProvider';
@@ -9,6 +10,14 @@ export const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { openRegister, openSubmit } = useModalActions();
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const close = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMobileMenuOpen(false);
+    };
+    window.addEventListener('keydown', close);
+    return () => window.removeEventListener('keydown', close);
+  }, [mobileMenuOpen]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,8 +47,8 @@ export const Header: React.FC = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Left Side: Intentionally Minimal Wordmark */}
-        <a
-          href="#"
+        <Link
+          href="/"
           id="header-brand"
           className="flex items-center gap-2.5 text-[#0B1535] hover:opacity-90 transition-opacity group"
         >
@@ -49,10 +58,10 @@ export const Header: React.FC = () => {
           <span className="font-extrabold text-xl tracking-tight">
             Ádiért<span className="text-blue-600 font-black">.</span>
           </span>
-        </a>
+        </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-1 lg:gap-2" aria-label="Fő navigáció">
+        <nav className="hidden xl:flex items-center gap-1 lg:gap-2" aria-label="Fő navigáció">
           {navLinks.map((link) => (
             <a
               key={link.href}
@@ -65,7 +74,7 @@ export const Header: React.FC = () => {
         </nav>
 
         {/* Desktop CTA */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden xl:flex items-center gap-3">
           <button
             type="button"
             onClick={() => openSubmit()}
@@ -78,12 +87,12 @@ export const Header: React.FC = () => {
         </div>
 
         {/* Mobile Menu Button */}
-        <div className="flex lg:hidden items-center gap-2">
+        <div className="flex xl:hidden items-center gap-2">
           <button
             type="button"
             onClick={() => openSubmit()}
             aria-label="Gyűjtés beküldése"
-            className="p-2 bg-blue-50 text-blue-600 rounded-xl"
+            className="flex size-11 items-center justify-center bg-blue-50 text-blue-600 rounded-xl"
           >
             <Camera className="w-5 h-5" />
           </button>
@@ -93,7 +102,7 @@ export const Header: React.FC = () => {
             aria-label={mobileMenuOpen ? 'Menü bezárása' : 'Menü megnyitása'}
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-navigation"
-            className="p-2 text-slate-700 hover:text-blue-600 rounded-lg focus:outline-none"
+            className="flex size-11 items-center justify-center text-slate-700 hover:text-blue-600 rounded-lg"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -104,7 +113,7 @@ export const Header: React.FC = () => {
       {mobileMenuOpen && (
         <div
           id="mobile-navigation"
-          className="animate-mobile-menu-in space-y-3 border-b border-slate-200 bg-white px-4 pt-3 pb-6 shadow-lg lg:hidden"
+          className="animate-mobile-menu-in max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain space-y-3 border-b border-slate-200 bg-white px-4 pt-3 pb-6 shadow-lg xl:hidden"
         >
           <nav className="flex flex-col space-y-1">
             {navLinks.map((link) => (

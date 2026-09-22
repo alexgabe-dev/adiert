@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Camera,
   CheckCircle2,
@@ -15,21 +15,9 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useModalActions } from '@/components/providers/ModalProvider';
 
 export const ReceiptVerificationDemo: React.FC = () => {
-  const [activeStep, setActiveStep] = useState<'reviewing' | 'approved'>('approved');
+  const [activeStep, setActiveStep] = useState<'reviewing' | 'approved'>('reviewing');
   const shouldReduceMotion = useReducedMotion();
   const { openSubmit } = useModalActions();
-
-  // Gentle auto-toggle simulation for live delight
-  useEffect(() => {
-    if (shouldReduceMotion) {
-      return;
-    }
-
-    const timer = setInterval(() => {
-      setActiveStep((prev) => (prev === 'reviewing' ? 'approved' : 'reviewing'));
-    }, 4500);
-    return () => clearInterval(timer);
-  }, [shouldReduceMotion]);
 
   return (
     <section className="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -52,8 +40,10 @@ export const ReceiptVerificationDemo: React.FC = () => {
           </p>
 
           {/* Quick interactive stepper toggles */}
-          <div className="flex items-center gap-2 p-1.5 bg-slate-100/80 rounded-xl mb-6 border border-slate-200/60">
+          <div className="grid grid-cols-2 w-full items-center gap-2 p-1.5 bg-slate-100/80 rounded-xl mb-6 border border-slate-200/60">
             <button
+              type="button"
+              aria-pressed={activeStep === 'reviewing'}
               onClick={() => setActiveStep('reviewing')}
               className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
                 activeStep === 'reviewing'
@@ -64,6 +54,8 @@ export const ReceiptVerificationDemo: React.FC = () => {
               1. Ellenőrzés alatt
             </button>
             <button
+              type="button"
+              aria-pressed={activeStep === 'approved'}
               onClick={() => setActiveStep('approved')}
               className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
                 activeStep === 'approved'
@@ -81,8 +73,8 @@ export const ReceiptVerificationDemo: React.FC = () => {
                 ✓
               </div>
               <p className="text-sm text-[#0B1535]">
-                <strong className="font-semibold">Biztonságos beküldés:</strong> a rendszer a
-                támogatott képet ellenőrzi és privát tárhelyen tárolja a kézi felülvizsgálatig.
+                <strong className="font-semibold">A fotó nem nyilvános:</strong> csak az iskolád
+                csapata és az ellenőrzők láthatják.
               </p>
             </div>
             <div className="flex items-start gap-3">
@@ -110,7 +102,7 @@ export const ReceiptVerificationDemo: React.FC = () => {
         <div className="lg:col-span-6 flex justify-center">
           <div className="w-full max-w-sm bg-white rounded-3xl p-5 sm:p-6 border border-[#E8ECF2] shadow-md relative overflow-hidden">
             {/* Phone Top Notch Bar */}
-            <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100 text-xs text-[#667085]">
+            <div className="flex flex-wrap gap-3 items-center justify-between pb-4 mb-4 border-b border-slate-100 text-xs text-[#667085]">
               <div className="flex items-center gap-1.5 font-bold text-[#0B1535]">
                 <Camera className="w-4 h-4 text-blue-600" />
                 <span>Képernyőfotó előnézete</span>
@@ -120,7 +112,7 @@ export const ReceiptVerificationDemo: React.FC = () => {
 
             {/* Receipt Preview Card Inside Mockup */}
             <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 mb-5 relative">
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex flex-wrap gap-3 items-center justify-between mb-3">
                 <span className="text-xs font-medium text-slate-500 flex items-center gap-1">
                   <Receipt className="w-3.5 h-3.5 text-slate-400" />
                   📸 Képernyőfotó feltöltve
@@ -155,10 +147,10 @@ export const ReceiptVerificationDemo: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: shouldReduceMotion ? 0 : 0.25 }}
-                  className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center justify-between"
+                  className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex flex-wrap gap-3 items-center justify-between"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center animate-spin-slow">
+                    <div className="w-9 h-9 shrink-0 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center animate-spin-slow">
                       <Clock className="w-5 h-5" />
                     </div>
                     <div>
@@ -181,10 +173,10 @@ export const ReceiptVerificationDemo: React.FC = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: shouldReduceMotion ? 0 : 0.25 }}
-                  className="bg-emerald-50 border border-emerald-300 rounded-2xl p-4 flex items-center justify-between shadow-2xs"
+                  className="bg-emerald-50 border border-emerald-300 rounded-2xl p-4 flex flex-wrap gap-3 items-center justify-between shadow-2xs"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-xs">
+                    <div className="w-9 h-9 shrink-0 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-xs">
                       <CheckCircle2 className="w-5 h-5" />
                     </div>
                     <div>

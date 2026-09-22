@@ -88,7 +88,7 @@ export default async function CampaignPage({ params, searchParams }: Props) {
         <form action={saveCampaignAction} className="mt-5 grid gap-4 lg:grid-cols-2">
           <input type="hidden" name="campaign_id" value={id} />
           <Field label="Név" name="name" defaultValue={campaign.name} />
-          <Field label="Slug" name="slug" defaultValue={campaign.slug} />
+          <Field label="URL-ben szereplő név" name="slug" defaultValue={campaign.slug} />
           <div className="lg:col-span-2">
             <label htmlFor="description" className="mb-1.5 block text-sm font-bold">
               Leírás
@@ -141,7 +141,7 @@ export default async function CampaignPage({ params, searchParams }: Props) {
               }}
               triggerLabel="Összes aktív iskola hozzáadása"
               title="Összes aktív iskola hozzáadása"
-              description={`${(totalSchools.count ?? 0).toLocaleString('hu-HU')} iskola kerül hozzáadásra a kampányhoz. A művelet tranzakciós, idempotens és auditált.`}
+              description={`${(totalSchools.count ?? 0).toLocaleString('hu-HU')} iskola kerül hozzáadásra a kampányhoz. A már részt vevő iskolák nem kerülnek be még egyszer.`}
               confirmLabel="Iskolák hozzáadása"
             />
           </div>
@@ -170,7 +170,7 @@ export default async function CampaignPage({ params, searchParams }: Props) {
               fields={{ ...filterFields, active: 'true' }}
               triggerLabel="Összes szűrt hozzáadása"
               title="Szűrt iskolák hozzáadása"
-              description={`${schools.total.toLocaleString('hu-HU')} szűrt iskola részvétele lesz aktív. A művelet idempotens és auditált.`}
+              description={`${schools.total.toLocaleString('hu-HU')} szűrt iskola részvétele lesz aktív. A már aktív részvétel változatlan marad.`}
               confirmLabel="Szűrt iskolák hozzáadása"
             />
             <ConfirmAction

@@ -144,7 +144,7 @@ export async function teamAction(_state: ActionState, form: FormData): Promise<A
     status: 'success',
     message:
       action === 'invite'
-        ? 'Meghívás rögzítve. A kolléga e-mailben kap értesítést.'
+        ? 'Meghívás létrehozva. A kolléga a saját fiókjában, a Meghívásaim oldalon csatlakozhat.'
         : 'A változtatást mentettük.',
   };
 }

@@ -33,19 +33,43 @@ describe('teacher upload experience', () => {
     fetchMock.mockRejectedValueOnce(new Error('network'));
     await user.click(screen.getByRole('button', { name: 'Beküldöm ellenőrzésre' }));
     await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('adataid megmaradtak'));
-    expect(screen.queryByText('Ez szép munka volt!')).not.toBeInTheDocument();
+    expect(screen.queryByText('A beküldés megérkezett.')).not.toBeInTheDocument();
     expect(screen.getByText('120 palack')).toBeInTheDocument();
     fetchMock.mockResolvedValueOnce({
       ok: true,
       json: async () => ({ publicReference: 'saved-ref', status: 'pending' }),
     });
     await user.click(screen.getByRole('button', { name: 'Beküldöm ellenőrzésre' }));
-    await waitFor(() => expect(screen.getByText('Ez szép munka volt!')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('A beküldés megérkezett.')).toBeInTheDocument());
     expect(fetchMock.mock.calls[0]?.[1].headers['Idempotency-Key']).toBe(
       fetchMock.mock.calls[1]?.[1].headers['Idempotency-Key'],
     );
     const payload = fetchMock.mock.calls[1]?.[1].body as FormData;
     expect(payload.get('count')).toBe('120');
     expect(payload.has('school_id')).toBe(false);
+  });
+  it('explains a small collection and lets the teacher review the photo before sending', async () => {
+    const user = userEvent.setup();
+    const { container } = render(<UploadFlow school="Teszt Iskola" />);
+    await user.upload(
+      container.querySelector('input[type=file]:not([capture])') as HTMLInputElement,
+      new File(['photo'], 'screen.jpg', { type: 'image/jpeg' }),
+    );
+    await user.click(screen.getByRole('button', { name: 'Tovább' }));
+    await user.type(screen.getByLabelText('Hány palackot váltottatok vissza?'), '20');
+    await user.click(screen.getByRole('button', { name: 'Tovább' }));
+    expect(screen.getByRole('alert')).toHaveTextContent('legalább 5 karakter');
+    await user.type(
+      screen.getByRole('textbox', { name: /Megjegyzés/ }),
+      'Osztálykiránduláson gyűjtöttük.',
+    );
+    await user.click(screen.getByRole('button', { name: 'Tovább' }));
+    expect(screen.getByRole('img', { name: 'Beküldésre váró képernyőfotó' })).toHaveAttribute(
+      'src',
+      'blob:preview',
+    );
+    expect(fetchMock).not.toHaveBeenCalled();
+    await user.click(screen.getByRole('button', { name: 'Vissza' }));
+    expect(screen.getByLabelText('Hány palackot váltottatok vissza?')).toHaveValue(20);
   });
 });

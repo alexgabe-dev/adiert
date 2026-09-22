@@ -6,9 +6,10 @@ import { ReviewForm } from '@/components/admin/ReviewForm';
 import { getAdminSubmission, type SubmissionStatus } from '@/features/admin/submissions';
 import { requireAdministratorRole } from '@/lib/auth/authorization';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { reviewFlagLabels } from '@/features/admin/labels';
 
 const statusLabels: Record<SubmissionStatus, string> = {
-  pending: 'Függőben',
+  pending: 'Ellenőrzésre vár',
   needs_review: 'Javítást kérünk',
   approved: 'Jóváhagyott',
   rejected: 'Elutasított',
@@ -179,6 +180,15 @@ export default async function AdminSubmissionPage({ params }: AdminSubmissionPag
       </div>
 
       <div className="mt-6 rounded-2xl border border-[#E8ECF2] bg-white p-5 shadow-sm">
+        {submission.flags.length > 0 && (
+          <a
+            href="#review-flags"
+            className="mb-5 block rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-950"
+          >
+            {submission.flags.length} ellenőrzést igénylő jelzés. Döntés előtt nézd meg a
+            részleteket. ↓
+          </a>
+        )}
         <h2 className="text-xl font-extrabold">Kézi felülvizsgálat</h2>
         <p className="mt-1 text-sm text-[#667085]">
           Ellenőrizd a képen látható mennyiséget. Eltérésnél vagy javításkérésnél írj rövid, érthető
@@ -221,7 +231,10 @@ export default async function AdminSubmissionPage({ params }: AdminSubmissionPag
         </section>
       )}
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-[#E8ECF2] bg-white p-5 shadow-sm">
+        <div
+          id="review-flags"
+          className="rounded-2xl border border-[#E8ECF2] bg-white p-5 shadow-sm"
+        >
           <h2 className="text-lg font-extrabold">Jelzések</h2>
           {submission.flags.length === 0 ? (
             <p className="mt-3 text-sm text-[#667085]">Nincs ismétlődésre utaló jelzés.</p>
@@ -229,10 +242,15 @@ export default async function AdminSubmissionPage({ params }: AdminSubmissionPag
             <ul className="mt-3 space-y-3">
               {submission.flags.map((flag) => (
                 <li key={flag.id} className="rounded-xl bg-amber-50 p-3 text-sm">
-                  <strong>{flag.type}</strong> · súlyosság {flag.severity}/5 · pont {flag.score}
-                  <pre className="mt-2 overflow-auto text-[10px] text-amber-900">
-                    {JSON.stringify(flag.details, null, 2)}
-                  </pre>
+                  <strong>{reviewFlagLabels[flag.type] ?? 'Ellenőrzést igénylő jelzés'}</strong>
+                  <details className="mt-2">
+                    <summary className="cursor-pointer text-xs text-amber-900">
+                      Részletes adatok
+                    </summary>
+                    <pre className="mt-2 overflow-auto text-xs text-amber-900">
+                      {JSON.stringify(flag.details, null, 2)}
+                    </pre>
+                  </details>
                 </li>
               ))}
             </ul>
@@ -240,7 +258,7 @@ export default async function AdminSubmissionPage({ params }: AdminSubmissionPag
         </div>
 
         <div className="rounded-2xl border border-[#E8ECF2] bg-white p-5 shadow-sm">
-          <h2 className="text-lg font-extrabold">Változtathatatlan auditnapló</h2>
+          <h2 className="text-lg font-extrabold">Korábbi döntések</h2>
           {submission.reviews.length === 0 ? (
             <p className="mt-3 text-sm text-[#667085]">Még nincs felülvizsgálati bejegyzés.</p>
           ) : (

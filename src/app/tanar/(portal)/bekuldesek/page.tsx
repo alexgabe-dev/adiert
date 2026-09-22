@@ -8,11 +8,11 @@ export default async function Submissions({
 }) {
   const { membership } = await requireTeacher();
   const p = await searchParams;
-  const page = Math.max(1, Math.min(100000, Number(p.page) || 1));
+  const page = Math.max(1, Math.min(100000, Math.floor(Number(p.page) || 1)));
   const { items, total } = await teacherSubmissions(membership.school_id, page, p.status);
   return (
     <div>
-      <h1 className="text-3xl font-extrabold">Minden gyűjtés számít.</h1>
+      <h1 className="text-3xl font-extrabold">Beküldések</h1>
       <p className="mt-3 text-sm text-slate-600">
         Az iskolátok beküldései és visszajelzései, egy helyen.
       </p>
@@ -30,7 +30,9 @@ export default async function Submissions({
             </option>
           ))}
         </select>
-        <button className="rounded-xl bg-white px-4 text-sm font-bold">Szűrés</button>
+        <button className="shrink-0 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold hover:bg-slate-50">
+          Szűrés
+        </button>
       </form>
       <div className="space-y-3">
         {items.map((s) => (
@@ -39,7 +41,7 @@ export default async function Submissions({
             href={`/tanar/bekuldesek/${s.id}`}
             className="block rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-blue-300"
           >
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-xl font-extrabold">
                 {(s.status === 'approved'
                   ? s.approved_bottle_count
@@ -61,13 +63,19 @@ export default async function Submissions({
         ))}
         {items.length === 0 && (
           <div className="rounded-3xl bg-white p-8 text-center">
-            <p className="text-lg font-bold">Itt lesznek a közös sikereitek.</p>
-            <p className="mt-3 text-sm text-slate-500">Ehhez a szűréshez még nincs beküldés.</p>
+            <p className="text-lg font-bold">
+              {p.status || page > 1 ? 'Nincs találat.' : 'Még nincs beküldött gyűjtés.'}
+            </p>
+            <p className="mt-3 text-sm leading-6 text-slate-500">
+              {p.status || page > 1
+                ? 'Másik állapotot választva megjelenhetnek a keresett beküldések.'
+                : 'Visszaváltás után töltsd fel az automata képernyőjéről készült fotót. Itt követheted az ellenőrzés állapotát.'}
+            </p>
             <Link
-              href="/tanar/feltoltes"
+              href={p.status || page > 1 ? '/tanar/bekuldesek' : '/tanar/feltoltes'}
               className="mt-5 inline-block rounded-xl bg-blue-600 px-5 py-3 font-bold text-white"
             >
-              Új gyűjtés feltöltése
+              {p.status || page > 1 ? 'Összes beküldés' : 'Első gyűjtés feltöltése'}
             </Link>
           </div>
         )}

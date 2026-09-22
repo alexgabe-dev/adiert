@@ -30,6 +30,10 @@ export function ModalDialog({
   onClose,
 }: ModalDialogProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef(onClose);
+  useEffect(() => {
+    closeRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
     const previouslyFocusedElement =
@@ -45,7 +49,7 @@ export function ModalDialog({
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault();
-        onClose();
+        closeRef.current();
         return;
       }
 
@@ -66,7 +70,10 @@ export function ModalDialog({
       const firstElement = focusableElements.at(0);
       const lastElement = focusableElements.at(-1);
 
-      if (event.shiftKey && document.activeElement === firstElement) {
+      if (
+        event.shiftKey &&
+        (document.activeElement === firstElement || document.activeElement === dialog)
+      ) {
         event.preventDefault();
         lastElement?.focus();
       } else if (!event.shiftKey && document.activeElement === lastElement) {
@@ -82,10 +89,10 @@ export function ModalDialog({
       document.body.style.overflow = previousOverflow;
       previouslyFocusedElement?.focus();
     };
-  }, [onClose]);
+  }, []);
 
   return createPortal(
-    <div className="animate-modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
+    <div className="dialog-backdrop animate-modal-backdrop fixed inset-x-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs">
       <div
         ref={dialogRef}
         role="dialog"
@@ -93,7 +100,7 @@ export function ModalDialog({
         aria-labelledby={labelId}
         aria-describedby={descriptionId}
         tabIndex={-1}
-        className={`animate-modal-dialog relative w-full border border-slate-100 bg-white shadow-2xl outline-none ${className}`}
+        className={`dialog-surface animate-modal-dialog relative min-w-0 w-full border border-slate-100 bg-white shadow-2xl outline-none ${className}`}
       >
         {children}
       </div>

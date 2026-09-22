@@ -9,7 +9,11 @@ export function ApplicationForm({ application }: { application?: SchoolApplicati
   const [school, setSchool] = useState<SchoolSelection | null>(null);
   const [manual, setManual] = useState(false);
   return (
-    <ActionForm action={applySchoolAction} label="Iskolai jelentkezés beküldése">
+    <ActionForm
+      action={applySchoolAction}
+      label="Jelentkezés beküldése"
+      disabled={!school && !manual && !application}
+    >
       <label htmlFor="application-school" className="block text-sm font-bold">
         Keresd meg az iskoládat
       </label>
@@ -27,11 +31,11 @@ export function ApplicationForm({ application }: { application?: SchoolApplicati
         type="button"
         onClick={() => {
           setSchool(null);
-          setManual(true);
+          setManual(!manual);
         }}
         className="min-h-11 text-sm font-semibold text-blue-600"
       >
-        Nem találom az iskolámat, megadom az adatait
+        {manual ? 'Vissza az iskolakeresőhöz' : 'Nem találom az iskolámat, megadom az adatait'}
       </button>
       <input
         type="hidden"
@@ -46,7 +50,7 @@ export function ApplicationForm({ application }: { application?: SchoolApplicati
             value={school?.name ?? application?.school_name}
             maxLength={240}
           />
-          <div className="grid grid-cols-[100px_1fr] gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-[100px_minmax(0,1fr)] gap-3">
             <Field
               label="Irányítószám"
               name="postal_code"

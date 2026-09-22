@@ -5,17 +5,12 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { ModalDialog } from '@/components/ui/ModalDialog';
-import type {
-  LeaderboardPage,
-  LeaderboardSchool,
-  SchoolSelection,
-} from '@/features/public-data/types';
+import type { LeaderboardPage, LeaderboardSchool } from '@/features/public-data/types';
 import { schoolTypeLabels } from '@/features/public-data/types';
 
 interface FullLeaderboardModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectSchool?: (school: SchoolSelection) => void;
 }
 
 function isLeaderboardResponse(
@@ -33,11 +28,7 @@ function isLeaderboardResponse(
   );
 }
 
-export function FullLeaderboardModal({
-  isOpen,
-  onClose,
-  onSelectSchool,
-}: FullLeaderboardModalProps) {
+export function FullLeaderboardModal({ isOpen, onClose }: FullLeaderboardModalProps) {
   const [query, setQuery] = useState('');
   const [county, setCounty] = useState('');
   const [city, setCity] = useState('');
@@ -93,7 +84,7 @@ export function FullLeaderboardModal({
       onClose={onClose}
       className="flex max-h-[92vh] max-w-4xl flex-col rounded-3xl p-5 sm:p-8"
     >
-      <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+      <div className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-100 pb-4">
         <div>
           <div className="flex items-center gap-2 text-xs font-bold tracking-wider text-amber-700 uppercase">
             <Trophy className="h-4 w-4 text-amber-500" aria-hidden="true" />
@@ -161,7 +152,7 @@ export function FullLeaderboardModal({
         </select>
       </div>
 
-      <div className="relative min-h-48 flex-1 divide-y divide-slate-100 overflow-y-auto pr-1">
+      <div className="relative min-h-32 flex-auto divide-y divide-slate-100 overflow-y-auto pr-1">
         {loading ? (
           <div
             className="absolute inset-0 z-10 flex items-center justify-center bg-white/75"
@@ -212,22 +203,12 @@ export function FullLeaderboardModal({
                   {school.approvedBottleCount.toLocaleString('hu-HU')} db
                 </span>
               </span>
-              <button
-                type="button"
-                onClick={() => {
-                  onSelectSchool?.(school);
-                  onClose();
-                }}
-                className="shrink-0 rounded-lg bg-blue-50 px-2.5 py-2 text-[11px] font-bold text-blue-700 hover:bg-blue-100 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
-              >
-                Kiválasztás
-              </button>
             </div>
           ))
         )}
       </div>
 
-      <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-4 text-xs text-[#667085]">
+      <div className="mt-3 flex shrink-0 flex-wrap gap-3 items-center justify-between border-t border-slate-100 pt-4 text-xs text-[#667085]">
         <span>{result?.totalCount ?? 0} jóváhagyott eredmény</span>
         <div className="flex items-center gap-2">
           <button

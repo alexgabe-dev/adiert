@@ -2,6 +2,7 @@
 
 import { ChevronRight, School as SchoolIcon, Trophy } from 'lucide-react';
 import type { ReactNode } from 'react';
+import Link from 'next/link';
 
 import { SchoolPodiumIllustration } from '@/components/illustrations/SchoolPodiumIllustration';
 import { useModalActions } from '@/components/providers/ModalProvider';
@@ -14,7 +15,6 @@ interface LeaderboardSectionProps {
 }
 
 function PodiumCard({ school, children }: { school: LeaderboardSchool; children: ReactNode }) {
-  const { openSubmit } = useModalActions();
   const rankStyles = {
     1: 'relative z-10 order-2 -mt-4 border-2 border-amber-300 bg-gradient-to-b from-amber-50/70 to-white p-4 sm:p-6',
     2: 'order-1 border border-slate-200 bg-white p-3.5 sm:p-5',
@@ -22,15 +22,14 @@ function PodiumCard({ school, children }: { school: LeaderboardSchool; children:
   } as const;
 
   return (
-    <button
-      type="button"
-      onClick={() => openSubmit(school)}
+    <Link
+      href={`/iskolak/${school.slug}`}
       className={`flex w-full flex-col items-center rounded-2xl text-center shadow-xs transition-all duration-200 hover:-translate-y-1 hover:shadow-md focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none ${rankStyles[school.rank as 1 | 2 | 3]}`}
-      aria-label={`${school.name} kiválasztása beküldéshez`}
+      aria-label={`${school.name} eredményei`}
     >
       {school.rank === 1 ? (
         <div className="absolute -top-3.5 rounded-full bg-amber-400 px-3 py-0.5 text-[11px] font-extrabold text-amber-950 shadow-xs">
-          👑 Bajnok
+          1. hely
         </div>
       ) : null}
       <div
@@ -45,7 +44,7 @@ function PodiumCard({ school, children }: { school: LeaderboardSchool; children:
         {school.rank}.
       </div>
       {children}
-      <h4 className="mb-2 flex h-10 items-center text-xs font-bold text-[#0B1535] sm:text-sm">
+      <h4 className="mb-2 flex min-h-10 items-center text-xs font-bold text-[#0B1535] sm:text-sm">
         <span className="line-clamp-2">{school.name}</span>
       </h4>
       <div className="text-sm font-extrabold text-[#0B1535] sm:text-base">
@@ -57,12 +56,12 @@ function PodiumCard({ school, children }: { school: LeaderboardSchool; children:
       <div className="mt-auto w-full border-t border-slate-100 pt-2">
         <SchoolPodiumIllustration rank={school.rank as 1 | 2 | 3} />
       </div>
-    </button>
+    </Link>
   );
 }
 
 export function LeaderboardSection({ schools, dataAvailable }: LeaderboardSectionProps) {
-  const { openLeaderboard, openSubmit } = useModalActions();
+  const { openLeaderboard } = useModalActions();
   const podium = schools.filter((school) => school.rank <= 3);
   const remaining = schools.filter((school) => school.rank > 3).slice(0, 4);
 
@@ -79,7 +78,7 @@ export function LeaderboardSection({ schools, dataAvailable }: LeaderboardSectio
               Top iskolák
             </h2>
             <p className="mt-1 text-sm text-[#667085] sm:text-base">
-              Kizárólag jóváhagyott képernyőfotók alapján, determinisztikus országos sorrendben.
+              Az iskolák jóváhagyott gyűjtései. Kattints egy iskolára a részletekért.
             </p>
           </div>
         </div>
@@ -99,7 +98,7 @@ export function LeaderboardSection({ schools, dataAvailable }: LeaderboardSectio
         ) : (
           <div className="grid grid-cols-1 items-stretch gap-8 lg:grid-cols-12">
             <div className="flex flex-col justify-between lg:col-span-7">
-              <div className="grid grid-cols-1 items-end gap-4 min-[430px]:grid-cols-3">
+              <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-3">
                 {podium.map((school) => (
                   <PodiumCard key={school.id} school={school}>
                     <span className="mb-1 text-[10px] font-bold tracking-wide text-slate-500 uppercase sm:text-xs">
@@ -120,10 +119,9 @@ export function LeaderboardSection({ schools, dataAvailable }: LeaderboardSectio
                 </div>
                 <div className="flex-1 divide-y divide-slate-100">
                   {remaining.map((school) => (
-                    <button
+                    <Link
                       key={school.id}
-                      type="button"
-                      onClick={() => openSubmit(school)}
+                      href={`/iskolak/${school.slug}`}
                       className="group flex w-full items-center justify-between gap-3 rounded-xl px-2 py-3 text-left hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
                     >
                       <span className="flex min-w-0 items-center gap-3">
@@ -150,7 +148,7 @@ export function LeaderboardSection({ schools, dataAvailable }: LeaderboardSectio
                           {school.approvedBottleCount.toLocaleString('hu-HU')} db
                         </span>
                       </span>
-                    </button>
+                    </Link>
                   ))}
                 </div>
                 <div className="mt-2 border-t border-slate-100 pt-4">

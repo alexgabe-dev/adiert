@@ -34,11 +34,11 @@ export default async function AdministratorsPage({ searchParams }: Administrator
       </p>
       <h1 className="mt-2 text-3xl font-extrabold tracking-tight">Adminisztrátorok</h1>
       <p className="mt-2 text-sm text-[#667085]">
-        Meghívások, szerepkörök és aktív hozzáférések. Minden változás auditált.
+        Meghívások, szerepkörök és aktív hozzáférések. A változtatások visszanézhetők a naplóban.
       </p>
       <AdminFlash success={first(parameters.success)} error={first(parameters.error)} />
 
-      <div className="mt-7 grid gap-6 xl:grid-cols-[1fr_360px]">
+      <div className="mt-7 grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="overflow-hidden rounded-2xl border border-[#E8ECF2] bg-white">
           <ul className="divide-y divide-slate-100">
             {administrators.map((administrator) => (

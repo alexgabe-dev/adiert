@@ -74,8 +74,8 @@ export function HeroSection({ participatingSchoolCount, dataAvailable }: HeroSec
               <p className="mt-1 text-sm text-white/90">Akiért most összefogunk.</p>
             </div>
           </div>
-          <figcaption className="absolute right-4 -bottom-1 flex items-center gap-3 rounded-2xl border border-blue-100 bg-white px-5 py-4 shadow-lg sm:right-6">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+          <figcaption className="absolute right-4 -bottom-1 max-w-[calc(100%-2rem)] flex items-center gap-3 rounded-2xl border border-blue-100 bg-white px-5 py-4 shadow-lg sm:right-6">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
               <Heart className="h-5 w-5" aria-hidden="true" />
             </span>
             <div>

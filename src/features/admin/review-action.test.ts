@@ -28,7 +28,8 @@ vi.mock('@/lib/supabase/server', () => ({
   createServerSupabaseClient: dependencies.createServerSupabaseClient,
 }));
 
-import { initialReviewActionState, reviewSubmissionAction } from '@/features/admin/review-action';
+import { reviewSubmissionAction } from '@/features/admin/review-action';
+import { initialReviewActionState } from '@/features/admin/review-state';
 
 const submissionId = '11111111-1111-4111-8111-111111111111';
 

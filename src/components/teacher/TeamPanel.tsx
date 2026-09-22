@@ -61,6 +61,7 @@ export function TeamPanel({
                   <ActionForm
                     action={teamAction}
                     label="Hozzáférés visszavonása"
+                    tone="danger"
                     confirm={`${m.display_name} hozzáférését visszavonod?`}
                   >
                     <input type="hidden" name="intent" value="remove" />
@@ -71,6 +72,7 @@ export function TeamPanel({
                     <ActionForm
                       action={teamAction}
                       label="Legyen iskolai admin"
+                      tone="secondary"
                       confirm={`Átadod az iskolai adminszerepet neki: ${m.display_name}? A korábbi admin tanári hozzáféréssel marad.`}
                     >
                       <input type="hidden" name="intent" value="transfer_owner" />
@@ -87,6 +89,10 @@ export function TeamPanel({
         <>
           <div className="rounded-2xl border border-blue-100 bg-white p-5">
             <h3 className="mb-4 font-bold">Hívj meg egy kollégát</h3>
+            <p className="mb-4 text-sm leading-6 text-slate-600">
+              A kollégád a saját e-mail-címével regisztrál, majd a Meghívásaim oldalon csatlakozik.
+              Nem kell újra regisztrálnia az iskolát.
+            </p>
             {count < 10 ? (
               <ActionForm action={teamAction} label="Meghívó küldése">
                 <input type="hidden" name="intent" value="invite" />
@@ -109,6 +115,7 @@ export function TeamPanel({
               <ActionForm
                 action={teamAction}
                 label="Meghívás visszavonása"
+                tone="danger"
                 confirm="Visszavonod ezt a meghívást?"
               >
                 <input type="hidden" name="intent" value="revoke_invite" />

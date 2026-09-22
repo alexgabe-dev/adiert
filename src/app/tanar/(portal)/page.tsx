@@ -16,11 +16,9 @@ export default async function Dashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-xs font-bold tracking-widest text-blue-600 uppercase">
-          Sok kis segítség. Közös eredmény.
-        </p>
+        <p className="text-xs font-bold tracking-widest text-blue-600 uppercase">Iskolai gyűjtés</p>
         <h1 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
-          Ma is tehetünk Ádiért.
+          A gyűjtésetek áttekintése
         </h1>
         <p className="mt-3 text-sm text-slate-600">
           {school.name} · {school.city}
@@ -36,7 +34,9 @@ export default async function Dashboard() {
           </span>
           <div>
             <p className="text-xl font-extrabold">Új gyűjtés feltöltése</p>
-            <p className="mt-1 text-sm text-blue-100">Egy fotó, pár adat. Máris közelebb.</p>
+            <p className="mt-1 text-sm text-blue-100">
+              Töltsd fel a fotót, és add meg a palackszámot.
+            </p>
           </div>
         </div>
         <ArrowUpRight className="h-6 w-6 shrink-0" />
@@ -49,7 +49,7 @@ export default async function Dashboard() {
           {summary.changes} beküldéshez pontosítást kérünk. Megnézem →
         </Link>
       )}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid gap-3 min-[380px]:grid-cols-2">
         <div className="rounded-2xl bg-white p-5">
           <Heart className="h-5 w-5 text-emerald-600" />
           <p className="mt-3 text-3xl font-extrabold">{summary.approved.toLocaleString('hu-HU')}</p>
@@ -89,8 +89,8 @@ export default async function Dashboard() {
           />
         </div>
         <p className="mt-3 text-sm text-slate-600">
-          Még {(summary.milestone - summary.approved).toLocaleString('hu-HU')} palack. Együtt
-          meglesz!
+          Még {(summary.milestone - summary.approved).toLocaleString('hu-HU')} jóváhagyott palack
+          szükséges.
         </p>
         <p className="mt-5 border-t border-slate-100 pt-4 text-sm font-semibold">
           {summary.rank

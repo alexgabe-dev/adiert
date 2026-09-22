@@ -8,9 +8,9 @@ export function AuthScreen({
   mode?: 'login' | 'signup' | 'reset' | 'update_password' | 'resend';
 }) {
   const titles = {
-    login: 'Jó, hogy itt vagy.',
-    signup: 'Kezdjük egy jó ügyért.',
-    reset: 'Új jelszó, új lendület.',
+    login: 'Tanári belépés',
+    signup: 'Tanári fiók létrehozása',
+    reset: 'Elfelejtett jelszó',
     update_password: 'Állíts be új jelszót.',
     resend: 'Erősítsd meg az e-mail-címed.',
   };

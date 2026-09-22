@@ -11,7 +11,7 @@ export function NewsForm({ action, item }: NewsFormProps) {
       <input type="hidden" name="news_id" value={item?.id ?? ''} />
       <div className="grid gap-4 lg:grid-cols-2">
         <Field label="Cím" name="title" defaultValue={item?.title} maxLength={200} />
-        <Field label="Slug" name="slug" defaultValue={item?.slug} maxLength={180} />
+        <Field label="URL-ben szereplő név" name="slug" defaultValue={item?.slug} maxLength={180} />
       </div>
       <div>
         <label htmlFor="news-excerpt" className="mb-1.5 block text-sm font-bold">

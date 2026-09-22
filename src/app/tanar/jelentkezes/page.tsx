@@ -33,7 +33,7 @@ export default async function ApplicationPage({
               ? 'A hozzáférés szünetel.'
               : a?.status === 'pending'
                 ? 'Megérkezett a jelentkezésed.'
-                : 'Találjuk meg az iskoládat.'}
+                : 'Iskola regisztrálása'}
           </h1>
           <p className="mt-3 mb-6 text-sm text-slate-600">{user.email}</p>
           {p.paused ? (
@@ -68,7 +68,7 @@ export default async function ApplicationPage({
           )}
           <Link
             href="/tanar/meghivasok"
-            className="mt-6 block min-h-11 text-sm font-bold text-blue-600"
+            className="mt-6 flex min-h-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-4 text-center text-sm font-semibold text-slate-700 hover:bg-slate-100"
           >
             Meghívott egy kolléga? Meghívásaim →
           </Link>

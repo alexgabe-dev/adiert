@@ -11,6 +11,7 @@ import { requireAdministratorRole } from '@/lib/auth/authorization';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import type { Membership, SchoolInvitation, TeacherSubmission } from '@/features/teacher/server';
 import { statusLabels } from '@/features/teacher/shared';
+import { portalEventLabels } from '@/features/admin/labels';
 const tabs = [
   ['overview', 'Áttekintés'],
   ['review', 'Ellenőrzés'],
@@ -105,7 +106,7 @@ export default async function SchoolPage({
       </nav>
       {tab === 'overview' && (
         <>
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {[
               ['Jóváhagyott palack', stats?.approved ?? 0],
               ['Ellenőrzésre váró beküldés', stats?.pending_count ?? 0],
@@ -208,14 +209,28 @@ export default async function SchoolPage({
         <ol className="space-y-3">
           {events.data?.map((e) => (
             <li key={e.id} className="rounded-2xl bg-white p-5">
-              <p className="font-bold">{e.action}</p>
+              <p className="font-bold">{portalEventLabels[e.action] ?? 'Iskolai adat módosítva'}</p>
               <p className="mt-2 text-xs text-slate-500">
-                {new Date(e.created_at).toLocaleString('hu-HU')} · {e.actor_id}
+                {new Date(e.created_at).toLocaleString('hu-HU', { timeZone: 'Europe/Budapest' })}
               </p>
+              {e.detail?.reason && <p className="mt-3 text-sm text-slate-600">{e.detail.reason}</p>}
+              {e.action.startsWith('submission.') && e.target_id && (
+                <Link
+                  href={`/admin/bekuldesek/${e.target_id}`}
+                  className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-blue-600"
+                >
+                  Beküldés megnyitása →
+                </Link>
+              )}
               {Object.keys(e.detail ?? {}).length > 0 && (
-                <pre className="mt-3 overflow-x-auto whitespace-pre-wrap text-xs">
-                  {JSON.stringify(e.detail, null, 2)}
-                </pre>
+                <details className="mt-3">
+                  <summary className="cursor-pointer text-xs text-slate-500">
+                    Naplózott adatok
+                  </summary>
+                  <pre className="mt-3 overflow-x-auto whitespace-pre-wrap text-xs">
+                    {JSON.stringify(e.detail, null, 2)}
+                  </pre>
+                </details>
               )}
             </li>
           ))}

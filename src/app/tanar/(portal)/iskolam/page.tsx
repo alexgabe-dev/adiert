@@ -15,7 +15,7 @@ export default async function MySchool() {
   if (members.error || invitations.error) throw new Error('A csapat nem tölthető be.');
   return (
     <div>
-      <h1 className="text-3xl font-extrabold">A mi iskolánk.</h1>
+      <h1 className="text-3xl font-extrabold">Iskolám és a csapat</h1>
       <div className="my-6 rounded-3xl bg-blue-600 p-6 text-white">
         <h2 className="text-xl font-bold">{school.name}</h2>
         <p className="mt-2 text-sm text-blue-100">

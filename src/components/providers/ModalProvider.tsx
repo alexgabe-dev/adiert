@@ -56,9 +56,7 @@ export function ModalProvider({ children }: ModalProviderProps) {
       {activeModal?.type === 'guide' && (
         <GuideModal isOpen onClose={closeModal} onOpenSubmitModal={openSubmit} />
       )}
-      {activeModal?.type === 'leaderboard' && (
-        <FullLeaderboardModal isOpen onClose={closeModal} onSelectSchool={openSubmit} />
-      )}
+      {activeModal?.type === 'leaderboard' && <FullLeaderboardModal isOpen onClose={closeModal} />}
     </ModalActionsContext.Provider>
   );
 }

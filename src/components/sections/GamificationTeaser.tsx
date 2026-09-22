@@ -32,7 +32,7 @@ export const GamificationTeaser: React.FC<GamificationTeaserProps> = ({
       <div className="text-center max-w-2xl mx-auto mb-12">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 border border-purple-200/70 text-purple-800 text-xs font-bold tracking-wider uppercase mb-3.5">
           <Sparkles className="w-3.5 h-3.5 text-purple-600" />
-          <span>JELVÉNYEK ÉS MÉRFÖLDKÖVEK</span>
+          <span>A GYŰJTÉS EREDMÉNYE</span>
         </div>
         <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0B1535] tracking-tight mb-3">
           Minden palack közelebb visz
@@ -56,7 +56,7 @@ export const GamificationTeaser: React.FC<GamificationTeaserProps> = ({
         </div>
 
         {/* Milestone Steps Bar */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 relative">
+        <div className="grid grid-cols-1 min-[380px]:grid-cols-2 md:grid-cols-4 gap-4 relative">
           {milestones.map((item) => (
             <div
               key={item.target}
@@ -73,7 +73,7 @@ export const GamificationTeaser: React.FC<GamificationTeaserProps> = ({
                 {item.completed ? (
                   <CheckCircle className="w-4 h-4 text-emerald-600" />
                 ) : (
-                  <span className="text-[10px] font-semibold text-slate-400">Következő</span>
+                  <span className="text-[10px] font-semibold text-slate-400">Még előttünk</span>
                 )}
               </div>
               <div className="text-lg font-extrabold mb-1">{item.label}</div>
@@ -94,11 +94,13 @@ export const GamificationTeaser: React.FC<GamificationTeaserProps> = ({
           </h3>
           <div className="rounded-3xl border border-emerald-200 bg-emerald-50/50 p-6 sm:p-8">
             <div className="text-3xl font-black text-emerald-700 sm:text-4xl">
-              {approvedBottleCount.toLocaleString('hu-HU')} db
+              {dataAvailable
+                ? `${approvedBottleCount.toLocaleString('hu-HU')} db`
+                : 'Az adat most nem elérhető'}
             </div>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-[#667085]">
-              Ez kizárólag a kézzel jóváhagyott képernyőfotókon rögzített palackszám. Függőben lévő,
-              elutasított vagy további ellenőrzést igénylő beküldés nem része az értéknek.
+              Az összesítésben a jóváhagyott gyűjtések szerepelnek. Az ellenőrzésre váró beküldések
+              később kerülnek hozzá.
             </p>
           </div>
         </div>
@@ -111,7 +113,7 @@ export const GamificationTeaser: React.FC<GamificationTeaserProps> = ({
           </div>
 
           <h3 className="text-xl font-extrabold text-[#0B1535] mb-2">
-            Számold ki az osztályod hatását!
+            Mennyit ér az osztály gyűjtése?
           </h3>
           <p className="text-xs text-[#667085] mb-5">Hány palackot tudtok összegyűjteni a héten?</p>
 
@@ -131,7 +133,7 @@ export const GamificationTeaser: React.FC<GamificationTeaserProps> = ({
               value={calculatorBottles}
               onChange={(e) => setCalculatorBottles(Number(e.target.value))}
               aria-label="Palackok száma csúszka"
-              className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+              className="impact-slider w-full cursor-pointer accent-blue-600"
             />
 
             <div className="flex justify-between text-[11px] text-[#667085] font-mono">
@@ -150,7 +152,7 @@ export const GamificationTeaser: React.FC<GamificationTeaserProps> = ({
               +{calculatedAmount.toLocaleString('hu-HU')} Ft
             </div>
             <div className="text-[11px] text-blue-600 font-semibold mt-1">
-              = {calculatorBottles} × 50 Ft becslés · nem hitelesített kampányadat
+              {calculatorBottles} palack × 50 Ft
             </div>
           </div>
         </div>

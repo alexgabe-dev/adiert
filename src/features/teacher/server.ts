@@ -70,7 +70,18 @@ export async function requireTeacherAccount() {
 }
 export async function requireTeacher() {
   const session = await requireTeacherAccount();
-  if (!session.membership) redirect('/tanar/jelentkezes');
+  if (!session.membership) {
+    const { data: invitations, error: invitationError } = await session.client
+      .from('school_invitations')
+      .select('id')
+      .eq('email', session.user.email?.toLowerCase() ?? '')
+      .eq('status', 'pending')
+      .gt('expires_at', new Date().toISOString())
+      .limit(1);
+    if (invitationError) throw new Error('A meghívások nem tölthetők be.');
+    if (invitations?.length) redirect('/tanar/meghivasok');
+    redirect('/tanar/jelentkezes');
+  }
   const { data: school, error } = await session.client
     .from('schools')
     .select('id,name,city,postal_code,active')

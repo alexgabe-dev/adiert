@@ -14,14 +14,14 @@ export const LiveStatsBar: React.FC<LiveStatsBarProps> = ({ campaign, dataAvaila
   const progressPercentage =
     targetAmount > 0 ? Math.min(100, Math.round((approvedAmount / targetAmount) * 100)) : 0;
   return (
-    <section className="relative z-10 -mt-2 sm:-mt-4 mb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="relative z-10 -mt-2 sm:-mt-4 mb-16 max-w-7xl mx-auto px-4 sm:px-6 xl:px-8">
       <div
         id="campaign-stats-container"
         className="bg-white rounded-2xl md:rounded-3xl border border-[#E8ECF2] shadow-sm p-5 sm:p-7 md:p-8"
       >
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-0 lg:divide-x lg:divide-slate-100">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 xl:gap-0 xl:divide-x xl:divide-slate-100">
           {/* Stat 1: Összegyűjtött összeg */}
-          <div className="flex flex-col space-y-1.5 lg:px-6 first:lg:pl-0">
+          <div className="flex flex-col space-y-1.5 xl:px-6 first:xl:pl-0">
             <div className="flex items-center gap-2 text-xs font-semibold text-[#667085] uppercase tracking-wider">
               <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
                 <Coins className="w-4 h-4" />
@@ -37,7 +37,7 @@ export const LiveStatsBar: React.FC<LiveStatsBarProps> = ({ campaign, dataAvaila
           </div>
 
           {/* Stat 2: Visszaváltott palackok */}
-          <div className="flex flex-col space-y-1.5 lg:px-6">
+          <div className="flex flex-col space-y-1.5 xl:px-6">
             <div className="flex items-center gap-2 text-xs font-semibold text-[#667085] uppercase tracking-wider">
               <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
                 <Recycle className="w-4 h-4" />
@@ -51,7 +51,7 @@ export const LiveStatsBar: React.FC<LiveStatsBarProps> = ({ campaign, dataAvaila
           </div>
 
           {/* Stat 3: Résztvevő iskolák */}
-          <div className="flex flex-col space-y-1.5 lg:px-6">
+          <div className="flex flex-col space-y-1.5 xl:px-6">
             <div className="flex items-center gap-2 text-xs font-semibold text-[#667085] uppercase tracking-wider">
               <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
                 <SchoolIcon className="w-4 h-4" />
@@ -65,7 +65,7 @@ export const LiveStatsBar: React.FC<LiveStatsBarProps> = ({ campaign, dataAvaila
           </div>
 
           {/* Stat 4: Kampány célja with Progress Bar */}
-          <div className="flex flex-col space-y-2 lg:px-6 last:lg:pr-0">
+          <div className="flex flex-col space-y-2 xl:px-6 last:xl:pr-0">
             <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-2 text-xs font-semibold text-[#667085] uppercase tracking-wider">
                 <div className="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">

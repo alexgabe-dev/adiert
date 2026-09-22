@@ -89,14 +89,14 @@ export function AdminShell({ administrator, children }: AdminShellProps) {
   );
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] text-[#0B1535] lg:grid lg:grid-cols-[248px_1fr]">
+    <div className="min-h-screen bg-[#F7F9FC] text-[#0B1535] lg:grid lg:grid-cols-[248px_minmax(0,1fr)]">
       <aside className="hidden border-r border-[#E8ECF2] bg-white lg:fixed lg:inset-y-0 lg:flex lg:w-[248px] lg:flex-col">
         <div className="border-b border-[#E8ECF2] px-5 py-5">
           <Link href="/admin" className="text-lg font-extrabold tracking-tight">
             Ádiért Admin
           </Link>
         </div>
-        <div className="flex-1 overflow-y-auto p-3">{navigation}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto p-3">{navigation}</div>
         <div className="border-t border-[#E8ECF2] p-4">
           <p className="truncate text-sm font-bold">
             {administrator.displayName ?? administrator.email ?? 'Meghívott admin'}
@@ -114,12 +114,12 @@ export function AdminShell({ administrator, children }: AdminShellProps) {
         </div>
       </aside>
 
-      <div className="lg:col-start-2">
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[#E8ECF2] bg-white/95 px-4 backdrop-blur sm:px-6 lg:px-8">
+      <div className="min-w-0 lg:col-start-2">
+        <header className="sticky top-0 z-30 flex min-h-16 shrink-0 items-center gap-3 justify-between border-b border-[#E8ECF2] bg-white/95 px-4 backdrop-blur sm:px-6 lg:px-8">
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 lg:hidden"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 lg:hidden"
             aria-label="Navigáció megnyitása"
           >
             <Menu className="h-5 w-5" />
@@ -140,19 +140,19 @@ export function AdminShell({ administrator, children }: AdminShellProps) {
           onClose={() => setOpen(false)}
           className="mr-auto flex h-full max-w-[320px] flex-col rounded-2xl"
         >
-          <div className="flex h-16 items-center justify-between border-b border-[#E8ECF2] px-4">
+          <div className="flex min-h-16 shrink-0 items-center gap-3 justify-between border-b border-[#E8ECF2] px-4">
             <strong id={drawerTitleId}>Ádiért Admin</strong>
             <button
               data-autofocus
               type="button"
               onClick={() => setOpen(false)}
-              className="flex h-11 w-11 items-center justify-center rounded-xl"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
               aria-label="Bezárás"
             >
               <X className="h-5 w-5" />
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto p-3">{navigation}</div>
+          <div className="min-h-0 flex-1 overflow-y-auto p-3">{navigation}</div>
           <div className="border-t border-[#E8ECF2] p-4">
             <p className="truncate text-sm font-bold">
               {administrator.displayName ?? administrator.email}

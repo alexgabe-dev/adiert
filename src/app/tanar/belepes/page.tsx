@@ -1,10 +1,13 @@
 import { AuthScreen } from '@/components/teacher/AuthScreen';
+import { redirect } from 'next/navigation';
+import { teacherSession } from '@/features/teacher/server';
 export default async function Login({
   searchParams,
 }: {
   searchParams: Promise<{ mode?: string; error?: string }>;
 }) {
   const p = await searchParams;
+  if (!p.mode && !p.error && (await teacherSession())) redirect('/tanar');
   return (
     <>
       <AuthScreen mode={p.mode === 'reset' ? 'reset' : p.mode === 'resend' ? 'resend' : 'login'} />
