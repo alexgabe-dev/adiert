@@ -7,6 +7,7 @@ import { hasValidMutationOrigin } from '@/lib/security/origin';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { requireTeacherAccount, teacherEntryStatus } from './server';
 import { createPrivilegedSupabaseClient } from '@/lib/supabase/admin';
+import { authErrorMessage } from './auth-error';
 import { matchesPostalCity } from './registration-location';
 import { applicationSchema, friendlyError, type ActionState } from './shared';
 import { scheduleNotifications } from './notifications';
@@ -35,18 +36,22 @@ export async function teacherAuthAction(_state: ActionState, form: FormData): Pr
   const callback = new URL('/auth/callback', environment.SITE_URL);
   callback.searchParams.set('next', mode === 'reset' ? '/tanar/jelszo' : '/tanar');
   if (mode === 'reset') {
-    await client.auth.resetPasswordForEmail(email.data, { redirectTo: callback.toString() });
+    const { error } = await client.auth.resetPasswordForEmail(email.data, {
+      redirectTo: callback.toString(),
+    });
+    if (error) return { status: 'error', message: authErrorMessage(error) };
     return {
       status: 'success',
       message: 'Ha a címhez tartozik fiók, elküldtük a jelszó-visszaállító hivatkozást.',
     };
   }
   if (mode === 'resend') {
-    await client.auth.resend({
+    const { error } = await client.auth.resend({
       type: 'signup',
       email: email.data,
       options: { emailRedirectTo: callback.toString() },
     });
+    if (error) return { status: 'error', message: authErrorMessage(error) };
     return {
       status: 'success',
       message: 'Ha szükséges, új megerősítő üzenetet küldtünk. Ellenőrizd a levélszemét mappát is.',
@@ -93,12 +98,10 @@ export async function teacherAuthAction(_state: ActionState, form: FormData): Pr
         data: { school_registration: { ...details, city: school.city } },
       },
     });
-    if (error)
-      return {
-        status: 'error',
-        message:
-          'A regisztráció most nem sikerült. Ha van már fiókod, lépj be vagy kérj új jelszót.',
-      };
+    if (error) {
+      console.error('Teacher signup failed', { code: error.code, status: error.status });
+      return { status: 'error', message: authErrorMessage(error) };
+    }
     await client.auth.signOut();
     return {
       status: 'success',
