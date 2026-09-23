@@ -14,6 +14,15 @@ Configure these variables in each deployment environment:
 - `SUPABASE_SERVICE_ROLE_KEY`: server-only environment-specific service-role key.
 - `SUBMISSION_RATE_LIMIT_SECRET`: server-only HMAC secret of at least 32 random characters.
 
+For existing Vercel configurations, the server also accepts `NEXT_PUBLIC_SUPABASE_URL` and
+`NEXT_PUBLIC_SUPABASE_ANON_KEY` when their unprefixed counterparts are absent. Explicit server
+values take precedence. Never use a service-role key as the anon key or in a `NEXT_PUBLIC_*` variable.
+
+Vercel environment changes apply to new deployments: redeploy after adding a missing variable.
+React error #441 hides the underlying Server Component exception in production; inspect Vercel
+runtime logs for the actual cause. For example, `Invalid server Supabase configuration` followed by
+`SUPABASE_ANON_KEY` means the deployment has no valid anon-key binding, not a client rendering bug.
+
 No environment binding is referenced by browser code. Supabase configuration is loaded only from
 server modules; the production build scans browser assets and fails if a Supabase variable name or
 configured value appears there.
