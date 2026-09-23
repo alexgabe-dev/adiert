@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Check, LoaderCircle, MapPin, Search } from 'lucide-react';
 import { ActionForm, Field } from './ActionForm';
 import { teacherAuthAction } from '@/features/teacher/actions';
@@ -13,6 +13,8 @@ const normalize = (s: string) =>
     .toLowerCase();
 
 export function RegistrationForm() {
+  const searchRef = useRef<HTMLInputElement>(null);
+  const changeRef = useRef<HTMLButtonElement>(null);
   const [postal, setPostal] = useState('');
   const [city, setCity] = useState('');
   const [cities, setCities] = useState<string[]>([]);
@@ -156,62 +158,95 @@ export function RegistrationForm() {
         )}
         {activeCity && !loading && !error && (
           <div className="space-y-3">
-            <label htmlFor="registration-school-search" className="block text-sm font-semibold">
-              Iskola keresése · {activeCity}
-            </label>
-            <div className="relative">
-              <Search
-                className="pointer-events-none absolute left-3 top-4 size-4 text-slate-400"
-                aria-hidden="true"
-              />
-              <input
-                id="registration-school-search"
-                type="search"
-                className="field pl-10"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Kezdd el írni az iskola nevét"
-                autoComplete="off"
-              />
-            </div>
-            {selected && (
-              <div className="flex items-start gap-2 rounded-xl bg-blue-50 p-3 text-sm text-blue-900">
-                <Check className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-                <span>
-                  <strong>Kiválasztva:</strong> {selected.name}
-                </span>
-              </div>
-            )}
-            <fieldset className="max-h-64 space-y-2 overflow-y-auto overscroll-contain rounded-xl border border-slate-200 p-2">
-              <legend className="sr-only">Válaszd ki az iskoládat</legend>
-              {filtered.slice(0, 30).map((s) => (
-                <label
-                  key={s.id}
-                  className={`flex min-h-12 cursor-pointer items-start gap-3 rounded-lg p-3 text-sm leading-6 ${selected?.id === s.id ? 'bg-blue-50 text-blue-900' : 'hover:bg-slate-50'}`}
+            {selected ? (
+              <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
+                <div className="flex items-start gap-2 text-sm text-blue-950">
+                  <Check className="mt-0.5 size-5 shrink-0 text-blue-600" aria-hidden="true" />
+                  <div className="min-w-0">
+                    <p className="mb-1 text-xs font-medium text-blue-700">Kiválasztott iskola</p>
+                    <p className="break-words font-semibold leading-6">{selected.name}</p>
+                  </div>
+                </div>
+                <button
+                  ref={changeRef}
+                  type="button"
+                  className="mt-2 min-h-11 rounded-lg px-3 text-sm font-semibold text-blue-700 hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                  onClick={() => {
+                    setSelected(null);
+                    setSearch('');
+                    requestAnimationFrame(() => searchRef.current?.focus());
+                  }}
                 >
-                  <input
-                    className="mt-1.5 size-4 shrink-0 accent-blue-600"
-                    type="radio"
-                    name="school_choice"
-                    checked={selected?.id === s.id}
-                    onChange={() => setSelected(s)}
-                  />
-                  <span>{s.name}</span>
+                  Másik iskolát választok
+                </button>
+              </div>
+            ) : (
+              <>
+                <label htmlFor="registration-school-search" className="block text-sm font-semibold">
+                  Iskola keresése · {activeCity}
                 </label>
-              ))}
-              {!filtered.length && (
-                <p className="p-3 text-sm leading-6 text-slate-500">
-                  {schools.length
-                    ? 'Nincs ilyen nevű iskola. Próbálj rövidebb névrészletet.'
-                    : 'Ehhez a településhez még nincs választható általános iskola. Ellenőrizd az irányítószámot, vagy jelezd a szervezőknek: info@adiert.hu.'}
+                <div className="relative">
+                  <Search
+                    className="pointer-events-none absolute left-3 top-4 size-4 text-slate-400"
+                    aria-hidden="true"
+                  />
+                  <input
+                    ref={searchRef}
+                    id="registration-school-search"
+                    type="search"
+                    className="field pl-10"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Írd be az iskola nevének egy részét"
+                    autoComplete="off"
+                    aria-describedby="school-search-help"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') e.preventDefault();
+                    }}
+                  />
+                </div>
+                <p
+                  id="school-search-help"
+                  className="text-xs leading-5 text-slate-500"
+                  role="status"
+                >
+                  {!schools.length
+                    ? 'Ehhez a településhez még nincs választható általános iskola. Ellenőrizd az irányítószámot, vagy jelezd a szervezőknek: info@adiert.hu.'
+                    : !search.trim()
+                      ? 'Kereshetsz névrészletre is, például: Petőfi.'
+                      : filtered.length > 20
+                        ? `${filtered.length} találat. Az első 20 látható; írj be hosszabb névrészletet a szűkítéshez.`
+                        : `${filtered.length} találat.`}
                 </p>
-              )}
-            </fieldset>
-            <p className="text-xs text-slate-500" aria-live="polite">
-              {filtered.length > 30
-                ? `${filtered.length} találat. Az első 30 látható; pontosíts a néven.`
-                : `${filtered.length} iskola a településen a keresésed alapján.`}
-            </p>
+                {search.trim() && schools.length > 0 && (
+                  <div
+                    className="max-h-64 space-y-1 overflow-y-auto overscroll-contain rounded-xl border border-slate-200 p-1"
+                    aria-label="Talált iskolák"
+                  >
+                    {filtered.slice(0, 20).map((school) => (
+                      <button
+                        key={school.id}
+                        type="button"
+                        className="block min-h-12 w-full rounded-lg px-3 py-3 text-left text-sm leading-6 break-words hover:bg-blue-50 active:bg-blue-100 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600"
+                        onClick={() => {
+                          setSelected(school);
+                          requestAnimationFrame(() =>
+                            changeRef.current?.focus({ preventScroll: true }),
+                          );
+                        }}
+                      >
+                        {school.name}
+                      </button>
+                    ))}
+                    {!filtered.length && (
+                      <p className="p-3 text-sm leading-6 text-slate-500">
+                        Nincs ilyen nevű iskola. Próbálj rövidebb névrészletet.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
           </div>
         )}
       </fieldset>

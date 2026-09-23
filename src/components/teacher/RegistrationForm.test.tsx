@@ -24,23 +24,30 @@ describe('registration school selection', () => {
     const submit = screen.getByRole('button', { name: 'Regisztráció beküldése' });
     expect(submit).toBeDisabled();
     await user.type(screen.getByLabelText('Irányítószám'), '4400');
-    await screen.findByRole('radio', { name: 'Arany János Iskola' });
+    await screen.findByRole('searchbox');
+    expect(screen.queryByRole('button', { name: 'Arany János Iskola' })).not.toBeInTheDocument();
     await user.type(screen.getByRole('searchbox'), 'arany');
-    expect(screen.queryByRole('radio', { name: 'Petőfi Iskola' })).not.toBeInTheDocument();
-    await user.click(screen.getByRole('radio', { name: 'Arany János Iskola' }));
+    expect(screen.queryByRole('button', { name: 'Petőfi Iskola' })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Arany János Iskola' }));
     expect(submit).toBeEnabled();
+    expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
+    expect(screen.getByText('Arany János Iskola')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Másik iskolát választok' }));
+    expect(submit).toBeDisabled();
+    await user.type(screen.getByRole('searchbox'), 'petofi');
+    await user.click(screen.getByRole('button', { name: 'Petőfi Iskola' }));
+    expect(submit).toBeEnabled();
+    expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
     await user.clear(screen.getByLabelText('Irányítószám'));
     expect(submit).toBeDisabled();
-    expect(screen.queryByText('Kiválasztva:')).not.toBeInTheDocument();
+    expect(screen.queryByText('Kiválasztott iskola')).not.toBeInTheDocument();
   });
 
   it('requires a town choice when the postal code belongs to multiple towns', async () => {
-    const fetcher = vi
-      .fn()
-      .mockResolvedValue({
-        ok: true,
-        json: async () => ({ cities: ['Település A', 'Település B'], schools: [] }),
-      });
+    const fetcher = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ cities: ['Település A', 'Település B'], schools: [] }),
+    });
     vi.stubGlobal('fetch', fetcher);
     const user = userEvent.setup();
     render(<RegistrationForm />);
