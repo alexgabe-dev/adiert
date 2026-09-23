@@ -13,7 +13,7 @@ export function HowItWorksSection() {
             Palack-visszaváltás lépésről lépésre
           </p>
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            Kétféle automata. Egy közös cél.
+            Neked csupán egy palack, de Ádinak hatalmas segítség.
           </h2>
           <p className="mt-4 text-lg text-slate-600">
             A helyes sorrenddel a visszaváltási díj Ádit támogatja, a lefotózott darabszám pedig az
