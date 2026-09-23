@@ -9,8 +9,8 @@ export function SchoolRegisterModal({ isOpen, onClose }: { isOpen: boolean; onCl
         Csatlakoztasd az iskoládat!
       </h2>
       <p className="my-4 text-sm text-slate-600">
-        Hozz létre saját fiókot, erősítsd meg az e-mail-címedet, majd add meg az iskola és a
-        kapcsolattartó adatait. A szervezők döntéséről e-mailt kapsz.
+        A regisztrációnál irányítószám alapján válaszd ki az iskolát, majd add meg a kapcsolattartó
+        adatait. A szervezők döntéséről e-mailt kapsz.
       </p>
       <Link
         href="/tanar/regisztracio"

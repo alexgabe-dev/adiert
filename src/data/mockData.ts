@@ -27,7 +27,7 @@ export const FAQS: FaqItem[] = [
     category: 'Iskoláknak',
     question: 'Hogyan regisztrálhat az iskola?',
     answer:
-      'Az Iskolai regisztráció gombbal hozz létre saját fiókot, erősítsd meg az e-mail-címedet, majd add meg az iskola és a kapcsolattartó adatait. A szervezők jóváhagyásáról e-mailt kapsz. Ezután az iskola adminjaként legfeljebb 10 további tanárt hívhatsz meg.',
+      'A regisztrációnál add meg az iskola irányítószámát, válaszd ki a települést és az iskolát, majd töltsd ki a kapcsolattartói adataidat. Erősítsd meg az e-mail-címedet; a tanári felületre csak a jóváhagyás után léphetsz be. A szervezők jóváhagyásáról e-mailt kapsz. Ezután az iskola adminjaként legfeljebb 10 további tanárt hívhatsz meg.',
   },
   {
     id: 'faq-5',

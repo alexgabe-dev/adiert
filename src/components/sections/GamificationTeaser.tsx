@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { Calculator, CheckCircle, Sparkles } from 'lucide-react';
 
 interface GamificationTeaserProps {
@@ -103,6 +104,14 @@ export const GamificationTeaser: React.FC<GamificationTeaserProps> = ({
               később kerülnek hozzá.
             </p>
           </div>
+          <Image
+            src="/pics/palack2.png"
+            alt="Összegyűjtött palackok egy kék gyűjtőben, az iskola előtt"
+            width={1536}
+            height={1024}
+            sizes="(min-width: 640px) 512px, calc(100vw - 32px)"
+            className="mx-auto mt-6 block h-auto w-full max-w-lg object-contain"
+          />
         </div>
 
         {/* Right: Interactive School / Class Calculator */}

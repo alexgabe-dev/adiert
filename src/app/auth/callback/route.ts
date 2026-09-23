@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { teacherEntryStatus } from '@/features/teacher/server';
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
@@ -9,6 +10,18 @@ export async function GET(request: NextRequest) {
   if (!code || !client || (await client.auth.exchangeCodeForSession(code)).error) {
     login.searchParams.set('error', 'invalid_callback');
     return NextResponse.redirect(login);
+  }
+  if (teacher && url.searchParams.get('next') !== '/tanar/jelszo') {
+    const {
+      data: { user },
+    } = await client.auth.getUser();
+    if (!user) return NextResponse.redirect(login);
+    const status = await teacherEntryStatus(client, user);
+    if (['pending', 'rejected', 'paused'].includes(status)) {
+      await client.auth.signOut();
+      login.searchParams.set('status', status);
+      return NextResponse.redirect(login);
+    }
   }
   if (teacher)
     return NextResponse.redirect(

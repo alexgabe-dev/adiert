@@ -1,6 +1,43 @@
 import 'server-only';
 import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import type { SupabaseClient, User } from '@supabase/supabase-js';
+
+export async function teacherEntryStatus(client: SupabaseClient, user: User) {
+  const { data: membership, error } = await client
+    .from('school_memberships')
+    .select('school_id,active')
+    .eq('user_id', user.id)
+    .maybeSingle();
+  if (error) throw new Error('A hozzáférés nem ellenőrizhető.');
+  if (membership) {
+    if (!membership.active) return 'paused';
+    const { data: school, error: schoolError } = await client
+      .from('schools')
+      .select('active')
+      .eq('id', membership.school_id)
+      .maybeSingle();
+    if (schoolError) throw new Error('Az iskola állapota nem ellenőrizhető.');
+    return school?.active ? 'approved' : 'paused';
+  }
+  const { data: invites, error: inviteError } = await client
+    .from('school_invitations')
+    .select('id')
+    .eq('email', user.email?.toLowerCase() ?? '')
+    .eq('status', 'pending')
+    .gt('expires_at', new Date().toISOString())
+    .limit(1);
+  if (inviteError) throw new Error('A meghívások nem ellenőrizhetők.');
+  if (invites?.length) return 'invited';
+  const { data: application, error: applicationError } = await client
+    .from('school_applications')
+    .select('status')
+    .eq('user_id', user.id)
+    .maybeSingle();
+  if (applicationError) throw new Error('A jelentkezés nem ellenőrizhető.');
+  if (application?.status === 'approved') return 'paused';
+  return application?.status ?? 'missing';
+}
 
 export interface Membership {
   user_id: string;

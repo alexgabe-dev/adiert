@@ -5,7 +5,9 @@ import { z } from 'zod';
 import { environment } from '@/lib/env';
 import { hasValidMutationOrigin } from '@/lib/security/origin';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
-import { requireTeacherAccount } from './server';
+import { requireTeacherAccount, teacherEntryStatus } from './server';
+import { createPrivilegedSupabaseClient } from '@/lib/supabase/admin';
+import { matchesPostalCity } from './registration-location';
 import { applicationSchema, friendlyError, type ActionState } from './shared';
 import { scheduleNotifications } from './notifications';
 
@@ -53,10 +55,43 @@ export async function teacherAuthAction(_state: ActionState, form: FormData): Pr
   if (password.length < 10 || password.length > 128)
     return { status: 'error', message: 'A jelszó 10–128 karakter hosszú legyen.' };
   if (mode === 'signup') {
+    const registration = z
+      .object({
+        school_id: z.uuid(),
+        postal_code: z.string().regex(/^\d{4}$/),
+        city: z.string().trim().min(2).max(120),
+        contact_name: z.string().trim().min(2).max(120),
+      })
+      .safeParse(Object.fromEntries(form));
+    if (!registration.success)
+      return { status: 'error', message: 'Válaszd ki az iskoládat, és add meg a teljes nevedet.' };
+    const details = registration.data;
+    if (!matchesPostalCity(details.postal_code, details.city))
+      return {
+        status: 'error',
+        message: 'Az irányítószám és a település nem egyezik. Válaszd ki újra az iskolát.',
+      };
+    const catalog = createPrivilegedSupabaseClient();
+    if (!catalog) return { status: 'error', message: 'Az iskolák adatai most nem érhetők el.' };
+    const { data: school, error: schoolError } = await catalog
+      .from('schools')
+      .select('id,city')
+      .eq('id', details.school_id)
+      .eq('active', true)
+      .or('type.eq.primary_school,and(type.eq.other,import_key.not.is.null)')
+      .maybeSingle();
+    if (schoolError || !school || !matchesPostalCity(details.postal_code, school.city))
+      return {
+        status: 'error',
+        message: 'Az iskola nem tartozik a kiválasztott településhez, vagy már nem választható.',
+      };
     const { error } = await client.auth.signUp({
       email: email.data,
       password,
-      options: { emailRedirectTo: callback.toString() },
+      options: {
+        emailRedirectTo: callback.toString(),
+        data: { school_registration: { ...details, city: school.city } },
+      },
     });
     if (error)
       return {
@@ -64,19 +99,38 @@ export async function teacherAuthAction(_state: ActionState, form: FormData): Pr
         message:
           'A regisztráció most nem sikerült. Ha van már fiókod, lépj be vagy kérj új jelszót.',
       };
+    await client.auth.signOut();
     return {
       status: 'success',
       message:
-        'Nézd meg a postaládádat! Erősítsd meg az e-mail-címedet, majd add meg az iskolád adatait. Ha már regisztráltál, lépj be.',
+        'Nézd meg a postaládádat, és erősítsd meg az e-mail-címedet. Új regisztráció esetén az iskolai jelentkezésedet is elmentettük. A tanári felületre jóváhagyás után léphetsz be. Ha már van fiókod, használd a belépést.',
     };
   }
   if (mode !== 'login') return { status: 'error', message: 'Érvénytelen művelet.' };
-  const { error } = await client.auth.signInWithPassword({ email: email.data, password });
+  const { data: loginData, error } = await client.auth.signInWithPassword({
+    email: email.data,
+    password,
+  });
   if (error)
     return {
       status: 'error',
       message: 'Nem sikerült belépni. Ellenőrizd az adatokat és az e-mail-cím megerősítését.',
     };
+  if (loginData.user) {
+    const status = await teacherEntryStatus(client, loginData.user);
+    if (['pending', 'rejected', 'paused'].includes(status)) {
+      await client.auth.signOut();
+      return {
+        status: 'error',
+        message:
+          status === 'pending'
+            ? 'A jelentkezésed még jóváhagyásra vár. Az elfogadásról e-mailben értesítünk; utána tudsz belépni.'
+            : status === 'rejected'
+              ? 'A jelentkezésedet nem fogadtuk el. A részleteket az értesítő e-mailben találod.'
+              : 'Az iskolai hozzáférésed jelenleg szünetel. Egyeztess az iskola adminjával.',
+      };
+    }
+  }
   redirect('/tanar');
 }
 export async function teacherSignOut() {

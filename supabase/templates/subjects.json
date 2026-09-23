@@ -1,0 +1,10 @@
+{
+  "confirmation": "Erősítsd meg az e-mail-címedet — Ádiért",
+  "recovery": "Új jelszó beállítása — Ádiért",
+  "magic_link": "Belépési hivatkozásod — Ádiért",
+  "invite": "Meghívást kaptál — Ádiért",
+  "email_change": "E-mail-cím módosításának megerősítése — Ádiért",
+  "reauthentication": "Biztonsági megerősítő kódod — Ádiért",
+  "password_changed_notification": "Megváltozott a jelszavad — Ádiért",
+  "email_changed_notification": "Megváltozott az e-mail-címed — Ádiért"
+}

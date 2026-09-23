@@ -49,3 +49,27 @@ enable_confirmations = true
 
 [analytics]
 enabled = false
+
+[auth.email.template.confirmation]
+subject = "Erősítsd meg az e-mail-címedet — Ádiért"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.recovery]
+subject = "Új jelszó beállítása — Ádiért"
+content_path = "./supabase/templates/recovery.html"
+
+[auth.email.template.magic_link]
+subject = "Belépési hivatkozásod — Ádiért"
+content_path = "./supabase/templates/magic_link.html"
+
+[auth.email.template.invite]
+subject = "Meghívást kaptál — Ádiért"
+content_path = "./supabase/templates/invite.html"
+
+[auth.email.template.email_change]
+subject = "E-mail-cím módosításának megerősítése — Ádiért"
+content_path = "./supabase/templates/email_change.html"
+
+[auth.email.template.reauthentication]
+subject = "Biztonsági megerősítő kódod — Ádiért"
+content_path = "./supabase/templates/reauthentication.html"

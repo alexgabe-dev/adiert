@@ -12,7 +12,8 @@ create schema auth;
 create table auth.users (
   id uuid primary key,
   email text unique,
-  email_confirmed_at timestamptz
+  email_confirmed_at timestamptz,
+  raw_user_meta_data jsonb
 );
 
 create function auth.uid()

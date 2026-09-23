@@ -1,11 +1,14 @@
 import Link from 'next/link';
+import { RegistrationForm } from './RegistrationForm';
 import { ArrowLeft, ArrowRight, Heart, KeyRound, Mail, ShieldCheck } from 'lucide-react';
 import { ActionForm, Field } from './ActionForm';
 import { teacherAuthAction } from '@/features/teacher/actions';
 export function AuthScreen({
   mode = 'login',
+  notice,
 }: {
   mode?: 'login' | 'signup' | 'reset' | 'update_password' | 'resend';
+  notice?: string;
 }) {
   const titles = {
     login: 'Tanári belépés',
@@ -37,7 +40,7 @@ export function AuthScreen({
                 {
                   login: 'Lépj be, és folytasd az iskolád gyűjtését.',
                   signup:
-                    'Hozd létre a saját fiókodat. Az e-mail-címed megerősítése után csatlakozhatsz az iskoládhoz.',
+                    'Válaszd ki az iskoládat, és add meg a kapcsolattartó adatait. A jelentkezést a szervezők ellenőrzik.',
                   reset: 'Elküldjük e-mailben a jelszó-visszaállításhoz szükséges hivatkozást.',
                   resend:
                     'Add meg a regisztrációnál használt címed, és új megerősítő levelet küldünk.',
@@ -45,33 +48,43 @@ export function AuthScreen({
                 }[mode]
               }
             </p>
-            <ActionForm
-              action={teacherAuthAction}
-              label={
-                mode === 'login'
-                  ? 'Belépek'
-                  : mode === 'signup'
-                    ? 'Fiók létrehozása'
+            {notice && (
+              <p
+                role="status"
+                className="mb-6 rounded-xl bg-blue-50 p-4 text-sm leading-6 text-blue-950"
+              >
+                {notice}
+              </p>
+            )}
+            {mode === 'signup' ? (
+              <RegistrationForm />
+            ) : (
+              <ActionForm
+                action={teacherAuthAction}
+                label={
+                  mode === 'login'
+                    ? 'Belépek'
                     : mode === 'update_password'
                       ? 'Jelszó mentése'
                       : 'E-mail küldése'
-              }
-            >
-              <input type="hidden" name="mode" value={mode} />
-              {mode !== 'update_password' && (
-                <Field label="E-mail-cím" name="email" type="email" autoComplete="email" />
-              )}
-              {['login', 'signup', 'update_password'].includes(mode) && (
-                <Field
-                  label={mode === 'login' ? 'Jelszó' : 'Jelszó (legalább 10 karakter)'}
-                  name="password"
-                  type="password"
-                  minLength={10}
-                  maxLength={128}
-                  autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                />
-              )}
-            </ActionForm>
+                }
+              >
+                <input type="hidden" name="mode" value={mode} />
+                {mode !== 'update_password' && (
+                  <Field label="E-mail-cím" name="email" type="email" autoComplete="email" />
+                )}
+                {['login', 'update_password'].includes(mode) && (
+                  <Field
+                    label={mode === 'login' ? 'Jelszó' : 'Jelszó (legalább 10 karakter)'}
+                    name="password"
+                    type="password"
+                    minLength={10}
+                    maxLength={128}
+                    autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                  />
+                )}
+              </ActionForm>
+            )}
             {mode === 'login' ? (
               <div className="mt-6 border-t border-slate-100 pt-6">
                 <p className="mb-3 text-center text-sm text-slate-500">Most csatlakozol először?</p>
