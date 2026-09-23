@@ -1,8 +1,22 @@
+import { DonationQr } from '@/components/ui/DonationQr';
 import { RETURN_METHODS } from '@/data/returnProcess';
 
 export function ReturnMethods({ compact = false }: { compact?: boolean }) {
   return (
     <div>
+      <div className="mb-6 grid min-w-0 gap-4 rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-center">
+        <div>
+          <h3 className="text-xl font-bold">Legyen nálad Ádi QR-kódja.</h3>
+          <p className="mt-3 text-sm leading-6 text-slate-600">
+            Ezt a kódot olvastasd be a REpont automatával. Előre is letöltheted a telefonodra, vagy
+            megnyithatod nagyban.
+          </p>
+          <p className="mt-3 text-sm leading-6 text-slate-700">
+            Sikeres beolvasás után ezt kell látnod: <strong>„Szia Alapítvány”</strong>.
+          </p>
+        </div>
+        <DonationQr />
+      </div>
       <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm leading-relaxed text-amber-950">
         <p className="font-bold">Fontos: automatától függően kétféle sorrend lehetséges.</p>
         <p className="mt-2">

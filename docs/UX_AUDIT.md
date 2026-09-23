@@ -67,7 +67,7 @@ Nem volt csatlakoztatott böngésző. Emiatt tényleges telefonos megjelenés, k
 
 A valódi regisztrációs e-mail kézbesítése és a levélből történő megerősítés nem lett végigtesztelve. A csatlakozási próbákhoz előre megerősített, ideiglenes tesztfiókok készültek. A rendszer döntési értesítéseit a küldési sorban ellenőriztük; valódi kézbesítéshez a levélküldés beállítása szükséges.
 
-A hivatalos REpont QR-kód továbbra is hiányzik. Enélkül az oldalról induló adományozási folyamat nem teljes. Jogi dokumentumot nem találtunk, és nem helyettesítettük kitalált tartalommal.
+Frissítés (2026. szeptember 23.): a megadott QR-kód elérhető a `public/qrcode/adiert-qr.png` fájlban. Megjelenik a visszaváltási útmutatóban, a tanári súgóban és az iskolai szekcióban; a `/qr-kod` oldal nagy nézetet, a letöltés offline hozzáférést ad. A képet változatlan PNG-ként, széles fehér margóval jelenítjük meg. Valódi automatás beolvasási próba nem történt. Jogi dokumentumot nem találtunk, és nem helyettesítettük kitalált tartalommal.
 
 ## Mobilos finomítások — 2026. szeptember 22.
 

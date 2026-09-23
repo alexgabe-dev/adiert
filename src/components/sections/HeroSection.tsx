@@ -74,13 +74,15 @@ export function HeroSection({ participatingSchoolCount, dataAvailable }: HeroSec
               <p className="mt-1 text-sm text-white/90">11 éves</p>
             </div>
           </div>
-          <figcaption className="absolute right-4 -bottom-1 max-w-[calc(100%-2rem)] flex items-center gap-3 rounded-2xl border border-blue-100 bg-white px-5 py-4 shadow-lg sm:right-6">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
-              <Heart className="h-5 w-5" aria-hidden="true" />
+          <figcaption className="absolute right-3 bottom-0 max-w-[calc(100%-1.5rem)] flex items-center gap-2 rounded-xl border border-blue-100 bg-white px-3 py-2.5 shadow-md sm:right-6 sm:-bottom-1 sm:gap-3 sm:rounded-2xl sm:px-5 sm:py-4 sm:shadow-lg">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600 sm:h-10 sm:w-10">
+              <Heart className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
             </span>
             <div>
-              <p className="text-sm font-bold">A palackod is segítség.</p>
-              <p className="mt-0.5 text-xs text-slate-500">Sok apró lépés, egy közös cél.</p>
+              <p className="text-xs font-bold sm:text-sm">A palackod is segítség.</p>
+              <p className="mt-0.5 text-[11px] leading-4 text-slate-500 sm:text-xs">
+                Sok apró lépés, egy közös cél.
+              </p>
             </div>
           </figcaption>
         </figure>

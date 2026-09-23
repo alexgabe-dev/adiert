@@ -1,8 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 import { ArrowRight, Check, Copy, QrCode } from 'lucide-react';
+import { DonationQr } from '@/components/ui/DonationQr';
 
 export function QrCodeCtaSection() {
   const [copied, setCopied] = useState(false);
@@ -19,7 +21,7 @@ export function QrCodeCtaSection() {
   return (
     <section id="iskolaknak" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24 lg:px-8">
       <div className="grid overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 lg:grid-cols-[1.2fr_1fr]">
-        <div className="p-6 sm:p-10">
+        <div className="flex min-w-0 flex-col p-6 sm:p-10">
           <p className="text-xs font-bold tracking-widest text-blue-600 uppercase">Iskoláknak</p>
           <h2 className="mt-3 text-3xl font-extrabold tracking-tight">
             Csatlakozzatok a gyűjtéshez
@@ -43,6 +45,16 @@ export function QrCodeCtaSection() {
               Már van fiókom
             </Link>
           </div>
+          <div className="mt-8 flex flex-1 items-end sm:mt-10">
+            <Image
+              src="/pics/palack1.png"
+              alt="Diákok palackokat gyűjtenek az iskolájuk előtt"
+              width={1536}
+              height={1024}
+              sizes="(min-width: 1280px) 580px, (min-width: 1024px) 50vw, (min-width: 640px) 512px, calc(100vw - 80px)"
+              className="mx-auto block h-auto w-full max-w-lg object-contain mix-blend-multiply lg:max-w-none"
+            />
+          </div>
         </div>
         <div className="border-t border-slate-200 bg-white p-6 sm:p-10 lg:border-t-0 lg:border-l">
           <QrCode className="size-7 text-blue-600" aria-hidden="true" />
@@ -51,12 +63,12 @@ export function QrCodeCtaSection() {
             Az adományozáshoz Ádi hivatalos REpont QR-kódja szükséges. Beolvasás után az automata
             kijelzőjén a „Szia Alapítvány” feliratot kell látnod.
           </p>
-          <p
-            role="status"
-            className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950"
-          >
-            A hivatalos QR-kód még nincs feltöltve. Az oldalon jelenleg nem tölthető le
-            visszaváltáshoz használható kód.
+          <div className="mt-5">
+            <DonationQr />
+          </div>
+          <p className="mt-4 text-sm leading-6 text-slate-600">
+            Indulás előtt mentsd el a kódot, így internet nélkül is meg tudod mutatni az
+            automatánál.
           </p>
           <button
             type="button"
