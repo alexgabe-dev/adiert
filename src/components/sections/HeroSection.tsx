@@ -71,7 +71,7 @@ export function HeroSection({ participatingSchoolCount, dataAvailable }: HeroSec
             <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-slate-950/55 to-transparent" />
             <div className="absolute right-6 bottom-9 left-6 text-white">
               <p className="text-3xl font-extrabold tracking-tight">Major Ádám</p>
-              <p className="mt-1 text-sm text-white/90">Akiért most összefogunk.</p>
+              <p className="mt-1 text-sm text-white/90">11 éves</p>
             </div>
           </div>
           <figcaption className="absolute right-4 -bottom-1 max-w-[calc(100%-2rem)] flex items-center gap-3 rounded-2xl border border-blue-100 bg-white px-5 py-4 shadow-lg sm:right-6">
