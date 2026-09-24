@@ -1,6 +1,7 @@
 'use client';
 
 import { useId, useState } from 'react';
+import { useFormStatus } from 'react-dom';
 
 import { inviteAdministratorAction } from '@/features/admin/control-actions';
 import type { AdministratorRole } from '@/lib/auth/roles';
@@ -95,15 +96,23 @@ export function AdministratorInviteForm() {
             >
               Mégse
             </button>
-            <button
-              type="submit"
-              className={`min-h-11 rounded-xl px-4 text-sm font-extrabold text-white ${role === 'super_admin' ? 'bg-rose-600 hover:bg-rose-700' : 'bg-blue-600 hover:bg-blue-700'}`}
-            >
-              Meghívás és jogosultság
-            </button>
+            <InviteSubmit role={role} />
           </form>
         </ModalDialog>
       ) : null}
     </>
+  );
+}
+
+function InviteSubmit({ role }: { role: AdministratorRole }) {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className={`min-h-11 rounded-xl px-4 text-sm font-extrabold text-white disabled:cursor-wait disabled:opacity-60 ${role === 'super_admin' ? 'bg-rose-600 hover:bg-rose-700' : 'bg-blue-600 hover:bg-blue-700'}`}
+    >
+      {pending ? 'Meghívó küldése…' : 'Meghívás és jogosultság'}
+    </button>
   );
 }

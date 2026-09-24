@@ -20,14 +20,24 @@ for (const [name, subject] of Object.entries(subjects)) {
     'Email',
     ...(name === 'email_change' ? ['NewEmail'] : []),
     ...(name === 'email_changed_notification' ? ['OldEmail'] : []),
-    ...(name === 'reauthentication' ? ['Token'] : ['ConfirmationURL']),
+    ...(name === 'reauthentication'
+      ? ['Token']
+      : name === 'invite'
+        ? ['SiteURL', 'TokenHash']
+        : ['ConfirmationURL']),
   ]);
   for (const token of html.matchAll(/{{\s*\.(\w+)\s*}}/g))
     assert.ok(allowed.has(token[1]), `Unsupported variable in ${name}`);
   const links = [...document.querySelectorAll('a')];
   if (!name.endsWith('_notification') && name !== 'reauthentication') {
     assert.equal(links.length, 2, 'Action button plus fallback link');
-    for (const link of links) assert.equal(link.getAttribute('href'), '{{ .ConfirmationURL }}');
+    for (const link of links)
+      assert.equal(
+        link.getAttribute('href'),
+        name === 'invite'
+          ? '{{ .SiteURL }}/admin/meghivas?token={{ .TokenHash }}'
+          : '{{ .ConfirmationURL }}',
+      );
   }
   if (name === 'reauthentication') assert.ok(html.includes('{{ .Token }}'));
   patch[`mailer_subjects_${name}`] = subject;

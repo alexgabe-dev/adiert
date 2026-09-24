@@ -114,7 +114,7 @@
                   <tr>
                     <td style="padding: 24px 0">
                       <a
-                        href="{{ .ConfirmationURL }}"
+                        href="{{ .SiteURL }}/admin/meghivas?token={{ .TokenHash }}"
                         class="button"
                         style="
                           display: inline-block;
@@ -171,9 +171,9 @@
                         "
                       >
                         <a
-                          href="{{ .ConfirmationURL }}"
+                          href="{{ .SiteURL }}/admin/meghivas?token={{ .TokenHash }}"
                           style="color: #246bfd; text-decoration: underline; word-break: break-all"
-                          >{{ .ConfirmationURL }}</a
+                          >{{ .SiteURL }}/admin/meghivas?token={{ .TokenHash }}</a
                         >
                       </p>
                     </td>

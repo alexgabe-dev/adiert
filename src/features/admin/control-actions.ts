@@ -344,7 +344,17 @@ async function findAuthUserByEmail(
 ) {
   for (let page = 1; page <= 10; page += 1) {
     const { data, error } = await privileged.auth.admin.listUsers({ page, perPage: 100 });
-    if (error) return null;
+    if (error) {
+      console.error('administrator_invitation_lookup_failed', {
+        code: error.code,
+        status: error.status,
+      });
+      redirectWith(
+        '/admin/adminisztratorok',
+        'error',
+        'A felhasználói fiókok nem érhetők el. Ellenőrizd a szerver Supabase-beállításait, majd próbáld újra.',
+      );
+    }
     const match = data.users.find(
       (user) => user.email?.toLocaleLowerCase('hu-HU') === email.toLocaleLowerCase('hu-HU'),
     );
@@ -356,7 +366,10 @@ async function findAuthUserByEmail(
 
 export async function inviteAdministratorAction(formData: FormData) {
   const parsed = z.object({ email: z.email(), role: z.enum(administratorRoles) }).safeParse({
-    email: formData.get('email'),
+    email:
+      typeof formData.get('email') === 'string'
+        ? String(formData.get('email')).trim().toLowerCase()
+        : '',
     role: formData.get('role'),
   });
   const client = await mutationClient('super_admin');
@@ -372,7 +385,17 @@ export async function inviteAdministratorAction(formData: FormData) {
         redirectTo: callbackUrl,
       });
   const user = existingUser ?? invitation?.data.user ?? null;
-  if (!user) redirectWith('/admin/adminisztratorok', 'error', 'A meghívás most nem küldhető el.');
+  if (!user) {
+    const error = invitation?.error;
+    console.error('administrator_invitation_failed', { code: error?.code, status: error?.status });
+    const message =
+      error?.status === 429
+        ? 'Túl sok meghívást küldtünk rövid idő alatt. Várj néhány percet, majd próbáld újra.'
+        : error?.code === 'email_address_invalid' || error?.code === 'email_address_not_authorized'
+          ? 'Erre az e-mail-címre nem küldhető meghívó. Ellenőrizd a címet és a levélküldési beállításokat.'
+          : 'A meghívólevelet nem sikerült elküldeni. Próbáld újra később; ha ismét elakad, ellenőrizd a Supabase levélküldési beállításait.';
+    redirectWith('/admin/adminisztratorok', 'error', message);
+  }
   const { error } = await client.rpc('admin_manage_administrator', {
     requested_user_id: user.id,
     requested_role: parsed.data.role,

@@ -218,6 +218,49 @@ describe('admin control actions', () => {
     expect(dependencies.rpc).not.toHaveBeenCalled();
   });
 
+  it('stops when the account lookup fails instead of treating the address as a new user', async () => {
+    dependencies.createPrivilegedSupabaseClient.mockReturnValue({
+      auth: { admin: dependencies },
+    });
+    dependencies.listUsers.mockResolvedValue({
+      data: { users: [] },
+      error: { code: 'bad_jwt', status: 401 },
+    });
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const data = new FormData();
+    data.set('email', 'new@example.test');
+    data.set('role', 'super_admin');
+    await expect(inviteAdministratorAction(data)).rejects.toThrow('REDIRECT:');
+    const url = new URL(dependencies.redirect.mock.calls.at(-1)![0], 'https://example.test');
+    expect(url.searchParams.get('error')).toContain('Supabase');
+    expect(dependencies.inviteUserByEmail).not.toHaveBeenCalled();
+    expect(dependencies.rpc).not.toHaveBeenCalled();
+    log.mockRestore();
+  });
+
+  it('normalizes the email and explains a sending limit without granting access', async () => {
+    dependencies.createPrivilegedSupabaseClient.mockReturnValue({
+      auth: { admin: dependencies },
+    });
+    dependencies.inviteUserByEmail.mockResolvedValue({
+      data: { user: null },
+      error: { code: 'over_email_send_rate_limit', status: 429 },
+    });
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const data = new FormData();
+    data.set('email', '  NEW@example.test  ');
+    data.set('role', 'super_admin');
+    await expect(inviteAdministratorAction(data)).rejects.toThrow('REDIRECT:');
+    expect(dependencies.inviteUserByEmail).toHaveBeenCalledWith(
+      'new@example.test',
+      expect.anything(),
+    );
+    const url = new URL(dependencies.redirect.mock.calls.at(-1)![0], 'https://example.test');
+    expect(url.searchParams.get('error')).toContain('Várj néhány percet');
+    expect(dependencies.rpc).not.toHaveBeenCalled();
+    log.mockRestore();
+  });
+
   it('removes a newly invited Auth user if the transactional role operation fails', async () => {
     dependencies.createPrivilegedSupabaseClient.mockReturnValue({
       auth: {

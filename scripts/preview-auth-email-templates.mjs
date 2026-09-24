@@ -16,6 +16,8 @@ for (const [name, subject] of Object.entries(subjects)) {
   let html = await readFile(resolve(root, `supabase/templates/${name}.html`), 'utf8');
   for (const [variable, value] of Object.entries({
     ConfirmationURL: 'https://www.palackverseny.hu/auth/callback?code=ELONEZET',
+    SiteURL: 'https://www.palackverseny.hu',
+    TokenHash: 'a'.repeat(56),
     Email: 'tanar@example.com',
     NewEmail: 'uj-cim@example.com',
     OldEmail: 'regi-cim@example.com',
