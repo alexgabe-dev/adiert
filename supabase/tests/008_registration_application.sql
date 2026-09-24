@@ -5,7 +5,7 @@ insert into auth.users(id,email,raw_user_meta_data) values
 ('92000000-0000-4000-8000-000000000001','signup-registration@test.invalid',
 '{"school_registration":{"school_id":"91000000-0000-4000-8000-000000000001","school_name":"Spoofed name","city":"Spoofed city","postal_code":"1111","contact_name":"Teacher Contact","status":"approved"}}');
 do $$ begin
- if exists(select 1 from public.school_applications where user_id='92000000-0000-4000-8000-000000000001') then raise exception 'unverified signup was submitted';end if;
+ if not exists(select 1 from public.school_applications where user_id='92000000-0000-4000-8000-000000000001' and status='pending') then raise exception 'unverified signup was not submitted for review';end if;
 end; $$;
 update auth.users set email_confirmed_at=now() where id='92000000-0000-4000-8000-000000000001';
 do $$ begin

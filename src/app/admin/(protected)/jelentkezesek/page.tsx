@@ -1,3 +1,4 @@
+export const maxDuration = 300;
 import { requireAdministratorRole } from '@/lib/auth/authorization';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import type { SchoolApplication } from '@/features/teacher/server';
@@ -27,7 +28,8 @@ export default async function Applications({
     <section>
       <h1 className="text-3xl font-extrabold">Iskolai jelentkezések</h1>
       <p className="mt-3 text-sm text-slate-600">
-        Az elfogadott kapcsolattartó az iskola adminja lesz. A döntésről e-mailben értesítjük.
+        Elfogadáskor megerősítő linket küldünk a kapcsolattartónak. A fiókját ezzel aktiválja, majd
+        az iskola adminjaként léphet be.
       </p>
       <form className="my-6 flex max-w-md gap-2">
         <select

@@ -83,3 +83,49 @@ export async function updateContact(_state: ActionState, form: FormData): Promis
   revalidatePath('/admin/iskolak');
   return { status: 'success', message: 'Kapcsolattartó frissítve.' };
 }
+
+export async function sendTeacherMessage(
+  _state: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  if (!(await hasValidMutationOrigin())) return { status: 'error', message: 'Érvénytelen kérés.' };
+  await requireAdministratorRole('admin');
+  const parsed = z
+    .object({
+      id: z.uuid(),
+      users: z.array(z.uuid()).min(1).max(50),
+      subject: z.string().trim().min(3).max(160),
+      body: z.string().trim().min(10).max(5000),
+    })
+    .safeParse({
+      id: form.get('message_id'),
+      users: form.getAll('users'),
+      subject: form.get('subject'),
+      body: form.get('body'),
+    });
+  const client = await createServerSupabaseClient();
+  if (!client || !parsed.success)
+    return {
+      status: 'error',
+      message: 'Válassz címzettet, adj meg tárgyat és legalább 10 karakteres üzenetet.',
+    };
+  const d = parsed.data;
+  const { data, error } = await client.rpc('send_teacher_message', {
+    p_id: d.id,
+    p_users: d.users,
+    p_subject: d.subject,
+    p_body: d.body,
+  });
+  if (error)
+    return {
+      status: 'error',
+      message:
+        'Az üzenetet nem sikerült sorba állítani. Ellenőrizd a címzetteket, majd próbáld újra.',
+    };
+  scheduleNotifications();
+  revalidatePath('/admin/ertesitesek');
+  return {
+    status: 'success',
+    message: `Az üzenet ${data} címzett részére a küldési sorba került. Az állapotát az Értesítések oldalon követheted.`,
+  };
+}

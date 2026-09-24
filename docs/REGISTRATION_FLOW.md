@@ -1,23 +1,28 @@
-# Tanári regisztráció és iskolai jóváhagyás
+# Iskolai jelentkezés és levelezés
 
-1. Négyjegyű irányítószám → település. Több településnél kötelező választani.
-2. Csak az adott település aktív, választható iskolái jelennek meg. A név szerinti szűrés azonnal, helyben történik; az irányítószám-lekérés késleltetett, megszakítható. Új irányítószám vagy település törli az előző iskolaválasztást.
-3. Kapcsolattartó neve, e-mail-címe és jelszó. A szerver újra ellenőrzi az iskola–település–irányítószám összetartozását.
-4. A regisztráció adatai a Supabase Auth-fiókkal együtt mentődnek. E-mail-megerősítéskor adatbázis-trigger hozza létre a függő jelentkezést, kanonikus iskolanévvel és településsel. A trigger nem ad tagságot vagy adminjogot.
-5. Függő vagy elutasított jelentkezéssel a normál tanári belépés nem ad munkamenetet: a felhasználó tájékoztatást kap. A megerősítő callback is kilépteti a függő jelentkezőt.
-6. Adminjóváhagyás után a meglévő döntési folyamat aktív iskolai tagságot hoz létre, és értesítést tesz a levélküldési sorba. A következő belépés sikeres lehet.
+2026-09-24: az admin jóváhagyása megelőzi az e-mail-cím megerősítését.
 
-A meghívott kollégák továbbra is az iskola adminjának meghívását fogadják el. Az ilyen regisztráció nem hoz létre új iskolatulajdonosi kérelmet. A javításra visszaküldött jelentkezéshez és a régi, hiányos fiókok befejezéséhez korlátozott ügyintézési hozzáférés megmarad; ezek nem jogosítanak feltöltésre. A jelszó-visszaállítás jóváhagyás előtt is használható, de nem ad iskolai tagságot.
+1. A tanár irányítószám és település alapján kiválasztja az iskolát, megadja a nevét, címét és jelszavát.
+2. A szerver korlátozza a próbálkozásokat, majd ellenőrizetlen Auth-fiókot hoz létre. Nem küld Supabase signup-levelet.
+3. Az adatbázistrigger ugyanabban a tranzakcióban pending jelentkezést és visszaigazoló levelet hoz létre. A levélben nincs aktiválási gomb.
+4. Az admin döntése tranzakcióban létrehozza a tagságot és az elfogadó levelet. A jóváhagyás nem erősíti meg az e-mail-címet.
+5. A levél 7 napos, egyszer használható linket tartalmaz. A megnyitás önmagában nem használja el: a tanár a megerősítő oldalon megnyomja a gombot.
+6. A szerver ellenőrzi a token lejáratát, felhasználását, az aktuális e-mail-címet és az aktív tagságot/meghívást, majd Supabase OTP-val megerősíti a címet és belépteti a tanárt.
 
-Az importált jegyzék intézményeinek típusa eredetileg `other`. Ezeket az importált rekordokat is engedjük kiválasztani és adminisztrátori ellenőrzésre beküldeni; a forrás szerinti besorolásuk nem változik meg. A nem importált, tetszőleges `other` rekordokra ez a kivétel nem vonatkozik.
+A tokenek SHA-256 lenyomata külön, csak service role által olvasható táblában tárolódik. A levélben lévő token HMAC-ból készül; újraküldési próbánál azonos marad. A titok a meglévő SUBMISSION_RATE_LIMIT_SECRET. Lejárt link esetén a belépési oldalon kérhető új levél. Minden új levél saját tokennel rendelkezik.
 
-A Magyar Posta jegyzékéből származó irányítószámok forrása: `docs/POSTAL_CODES.md`. Nem kell külső címkereső szolgáltatás a regisztráció használatához.
+Meghívott kollégánál a meglévő iskolai meghívás jogosít aktiválásra; nem jön létre második iskolatulajdonosi jelentkezés. Pontosításkérésnél és elutasításnál nincs aktiválási link, a tanár a kapcsolatfelvételi címen válaszolhat. Korábbi megerősített fiókok továbbra is használhatók.
+
+## Adminüzenetek
+
+Az /admin/uzenetek oldalon admin vagy főadmin kereshet aktív tanárokat név/e-mail alapján. A keresés megőrzi a címzetteket és a szöveget. Legfeljebb 50 címzett jelölhető; küldés előtt kötelező az előnézet. A címzettek külön levelet kapnak. A szerver és az adatbázis is ellenőrzi a jogosultságot és a címzetteket. Egy üzenetazonosító ismételt beküldése nem hoz létre második levelet. A küldés naplózott, az állapot az Értesítések oldalon látható.
+
+A levelek HTML és szöveges változatot kapnak. A tárgy és a törzs HTML-escape-elt. Az after háttérfeladat ötös csoportokban, korlátozott sebességgel üríti a sort, legfeljebb 100 levelet egy futásban. Az új levelek elsőbbséget élveznek a hibás próbák előtt. Szolgáltatói hiba esetén a levél megmarad, az admin újrapróbálhatja. Külső rendszeres diszpécser továbbra is az /api/notifications/dispatch végpontot hívhatja NOTIFICATION_CRON_SECRET Bearer tokennel; automatikus cron nincs beállítva.
 
 ## Ellenőrzés
 
-- Komponenspróbák: iskolanév-szűrés, kiválasztás, irányítószám-váltás, több település, hálózati hiba.
-- Jogosultságpróbák: függő kérelem, aktív tagság és iskola, szüneteltetés, meghívó, javítás, adatbázishiba.
-- PostgreSQL-próba: megerősítés előtt nincs ellenőrzési kérelem; utána függő kérelem van, tagság nincs. Önjóváhagyás tiltott. Admin jóváhagyhat importált iskolát. Ismételt megerősítés nem írja felül a döntést.
-- A kapcsolt Supabase-projekten ideiglenes tesztfiókkal igazoltuk a jelentkezés automatikus létrejöttét, a függő belépés tiltását és a feltöltési oldal elérhetetlenségét. A tesztfiókot és kérelmét eltávolítottuk, e-mailt nem küldtünk.
-
-Az adatbázis-migráció felkerült a kapcsolt Supabase-projektbe. Az alkalmazáskódot a szokásos push/deploy teszi élessé. A valódi levelek kézbesítéséhez a korábban jelzett Auth SMTP és alkalmazásértesítési szolgáltató beállítása továbbra is szükséges. Valódi telefonos böngészőpróba nem történt.
+- SQL: atomikus jelentkezés/visszaigazolás, adminengedély, egyszeri és lejárt token, üzenet-idempotencia.
+- UI-komponensteszt: keresés közben megmaradó címzettek és piszkozat, kötelező előnézet.
+- Hosted próba: külön tesztiskola és Resend delivered+…@resend.dev cím; valódi Auth-létrehozás, döntés, levélküldés, aktiválás, jelszavas belépés, adminüzenet. A fiók törölve, az iskola archiválva, az audit megmarad.
+- Opt-in hosted teszt: TEST_REMOTE_APPROVAL=true npx vitest run src/features/teacher/approval.remote.test.ts. Csak beállított .env.local mellett; három tesztlevelet küld. Más várakozó leveleket nem küld ki.
+- Böngészős és valódi mobilos vizuális ellenőrzés: a munkamenetben nincs elérhető böngésző.

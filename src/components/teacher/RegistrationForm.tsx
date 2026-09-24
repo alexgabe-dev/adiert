@@ -13,6 +13,7 @@ const normalize = (s: string) =>
     .toLowerCase();
 
 export function RegistrationForm() {
+  const [submitted, setSubmitted] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const changeRef = useRef<HTMLButtonElement>(null);
   const [postal, setPostal] = useState('');
@@ -60,9 +61,42 @@ export function RegistrationForm() {
     setLoaded(false);
     setError(false);
   }
+  if (submitted)
+    return (
+      <div role="status" className="space-y-5">
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+          <Check className="mb-3 size-8 text-emerald-600" aria-hidden="true" />
+          <h2 className="text-xl font-bold text-emerald-950">Köszönjük a jelentkezésedet!</h2>
+          <p className="mt-3 text-sm leading-6 text-emerald-900">
+            Új regisztráció esetén visszaigazoló levelet küldünk. Most nincs további teendőd.
+          </p>
+        </div>
+        <ol className="space-y-4 text-sm leading-6 text-slate-600">
+          <li>
+            <strong className="block text-slate-900">1. Ellenőrizzük az adatokat</strong>A szervezők
+            átnézik az iskolai jelentkezést.
+          </li>
+          <li>
+            <strong className="block text-slate-900">2. E-mailben értesítünk</strong>Az elfogadó
+            levélben kapod meg a megerősítő linket.
+          </li>
+          <li>
+            <strong className="block text-slate-900">3. Megerősíted és belépsz</strong>A gombbal
+            aktiválod a fiókodat, és kezdődhet a gyűjtés.
+          </li>
+        </ol>
+        <p className="text-xs leading-5 text-slate-500">
+          Ha korábban már regisztráltál, a meglévő fiókoddal tudsz belépni.
+        </p>
+      </div>
+    );
   return (
     <ActionForm
-      action={teacherAuthAction}
+      action={async (state, form) => {
+        const result = await teacherAuthAction(state, form);
+        if (result.status === 'success') setSubmitted(true);
+        return result;
+      }}
       label="Regisztráció beküldése"
       disabled={!selected || loading}
     >
@@ -270,8 +304,8 @@ export function RegistrationForm() {
         />
       </fieldset>
       <p className="rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-600">
-        Erősítsd meg az e-mail-címedet, majd várd meg a szervezők jóváhagyását. A tanári felületre
-        csak az elfogadás után léphetsz be; a döntésről e-mailt küldünk.
+        A jelentkezés után visszaigazolást küldünk. A szervezők elfogadják a regisztrációt, majd egy
+        új levélben megkapod a megerősítő linket. Ezzel aktiválhatod a fiókodat és léphetsz be.
       </p>
     </ActionForm>
   );

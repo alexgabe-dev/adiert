@@ -7,6 +7,7 @@ import { hasValidMutationOrigin } from '@/lib/security/origin';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { requireTeacherAccount, teacherEntryStatus } from './server';
 import { createPrivilegedSupabaseClient } from '@/lib/supabase/admin';
+import { allowTeacherAuth } from './auth-rate-limit';
 import { authErrorMessage } from './auth-error';
 import { matchesPostalCity } from './registration-location';
 import { applicationSchema, friendlyError, type ActionState } from './shared';
@@ -46,15 +47,46 @@ export async function teacherAuthAction(_state: ActionState, form: FormData): Pr
     };
   }
   if (mode === 'resend') {
-    const { error } = await client.auth.resend({
-      type: 'signup',
-      email: email.data,
-      options: { emailRedirectTo: callback.toString() },
-    });
-    if (error) return { status: 'error', message: authErrorMessage(error) };
+    if (!(await allowTeacherAuth(email.data)))
+      return { status: 'error', message: 'Túl sok próbálkozás történt. Kérj új linket később.' };
+    const admin = createPrivilegedSupabaseClient();
+    if (!admin) return { status: 'error', message: 'A levélküldés most nem érhető el.' };
+    const { data: member, error: memberError } = await admin
+      .from('school_memberships')
+      .select('user_id,school_id')
+      .eq('email', email.data.toLowerCase())
+      .eq('active', true)
+      .maybeSingle();
+    if (memberError) return { status: 'error', message: 'A kérést most nem sikerült feldolgozni.' };
+    if (member) {
+      const { error } = await admin.from('email_outbox').insert({
+        recipient: email.data.toLowerCase(),
+        subject: 'Regisztráció megerősítése — Palackverseny',
+        body: 'Az iskolai jelentkezésedet elfogadtuk. Az alábbi gombbal erősítheted meg a fiókodat és léphetsz be.',
+        link_path: '/tanar',
+        kind: 'activation',
+        target_user_id: member.user_id,
+      });
+      if (error) return { status: 'error', message: 'A levelet nem sikerült sorba állítani.' };
+      scheduleNotifications();
+    } else {
+      // Invited colleagues and legacy accounts retain their existing confirmation flow.
+      const { data: application } = await admin
+        .from('school_applications')
+        .select('id')
+        .eq('email', email.data.toLowerCase())
+        .maybeSingle();
+      if (!application)
+        await client.auth.resend({
+          type: 'signup',
+          email: email.data,
+          options: { emailRedirectTo: callback.toString() },
+        });
+    }
     return {
       status: 'success',
-      message: 'Ha szükséges, új megerősítő üzenetet küldtünk. Ellenőrizd a levélszemét mappát is.',
+      message:
+        'Ha a jelentkezésedet már elfogadtuk, elküldjük a megerősítő linket. Jóváhagyás előtt nincs további teendőd.',
     };
   }
   if (password.length < 10 || password.length > 128)
@@ -90,23 +122,26 @@ export async function teacherAuthAction(_state: ActionState, form: FormData): Pr
         status: 'error',
         message: 'Az iskola nem tartozik a kiválasztott településhez, vagy már nem választható.',
       };
-    const { error } = await client.auth.signUp({
-      email: email.data,
+    if (!(await allowTeacherAuth(email.data)))
+      return {
+        status: 'error',
+        message: 'Túl sok regisztrációs próbálkozás történt. Kérjük, próbáld meg később.',
+      };
+    const { error } = await catalog.auth.admin.createUser({
+      email: email.data.toLowerCase(),
       password,
-      options: {
-        emailRedirectTo: callback.toString(),
-        data: { school_registration: { ...details, city: school.city } },
-      },
+      email_confirm: false,
+      user_metadata: { school_registration: { ...details, city: school.city } },
     });
-    if (error) {
+    if (error && !['email_exists', 'user_already_exists'].includes(error.code ?? '')) {
       console.error('Teacher signup failed', { code: error.code, status: error.status });
       return { status: 'error', message: authErrorMessage(error) };
     }
-    await client.auth.signOut();
+    if (!error) scheduleNotifications();
     return {
       status: 'success',
       message:
-        'Nézd meg a postaládádat, és erősítsd meg az e-mail-címedet. Új regisztráció esetén az iskolai jelentkezésedet is elmentettük. A tanári felületre jóváhagyás után léphetsz be. Ha már van fiókod, használd a belépést.',
+        'Köszönjük a jelentkezésedet! Új regisztráció esetén visszaigazolást küldünk. A szervezők ellenőrzik az adatokat, majd elfogadás után e-mailben kapod meg a megerősítő linket. Ha már van fiókod, használd a belépést.',
     };
   }
   if (mode !== 'login') return { status: 'error', message: 'Érvénytelen művelet.' };
@@ -117,7 +152,10 @@ export async function teacherAuthAction(_state: ActionState, form: FormData): Pr
   if (error)
     return {
       status: 'error',
-      message: 'Nem sikerült belépni. Ellenőrizd az adatokat és az e-mail-cím megerősítését.',
+      message:
+        error.code === 'email_not_confirmed'
+          ? 'A fiókod még nincs aktiválva. Az admin elfogadása után kapott levélben erősítsd meg a regisztrációdat. Ha még nem kaptál elfogadó levelet, várd meg a döntést.'
+          : 'Nem sikerült belépni. Ellenőrizd az e-mail-címedet és a jelszavadat.',
     };
   if (loginData.user) {
     const status = await teacherEntryStatus(client, loginData.user);

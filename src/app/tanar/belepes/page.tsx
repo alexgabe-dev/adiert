@@ -14,7 +14,7 @@ export default async function Login({
         mode={p.mode === 'reset' ? 'reset' : p.mode === 'resend' ? 'resend' : 'login'}
         notice={
           p.status === 'pending'
-            ? 'Az e-mail-címedet megerősítetted. Most a szervezők jóváhagyására vársz; az elfogadásról e-mailt kapsz, és utána tudsz belépni.'
+            ? 'A jelentkezésed a szervezők jóváhagyására vár. Az elfogadásról e-mailt kapsz a megerősítéshez szükséges linkkel.'
             : p.status === 'rejected'
               ? 'A jelentkezésedet nem fogadtuk el. A részleteket az értesítő e-mailben találod.'
               : p.status === 'paused'

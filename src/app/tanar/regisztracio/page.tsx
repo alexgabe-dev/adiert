@@ -1,3 +1,4 @@
+export const maxDuration = 300;
 import { AuthScreen } from '@/components/teacher/AuthScreen';
 import { redirect } from 'next/navigation';
 import { teacherSession } from '@/features/teacher/server';

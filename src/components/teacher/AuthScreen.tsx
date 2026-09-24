@@ -43,7 +43,7 @@ export function AuthScreen({
                     'Válaszd ki az iskoládat, és add meg a kapcsolattartó adatait. A jelentkezést a szervezők ellenőrzik.',
                   reset: 'Elküldjük e-mailben a jelszó-visszaállításhoz szükséges hivatkozást.',
                   resend:
-                    'Add meg a regisztrációnál használt címed, és új megerősítő levelet küldünk.',
+                    'Már elfogadtuk a jelentkezésedet, de lejárt a linked? Add meg a címedet, és küldünk újat. Ha még vársz az elfogadásra, nincs további teendőd.',
                   update_password: 'Válassz egy legalább 10 karakteres, biztonságos jelszót.',
                 }[mode]
               }

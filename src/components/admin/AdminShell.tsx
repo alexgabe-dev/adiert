@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import {
   FileCheck,
   History,
+  Mail,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -48,6 +49,7 @@ const items: Array<{
   },
   { href: '/admin/bekuldesek', label: 'Beküldések', icon: FileCheck, role: 'reviewer' as const },
   { href: '/admin/jelentkezesek', label: 'Jelentkezések', icon: School, role: 'admin' },
+  { href: '/admin/uzenetek', label: 'Üzenetküldés', icon: Mail, role: 'admin' },
   { href: '/admin/ertesitesek', label: 'Értesítések', icon: History, role: 'admin' },
   { href: '/admin/iskolak', label: 'Iskolák', icon: School, role: 'admin' as const },
   { href: '/admin/kampanyok', label: 'Kampányok', icon: Trophy, role: 'admin' as const },
