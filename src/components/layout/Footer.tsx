@@ -3,10 +3,10 @@ import React from 'react';
 export const Footer: React.FC = () => {
   return (
     <footer className="bg-white border-t border-[#E8ECF2] pt-14 pb-10 text-[#667085]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+      <div className="safe-content max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 min-[400px]:grid-cols-2 md:grid-cols-4 gap-8 mb-12">
           {/* Column 1: Brand Wordmark & Mission */}
-          <div className="col-span-2 md:col-span-1 space-y-3">
+          <div className="min-[400px]:col-span-2 md:col-span-1 space-y-3">
             <div className="text-lg font-extrabold text-[#0B1535]">
               Ádiért<span className="text-blue-600">.</span>
             </div>
@@ -21,22 +21,34 @@ export const Footer: React.FC = () => {
             <h4 className="text-xs font-bold uppercase tracking-wider text-[#0B1535]">Navigáció</h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <a href="#adi-tortenete" className="hover:text-blue-600 transition-colors">
+                <a
+                  href="#adi-tortenete"
+                  className="inline-flex min-h-11 items-center hover:text-blue-600 transition-colors"
+                >
                   Ádi története
                 </a>
               </li>
               <li>
-                <a href="#hogyan-mukodik" className="hover:text-blue-600 transition-colors">
+                <a
+                  href="#hogyan-mukodik"
+                  className="inline-flex min-h-11 items-center hover:text-blue-600 transition-colors"
+                >
                   Hogyan működik?
                 </a>
               </li>
               <li>
-                <a href="#ranglista" className="hover:text-blue-600 transition-colors">
+                <a
+                  href="#ranglista"
+                  className="inline-flex min-h-11 items-center hover:text-blue-600 transition-colors"
+                >
                   Ranglista
                 </a>
               </li>
               <li>
-                <a href="#iskolaknak" className="hover:text-blue-600 transition-colors">
+                <a
+                  href="#iskolaknak"
+                  className="inline-flex min-h-11 items-center hover:text-blue-600 transition-colors"
+                >
                   Iskoláknak
                 </a>
               </li>
@@ -50,22 +62,34 @@ export const Footer: React.FC = () => {
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <a href="#gyik" className="hover:text-blue-600 transition-colors">
+                <a
+                  href="#gyik"
+                  className="inline-flex min-h-11 items-center hover:text-blue-600 transition-colors"
+                >
                   GYIK
                 </a>
               </li>
               <li>
-                <a href="/tanar/belepes" className="hover:text-blue-600 transition-colors">
+                <a
+                  href="/tanar/belepes"
+                  className="inline-flex min-h-11 items-center hover:text-blue-600 transition-colors"
+                >
                   Tanári belépés
                 </a>
               </li>
               <li>
-                <a href="/tanar/regisztracio" className="hover:text-blue-600 transition-colors">
+                <a
+                  href="/tanar/regisztracio"
+                  className="inline-flex min-h-11 items-center hover:text-blue-600 transition-colors"
+                >
                   Iskolai regisztráció
                 </a>
               </li>
               <li>
-                <a href="/admin/login" className="hover:text-blue-600 transition-colors">
+                <a
+                  href="/admin/login"
+                  className="inline-flex min-h-11 items-center hover:text-blue-600 transition-colors"
+                >
                   Szervezői belépés
                 </a>
               </li>
@@ -78,7 +102,7 @@ export const Footer: React.FC = () => {
             <p className="text-xs">Kérdésed vagy észrevételed van?</p>
             <a
               href="mailto:info@palackverseny.hu"
-              className="inline-block text-xs font-bold text-blue-600 hover:underline"
+              className="inline-flex min-h-11 items-center text-xs font-bold text-blue-600 hover:underline"
             >
               info@palackverseny.hu
             </a>

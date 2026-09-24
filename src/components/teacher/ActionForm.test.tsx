@@ -17,6 +17,7 @@ describe('form interaction', () => {
     await user.click(screen.getByRole('button', { name: 'Mentés' }));
     await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Próbáld újra.'));
     expect(screen.getByLabelText('Teljes név')).toHaveValue('Kiss Anna');
+    expect(screen.getByRole('alert')).toHaveFocus();
   });
   it('does not revoke access when the confirmation is cancelled', async () => {
     const user = userEvent.setup();

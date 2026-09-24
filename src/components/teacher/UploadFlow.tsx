@@ -136,7 +136,7 @@ export function UploadFlow({ school, revision }: { school: string; revision?: Te
   }
   if (step === 4)
     return (
-      <div className="rounded-3xl bg-white p-8 text-center">
+      <div className="mx-auto max-w-xl rounded-3xl bg-white p-5 text-center sm:p-8">
         <span className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
           <Check className="h-10 w-10" />
         </span>
@@ -213,7 +213,7 @@ export function UploadFlow({ school, revision }: { school: string; revision?: Te
                 />
               </div>
             )}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid gap-3 min-[360px]:grid-cols-2">
               <label className="flex min-h-24 cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl bg-blue-50 p-3 text-center text-sm font-bold text-blue-700 focus-within:ring-2 focus-within:ring-blue-500 hover:bg-blue-100">
                 <Camera className="h-6 w-6" />
                 Fotó készítése
@@ -222,7 +222,10 @@ export function UploadFlow({ school, revision }: { school: string; revision?: Te
                   accept="image/jpeg,image/png,image/webp"
                   capture="environment"
                   className="sr-only"
-                  onChange={(e) => changeFile(e.target.files?.[0])}
+                  onChange={(e) => {
+                    changeFile(e.target.files?.[0]);
+                    e.target.value = '';
+                  }}
                 />
               </label>
               <label className="flex min-h-24 cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border border-slate-200 p-3 text-center text-sm font-bold focus-within:ring-2 focus-within:ring-blue-500 hover:bg-slate-50">
@@ -232,7 +235,10 @@ export function UploadFlow({ school, revision }: { school: string; revision?: Te
                   type="file"
                   accept="image/jpeg,image/png,image/webp"
                   className="sr-only"
-                  onChange={(e) => changeFile(e.target.files?.[0])}
+                  onChange={(e) => {
+                    changeFile(e.target.files?.[0]);
+                    e.target.value = '';
+                  }}
                 />
               </label>
             </div>
@@ -320,7 +326,7 @@ export function UploadFlow({ school, revision }: { school: string; revision?: Te
             {error}
           </p>
         )}
-        <div className="mt-6 flex flex-wrap gap-3">
+        <div className="mt-6 flex flex-col-reverse gap-3 min-[400px]:flex-row">
           {step > 1 && (
             <button
               disabled={pending}
@@ -333,7 +339,7 @@ export function UploadFlow({ school, revision }: { school: string; revision?: Te
           <button
             disabled={pending}
             onClick={step === 3 ? submit : next}
-            className="flex min-h-12 min-w-40 flex-1 items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-4 font-bold text-white transition active:scale-[.98] disabled:opacity-60"
+            className="flex min-h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-4 font-bold text-white transition active:scale-[.98] disabled:opacity-60"
           >
             {pending ? (
               <>

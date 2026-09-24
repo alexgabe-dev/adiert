@@ -17,7 +17,7 @@ export default async function AdminLoginPage() {
   const localPassword = localTestLoginEnabled();
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#F7F9FC] px-4 py-12">
+    <main className="flex min-h-dvh items-center justify-center bg-[#F7F9FC] safe-content py-12">
       <section className="w-full max-w-md rounded-3xl border border-[#E8ECF2] bg-white p-7 shadow-xl shadow-slate-200/60 sm:p-10">
         <Link
           href="/"
@@ -40,7 +40,10 @@ export default async function AdminLoginPage() {
         {isConfigured ? (
           <LoginForm localPassword={localPassword} />
         ) : (
-          <p role="status" className="mt-8 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <p
+            role="status"
+            className="mt-8 rounded-xl bg-amber-50 safe-content py-3 text-sm text-amber-900"
+          >
             A Supabase-kapcsolat ebben a környezetben nincs beállítva.
           </p>
         )}

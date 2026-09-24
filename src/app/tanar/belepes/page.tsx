@@ -13,23 +13,17 @@ export default async function Login({
       <AuthScreen
         mode={p.mode === 'reset' ? 'reset' : p.mode === 'resend' ? 'resend' : 'login'}
         notice={
-          p.status === 'pending'
-            ? 'A jelentkezésed a szervezők jóváhagyására vár. Az elfogadásról e-mailt kapsz a megerősítéshez szükséges linkkel.'
-            : p.status === 'rejected'
-              ? 'A jelentkezésedet nem fogadtuk el. A részleteket az értesítő e-mailben találod.'
-              : p.status === 'paused'
-                ? 'Az iskolai hozzáférésed jelenleg szünetel.'
-                : undefined
+          p.error
+            ? 'A belépési hivatkozás lejárt vagy érvénytelen. Kérj új e-mailt az alábbi lehetőségek egyikével.'
+            : p.status === 'pending'
+              ? 'A jelentkezésed a szervezők jóváhagyására vár. Az elfogadásról e-mailt kapsz a megerősítéshez szükséges linkkel.'
+              : p.status === 'rejected'
+                ? 'A jelentkezésedet nem fogadtuk el. A részleteket az értesítő e-mailben találod.'
+                : p.status === 'paused'
+                  ? 'Az iskolai hozzáférésed jelenleg szünetel.'
+                  : undefined
         }
       />
-      {p.error && (
-        <p
-          role="alert"
-          className="fixed top-3 right-3 left-3 rounded-xl bg-rose-100 p-4 text-center text-sm text-rose-900"
-        >
-          A belépési hivatkozás lejárt vagy érvénytelen. Kérj új e-mailt.
-        </p>
-      )}
     </>
   );
 }

@@ -24,21 +24,23 @@ export function TeacherShell({
   const router = useRouter();
   const [help, setHelp] = useState(false);
   return (
-    <div className="min-h-screen bg-[#F5F8FD] text-[#0B1535]">
+    <div className="min-h-dvh bg-[#F5F8FD] text-[#0B1535]">
       <a
         href="#teacher-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-xl focus:bg-white focus:p-4"
       >
         Ugrás a tartalomhoz
       </a>
-      <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+      <header className="safe-top sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
+        <div className="safe-content mx-auto grid max-w-5xl grid-cols-[minmax(0,1fr)_44px_44px] items-center gap-x-2 gap-y-2 py-2 sm:flex sm:gap-3 sm:py-3">
           <Link href="/tanar" className="flex shrink-0 items-center gap-2 text-lg font-extrabold">
             <Heart className="h-5 w-5 fill-blue-600 text-blue-600" />
             Ádiért.
           </Link>
-          <div className="min-w-0 flex-1 px-2 text-right">
-            <p className="truncate text-xs font-semibold text-slate-700">{school}</p>
+          <div className="order-last col-span-3 min-w-0 border-t border-slate-100 pt-2 pb-1 sm:order-none sm:flex-1 sm:border-0 sm:px-2 sm:py-0 sm:text-right">
+            <p className="line-clamp-2 text-xs font-semibold leading-5 text-slate-700 sm:truncate">
+              {school}
+            </p>
             <p className="mt-1 truncate text-xs text-slate-500">{name}</p>
           </div>
           <button
@@ -86,14 +88,17 @@ export function TeacherShell({
           </Link>
         </nav>
       </header>
-      <main id="teacher-content" className="mx-auto max-w-5xl px-4 pt-7 pb-32 sm:px-6 md:py-10">
+      <main
+        id="teacher-content"
+        className="safe-content mx-auto max-w-5xl pt-6 pb-[calc(7rem+env(safe-area-inset-bottom))] md:py-10"
+      >
         {children}
       </main>
       <nav
         aria-label="Iskolai navigáció"
         className="teacher-bottom-nav fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white pb-[env(safe-area-inset-bottom)] md:hidden"
       >
-        <div className="mx-auto grid max-w-lg grid-cols-4 gap-1 p-2">
+        <div className="mx-auto grid max-w-lg grid-cols-4 gap-1 pl-[max(8px,env(safe-area-inset-left))] pr-[max(8px,env(safe-area-inset-right))] py-2">
           {links.map(({ href, label, icon: Icon }) => {
             const active = href === '/tanar' ? path === href : path.startsWith(href);
             return (

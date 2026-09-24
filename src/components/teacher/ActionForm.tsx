@@ -23,6 +23,7 @@ export function ActionForm({
 }) {
   const [state, submit, pending] = useActionState(action, initialActionState);
   const router = useRouter();
+  const feedbackRef = useRef<HTMLParagraphElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const submitted = useRef<FormData | null>(null);
   const confirmed = useRef(false);
@@ -30,6 +31,10 @@ export function ActionForm({
   const confirmId = useId();
   useEffect(() => {
     if (state.status === 'success') router.refresh();
+    if (state.message) {
+      feedbackRef.current?.focus({ preventScroll: true });
+      feedbackRef.current?.scrollIntoView?.({ block: 'nearest', behavior: 'auto' });
+    }
     if (state.status === 'error' && submitted.current && formRef.current) {
       for (const element of Array.from(formRef.current.elements)) {
         if (!(
@@ -72,6 +77,8 @@ export function ActionForm({
         {children}
         {state.message && (
           <p
+            ref={feedbackRef}
+            tabIndex={-1}
             role={state.status === 'error' ? 'alert' : 'status'}
             className={`rounded-xl p-3 text-sm ${state.status === 'error' ? 'bg-rose-50 text-rose-800' : 'bg-emerald-50 text-emerald-800'}`}
           >

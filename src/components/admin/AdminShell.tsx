@@ -91,7 +91,13 @@ export function AdminShell({ administrator, children }: AdminShellProps) {
   );
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] text-[#0B1535] lg:grid lg:grid-cols-[248px_minmax(0,1fr)]">
+    <div className="min-h-dvh bg-[#F7F9FC] text-[#0B1535] lg:grid lg:grid-cols-[248px_minmax(0,1fr)]">
+      <a
+        href="#admin-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-xl focus:bg-white focus:p-4"
+      >
+        Ugrás a tartalomhoz
+      </a>
       <aside className="hidden border-r border-[#E8ECF2] bg-white lg:fixed lg:inset-y-0 lg:flex lg:w-[248px] lg:flex-col">
         <div className="border-b border-[#E8ECF2] px-5 py-5">
           <Link href="/admin" className="text-lg font-extrabold tracking-tight">
@@ -117,12 +123,14 @@ export function AdminShell({ administrator, children }: AdminShellProps) {
       </aside>
 
       <div className="min-w-0 lg:col-start-2">
-        <header className="sticky top-0 z-30 flex min-h-16 shrink-0 items-center gap-3 justify-between border-b border-[#E8ECF2] bg-white/95 px-4 backdrop-blur sm:px-6 lg:px-8">
+        <header className="safe-top sticky top-0 z-30 flex min-h-16 shrink-0 items-center gap-3 justify-between border-b border-[#E8ECF2] bg-white/95 safe-content backdrop-blur">
           <button
             type="button"
             onClick={() => setOpen(true)}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 lg:hidden"
             aria-label="Navigáció megnyitása"
+            aria-expanded={open}
+            aria-haspopup="dialog"
           >
             <Menu className="h-5 w-5" />
           </button>
@@ -133,7 +141,12 @@ export function AdminShell({ administrator, children }: AdminShellProps) {
             <p className="text-xs font-bold text-[#667085]">{roleLabels[administrator.role]}</p>
           </div>
         </header>
-        <main className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">{children}</main>
+        <main
+          id="admin-content"
+          className="safe-content mx-auto max-w-[1440px] py-6 pb-[max(24px,env(safe-area-inset-bottom))] sm:py-8"
+        >
+          {children}
+        </main>
       </div>
 
       {open ? (

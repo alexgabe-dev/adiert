@@ -15,7 +15,7 @@ export default async function Confirmation({
   const { token } = await searchParams;
   const valid = /^[a-f0-9]{64}$/.test(token ?? '');
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10">
+    <main className="flex min-h-dvh items-center justify-center bg-slate-50 safe-content py-10">
       <section className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
         <Link href="/" className="text-lg font-extrabold text-blue-600">
           Ádiért.

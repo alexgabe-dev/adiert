@@ -10,7 +10,7 @@ export function HeroSection({ participatingSchoolCount, dataAvailable }: HeroSec
   return (
     <section
       id="rolunk"
-      className="relative overflow-hidden bg-[#F7F8FA] pt-28 pb-12 md:pt-36 md:pb-20"
+      className="relative overflow-hidden bg-[#F7F8FA] pt-[calc(7rem+env(safe-area-inset-top))] pb-12 md:pt-[calc(9rem+env(safe-area-inset-top))] md:pb-20"
     >
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8">
         <div>

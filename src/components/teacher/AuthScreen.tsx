@@ -18,7 +18,7 @@ export function AuthScreen({
     resend: 'Erősítsd meg az e-mail-címed.',
   };
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[radial-gradient(ellipse_at_top,#e4edff_0%,#f5f8fd_55%)] px-4 py-8 sm:py-12">
+    <main className="flex min-h-dvh items-center justify-center bg-[radial-gradient(ellipse_at_top,#e4edff_0%,#f5f8fd_55%)] safe-content py-8 sm:py-12">
       <div className="w-full max-w-[460px]">
         <Link
           href="/"
@@ -30,7 +30,7 @@ export function AuthScreen({
           Ádiért.
         </Link>
         <div className="overflow-hidden rounded-[28px] border border-white bg-white shadow-xl shadow-slate-900/5 ring-1 ring-slate-900/5">
-          <div className="p-6 sm:p-8">
+          <div className="p-5 sm:p-8">
             <p className="mb-3 text-xs font-bold tracking-widest text-blue-600 uppercase">
               Iskolai csapatoknak
             </p>
@@ -90,7 +90,7 @@ export function AuthScreen({
                 <p className="mb-3 text-center text-sm text-slate-500">Most csatlakozol először?</p>
                 <Link
                   href="/tanar/regisztracio"
-                  className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-bold text-blue-700 transition hover:border-blue-300 hover:bg-blue-100"
+                  className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 safe-content py-3 text-sm font-bold text-blue-700 transition hover:border-blue-300 hover:bg-blue-100"
                 >
                   Tanári fiók létrehozása <ArrowRight className="size-4" aria-hidden="true" />
                 </Link>

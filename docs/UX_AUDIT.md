@@ -78,3 +78,21 @@ A közös vezérlők legalább 44 pixeles érintési célt, az általános mező
 A párbeszédablakok a Visual Viewport méretéhez és eltolásához igazodnak, figyelembe veszik a biztonságos képernyőszéleket, és hosszú tartalomnál görgethetők. Felismert mobilbillentyűzet mellett a tanári alsó menü elbújik, az ellenőrzési műveletsor pedig normál dokumentumfolyamba kerül. A modal újrarenderelése többé nem veszi el a fókuszt a gépelés alatt álló mezőről.
 
 Új regressziós tesztek ellenőrzik a gépelési fókuszt, a billentyűzet miatti nézetváltozás kezelését, a nagyítás megkülönböztetését és az eseménykezelők takarítását. Ezek szimulált DOM-interakciók, nem képernyőképes vagy valódi eszközös mérések. Csatlakoztatott böngésző továbbra sem érhető el; a tényleges 320–430 pixeles, fekvő és nyitott billentyűzetes vizuális ellenőrzés még szükséges.
+
+
+## Mobilos átvizsgálás — 2026. szeptember 24.
+
+Átnézett felületek: nyilvános fejléc/lábléc/hero, regisztráció és belépés, tanári navigáció és feltöltés, admin navigáció, jelentkezések, üzenetküldő, ellenőrzési űrlapok és listák.
+
+Javítások:
+- A `.field` stílus komponensrétegbe került. Korábban felülírta a Tailwind ikon- és jelszógomb-margóit, valamint a textarea egyedi méretezését.
+- A nyilvános mobilmenü a közös, fókuszt kezelő párbeszédablakot használja. Görgethető, Escape-pel zárható, bezáráskor visszaadja a fókuszt, nyitva nem görgethető a háttér.
+- Kis kijelzőn a tanári fejléc külön sorban mutatja az iskolát és a tanárt. Az admin és tanári kezelőelemek figyelembe veszik a safe-area széleket.
+- A belépési oldalak dinamikus képernyőmagassághoz igazodnak. A callback-hiba az űrlapban jelenik meg, nem a fejlécet eltakaró fix sávban.
+- A keskeny feltöltési képernyőn a képválasztás és a műveletek egymás alá rendeződnek. Ugyanaz a fájl ismét kiválasztható. A palackszám nagy betűméretét már nem írja felül a mobilos általános mezőszabály.
+- A közös űrlap visszajelzése fókuszt kap, és szükség esetén látható helyre gördül. A hibás beküldés adatai megmaradnak.
+- A lábléc keskeny kijelzőn egy oszlopra vált, hivatkozásai legalább 44 pixel magas érintési területet kapnak.
+
+Ellenőrzés: 12 célzott interakcióteszt sikeres; 9 HTTP felhasználói útvonal sikeres valódi helyi alkalmazáson és Supabase-fiókokkal (belépés/kilépés, navigáció, szűrés, jogosultságok, CSV). A Browser ismét nem talált csatlakoztatott böngészőt. A töréspontokat és a CSS-szabályokat forrásból ellenőriztük; valódi 320/360/390/430 px képernyőkép, fekvő nézet és eszközbillentyűzet továbbra sem volt mérhető.
+
+A regisztráció és levélküldés korábbi korlátaihoz: a Resend már aktív. Az új jóváhagyás → megerősítés folyamat hosted tesztje és a három Resend-tesztlevél kézbesítése sikeres; részletek a REGISTRATION_FLOW.md fájlban.

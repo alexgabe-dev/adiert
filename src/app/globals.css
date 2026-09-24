@@ -28,7 +28,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 6rem;
+  scroll-padding-top: calc(6rem + env(safe-area-inset-top));
 }
 
 body {
@@ -83,7 +83,7 @@ body {
 }
 
 @media (max-width: 767px) {
-  input:not([type='checkbox']):not([type='radio']),
+  input:not([type='checkbox']):not([type='radio']):not(.bottle-count-input),
   select,
   textarea {
     font-size: 16px;
@@ -109,20 +109,22 @@ body {
   }
 }
 
-.field {
-  min-height: 3rem;
-  width: 100%;
-  border: 1px solid #d7ddea;
-  border-radius: 0.75rem;
-  background: #ffffff;
-  padding: 0.625rem 0.875rem;
-  font-size: 1rem;
-  outline: none;
-}
+@layer components {
+  .field {
+    min-height: 3rem;
+    width: 100%;
+    border: 1px solid #d7ddea;
+    border-radius: 0.75rem;
+    background: #ffffff;
+    padding: 0.625rem 0.875rem;
+    font-size: 1rem;
+    outline: none;
+  }
 
-.field:focus-visible {
-  border-color: var(--adiert-blue);
-  box-shadow: 0 0 0 3px rgb(36 107 253 / 14%);
+  .field:focus-visible {
+    border-color: var(--adiert-blue);
+    box-shadow: 0 0 0 3px rgb(36 107 253 / 14%);
+  }
 }
 
 button,
@@ -249,4 +251,25 @@ textarea {
 }
 input.bottle-count-input {
   font-size: 2.25rem;
+}
+
+/* Respect notches in landscape and home indicators without hiding overflow. */
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+.safe-content {
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
+@media (min-width: 640px) {
+  .safe-content {
+    padding-left: max(1.5rem, env(safe-area-inset-left));
+    padding-right: max(1.5rem, env(safe-area-inset-right));
+  }
+}
+@media (min-width: 1024px) {
+  .safe-content {
+    padding-left: max(2rem, env(safe-area-inset-left));
+    padding-right: max(2rem, env(safe-area-inset-right));
+  }
 }
