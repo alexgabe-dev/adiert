@@ -5,7 +5,7 @@ export default function TeacherError({ reset }: { reset: () => void }) {
     <div className="mx-auto my-12 max-w-lg rounded-3xl border border-slate-200 bg-white p-8 text-center">
       <h1 className="text-2xl font-extrabold">Most nem sikerült betölteni.</h1>
       <p className="mt-4 text-sm leading-relaxed text-slate-600">
-        Próbáld újra. Ha a hiba megmarad, írj az info@adiert.hu címre.
+        Próbáld újra. Ha a hiba megmarad, írj az info@palackverseny.hu címre.
       </p>
       <button
         onClick={reset}

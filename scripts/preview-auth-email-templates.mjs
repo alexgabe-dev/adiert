@@ -15,7 +15,7 @@ const cards = [];
 for (const [name, subject] of Object.entries(subjects)) {
   let html = await readFile(resolve(root, `supabase/templates/${name}.html`), 'utf8');
   for (const [variable, value] of Object.entries({
-    ConfirmationURL: 'https://adiert.vercel.app/auth/callback?code=ELONEZET',
+    ConfirmationURL: 'https://www.palackverseny.hu/auth/callback?code=ELONEZET',
     Email: 'tanar@example.com',
     NewEmail: 'uj-cim@example.com',
     OldEmail: 'regi-cim@example.com',

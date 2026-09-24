@@ -21,7 +21,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
         </div>
         <h1 className="mb-2 text-2xl font-extrabold text-[#0B1535]">Valami nem sikerült</h1>
         <p className="mb-6 text-sm text-[#667085]">
-          Kérjük, próbáld újra. Ha a hiba továbbra is fennáll, írj nekünk az info@adiert.hu címen.
+          Kérjük, próbáld újra. Ha a hiba továbbra is fennáll, írj nekünk az info@palackverseny.hu címen.
         </p>
         <button
           type="button"

@@ -68,8 +68,8 @@ export const FaqSection: React.FC = () => {
 
       <div className="mt-10 text-center text-xs text-[#667085]">
         További kérdésed van? Írj nekünk bátran az{' '}
-        <a href="mailto:info@adiert.hu" className="text-blue-600 font-semibold hover:underline">
-          info@adiert.hu
+        <a href="mailto:info@palackverseny.hu" className="text-blue-600 font-semibold hover:underline">
+          info@palackverseny.hu
         </a>{' '}
         címre.
       </div>

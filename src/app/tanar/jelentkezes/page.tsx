@@ -38,7 +38,7 @@ export default async function ApplicationPage({
           <p className="mt-3 mb-6 text-sm text-slate-600">{user.email}</p>
           {p.paused ? (
             <p className="rounded-xl bg-amber-50 p-4">
-              Az iskolád jelenleg inaktív. Egyeztess a szervezőkkel az info@adiert.hu címen.
+              Az iskolád jelenleg inaktív. Egyeztess a szervezőkkel az info@palackverseny.hu címen.
             </p>
           ) : a?.status === 'pending' ? (
             <div className="rounded-2xl bg-blue-50 p-5">
@@ -50,7 +50,7 @@ export default async function ApplicationPage({
             </div>
           ) : a?.status === 'rejected' ? (
             <p className="rounded-xl bg-rose-50 p-4 text-rose-900">
-              A jelentkezést elutasítottuk. {a.reason} Kérdés esetén: info@adiert.hu.
+              A jelentkezést elutasítottuk. {a.reason} Kérdés esetén: info@palackverseny.hu.
             </p>
           ) : a?.status === 'approved' ? (
             <p className="rounded-xl bg-amber-50 p-4">

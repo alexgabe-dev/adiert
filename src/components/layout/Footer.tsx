@@ -77,10 +77,10 @@ export const Footer: React.FC = () => {
             <h4 className="text-xs font-bold uppercase tracking-wider text-[#0B1535]">Kapcsolat</h4>
             <p className="text-xs">Kérdésed vagy észrevételed van?</p>
             <a
-              href="mailto:info@adiert.hu"
+              href="mailto:info@palackverseny.hu"
               className="inline-block text-xs font-bold text-blue-600 hover:underline"
             >
-              info@adiert.hu
+              info@palackverseny.hu
             </a>
             <div className="text-[11px] text-slate-400">Budapest, Magyarország</div>
           </div>

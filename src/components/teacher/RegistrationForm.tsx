@@ -211,7 +211,7 @@ export function RegistrationForm() {
                   role="status"
                 >
                   {!schools.length
-                    ? 'Ehhez a településhez még nincs választható általános iskola. Ellenőrizd az irányítószámot, vagy jelezd a szervezőknek: info@adiert.hu.'
+                    ? 'Ehhez a településhez még nincs választható általános iskola. Ellenőrizd az irányítószámot, vagy jelezd a szervezőknek: info@palackverseny.hu.'
                     : !search.trim()
                       ? 'Kereshetsz névrészletre is, például: Petőfi.'
                       : filtered.length > 20

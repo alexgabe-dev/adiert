@@ -48,6 +48,6 @@ export const FAQS: FaqItem[] = [
     category: 'Visszaváltás',
     question: 'Mi történik, ha elmaradt a képernyő lefotózása?',
     answer:
-      'A feltöltéshez jól olvasható képernyőfotó szükséges. Ha ez elmaradt, egyeztess a szervezőkkel az info@adiert.hu címen; a gyűjtés beszámítása nem automatikus.',
+      'A feltöltéshez jól olvasható képernyőfotó szükséges. Ha ez elmaradt, egyeztess a szervezőkkel az info@palackverseny.hu címen; a gyűjtés beszámítása nem automatikus.',
   },
 ];

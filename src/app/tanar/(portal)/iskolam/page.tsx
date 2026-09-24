@@ -22,7 +22,7 @@ export default async function MySchool() {
           {school.postal_code} {school.city}
         </p>
         <p className="mt-5 text-xs text-blue-100">
-          Hivatalos adat módosításához írj a szervezőknek: info@adiert.hu
+          Hivatalos adat módosításához írj a szervezőknek: info@palackverseny.hu
         </p>
       </div>
       <TeamPanel

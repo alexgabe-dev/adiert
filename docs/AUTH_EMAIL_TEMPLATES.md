@@ -28,7 +28,7 @@ A hitelesítési gombok és tartalék hivatkozásaik a Supabase `{{ .Confirmatio
 
 ## Éles aktiválás
 
-2026. szeptember 23-án a Supabase Management API elutasította a sablonok mentését: ingyenes csomag és alapértelmezett levélküldő mellett egyedi e-mail-sablon nem menthető. Saját SMTP-szolgáltató beállítása vagy megfelelő csomag szükséges. Emiatt a távoli projekt jelenleg még az eredeti sablonokat használja.
+2026. szeptember 24-én a Resend SMTP bekötése és mind a nyolc magyar sablon éles aktiválása megtörtént. Feladó: Ádiért · Palackverseny <info@palackverseny.hu>. Az SMTP-hitelesítés ellenőrizve; az Auth levélküldési kerete 30/óra. A Resend domain küldési és fogadási DNS-rekordjai hitelesítettek. Személyes postaládába továbbítás külön beállítást igényel.
 
 Az SMTP-beállításhoz a szolgáltató hostja, portja, felhasználóneve, jelszava/API-kulcsa és ellenőrzött feladói címe szükséges. Titkos adatot ne írj a repóba vagy a beszélgetésbe. Beállítás: Supabase Dashboard → Authentication → Email → SMTP Settings.
 
@@ -42,6 +42,6 @@ A token a `SUPABASE_ACCESS_TOKEN` környezeti változóból érkezik. A script c
 
 A jelszó- és e-mail-cím-változás biztonsági értesítői jelenleg ki vannak kapcsolva a projektben. Sablonjuk elkészült; küldésük külön engedélyezhető a Supabase beállításaiban. A script nem módosítja ezt a kapcsolót.
 
-A projekt Site URL-je javítva lett `https://adiert.vercel.app` értékre. Az éles és a támogatott helyi `/auth/callback` útvonalak bekerültek az engedélyezett visszatérési címek közé. Valódi postaládás, Gmail/Outlook és mobilos vizuális próba még nem történt.
+A projekt Site URL-je javítva lett `https://www.palackverseny.hu` értékre. Az éles és a támogatott helyi `/auth/callback` útvonalak bekerültek az engedélyezett visszatérési címek közé. A Supabase signUp → Resend SMTP → Resend tesztcím folyamat sikeres volt; a kézbesítési esemény delivered, a megerősítő levél visszatérési címe https://www.palackverseny.hu/auth/callback. Az ideiglenes tesztfiók törölve. Valódi Gmail/Outlook postaládás és mobilos vizuális próba még nem történt.
 
 Forrás: [Supabase e-mail-sablonok](https://supabase.com/docs/guides/auth/auth-email-templates).
