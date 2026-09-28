@@ -21,7 +21,7 @@ vi.mock('next/navigation', () => ({
   },
 }));
 vi.mock('@/lib/security/origin', () => ({ hasValidMutationOrigin: async () => true }));
-vi.mock('./auth-rate-limit', () => ({ allowTeacherAuth: async () => true }));
+vi.mock('./auth-rate-limit', () => ({ allowTeacherAuth: async () => ({ allowed: true }) }));
 vi.mock('@/lib/supabase/server', () => ({
   createServerSupabaseClient: async () => context.current,
 }));

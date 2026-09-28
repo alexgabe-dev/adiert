@@ -47,8 +47,8 @@ export async function teacherAuthAction(_state: ActionState, form: FormData): Pr
     };
   }
   if (mode === 'resend') {
-    if (!(await allowTeacherAuth(email.data)))
-      return { status: 'error', message: 'Túl sok próbálkozás történt. Kérj új linket később.' };
+    const limit = await allowTeacherAuth(email.data);
+    if (!limit.allowed) return { status: 'error', message: limit.message };
     const admin = createPrivilegedSupabaseClient();
     if (!admin) return { status: 'error', message: 'A levélküldés most nem érhető el.' };
     const { data: member, error: memberError } = await admin
@@ -122,11 +122,8 @@ export async function teacherAuthAction(_state: ActionState, form: FormData): Pr
         status: 'error',
         message: 'Az iskola nem tartozik a kiválasztott településhez, vagy már nem választható.',
       };
-    if (!(await allowTeacherAuth(email.data)))
-      return {
-        status: 'error',
-        message: 'Túl sok regisztrációs próbálkozás történt. Kérjük, próbáld meg később.',
-      };
+    const limit = await allowTeacherAuth(email.data);
+    if (!limit.allowed) return { status: 'error', message: limit.message };
     const { error } = await catalog.auth.admin.createUser({
       email: email.data.toLowerCase(),
       password,
