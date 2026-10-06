@@ -14,13 +14,13 @@ export default async function NewNewsPage({ searchParams }: NewNewsPageProps) {
   await requireAdministratorRole('admin');
   const parameters = await searchParams;
   return (
-    <section className="max-w-4xl">
+    <section className="mx-auto max-w-7xl">
       <Link href="/admin/hirek" className="text-sm font-bold text-blue-600">
         ← Hírek
       </Link>
       <h1 className="mt-4 text-3xl font-extrabold tracking-tight">Új hír</h1>
       <AdminFlash success={first(parameters.success)} error={first(parameters.error)} />
-      <div className="mt-6 rounded-2xl border border-[#E8ECF2] bg-white p-5 sm:p-6">
+      <div className="mt-6">
         <NewsForm action={saveNewsAction} />
       </div>
     </section>

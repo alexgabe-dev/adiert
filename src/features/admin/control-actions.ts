@@ -6,6 +6,7 @@ import type { Route } from 'next';
 import { z } from 'zod';
 
 import { schoolTypes } from '@/features/admin/control-center';
+import { validArticleContent } from '@/features/news/content';
 import { parsePublicationTime } from '@/features/admin/news-publication';
 import { environment } from '@/lib/env';
 import { requireAdministratorRole } from '@/lib/auth/authorization';
@@ -292,7 +293,7 @@ const newsSchema = z.object({
   title: z.string().trim().min(2).max(200),
   slug,
   excerpt: z.string().trim().min(1).max(800),
-  content: z.string().trim().min(1).max(40000),
+  content: z.string().trim().min(1).max(40000).refine(validArticleContent),
   published: z.boolean(),
   publishedAt: z.string().trim().nullable(),
 });

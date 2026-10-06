@@ -1,5 +1,106 @@
 @import 'tailwindcss';
 
+/* Shared typography keeps the editor, preview and published article consistent. */
+.article-content {
+  color: #334155;
+  font-size: 1rem;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+.article-content > * + * {
+  margin-top: 1.15em;
+}
+.article-content > :first-child {
+  margin-top: 0;
+}
+.article-content h2,
+.article-content h3 {
+  color: #0b1535;
+  font-weight: 800;
+  line-height: 1.35;
+  letter-spacing: -0.025em;
+  margin-top: 1.8em;
+}
+.article-content h2 {
+  font-size: 1.65em;
+}
+.article-content h3 {
+  font-size: 1.25em;
+}
+.article-content strong {
+  font-weight: 750;
+  color: #0b1535;
+}
+.article-content ul,
+.article-content ol {
+  padding-left: 1.6em;
+}
+.article-content ul {
+  list-style-type: disc;
+}
+.article-content ol {
+  list-style-type: decimal;
+}
+.article-content li + li {
+  margin-top: 0.4em;
+}
+.article-content li > ul,
+.article-content li > ol {
+  margin-top: 0.4em;
+}
+.article-content blockquote {
+  border-left: 3px solid #246bfd;
+  border-radius: 0 0.75rem 0.75rem 0;
+  background: #eff6ff;
+  padding: 1rem 1.4rem;
+  color: #334b70;
+  font-style: italic;
+}
+.article-content blockquote > * + * {
+  margin-top: 0.75em;
+}
+.article-content a {
+  color: #246bfd;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.article-content code {
+  border-radius: 0.3rem;
+  padding: 0.15em 0.35em;
+  background: #f1f5f9;
+  font-size: 0.875em;
+}
+.article-content hr {
+  border: 0;
+  border-top: 1px solid #e2e8f0;
+  margin: 2em 0;
+}
+.article-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+}
+.article-content figcaption {
+  margin-top: 0.6rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+.article-content .ProseMirror-selectednode {
+  outline: 3px solid #93c5fd;
+  outline-offset: 3px;
+}
+.article-content p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  color: #94a3b8;
+}
+.article-content:focus-visible {
+  box-shadow: inset 0 0 0 2px #bfdbfe;
+}
+
 @theme inline {
   --font-sans: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
 

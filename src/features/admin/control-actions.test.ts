@@ -45,6 +45,7 @@ import {
   saveNewsAction,
   setSchoolActiveAction,
 } from '@/features/admin/control-actions';
+import { RICH_TEXT_PREFIX } from '@/features/news/content';
 
 const campaignId = '11111111-1111-4111-8111-111111111111';
 const schoolId = '22222222-2222-4222-8222-222222222222';
@@ -334,5 +335,49 @@ describe('news publication', () => {
     await expect(saveNewsAction(newsForm('2026-02-30T12:30'))).rejects.toThrow('REDIRECT:');
     expect(dependencies.rpc).not.toHaveBeenCalled();
     expect(dependencies.updateTag).not.toHaveBeenCalled();
+  });
+
+  it('saves rich text through the same authenticated publication action', async () => {
+    const form = newsForm();
+    const content =
+      RICH_TEXT_PREFIX +
+      JSON.stringify({
+        type: 'doc',
+        content: [
+          {
+            type: 'paragraph',
+            content: [{ type: 'text', text: 'Új történet', marks: [{ type: 'bold' }] }],
+          },
+        ],
+      });
+    form.set('content', content);
+    await expect(saveNewsAction(form)).rejects.toThrow('REDIRECT:/admin/hirek/');
+    expect(dependencies.requireAdministratorRole).toHaveBeenCalledWith('admin');
+    expect(dependencies.rpc.mock.calls[0]?.[1].requested_content).toBe(content);
+  });
+
+  it('rejects rich text with executable links before database mutation', async () => {
+    const form = newsForm();
+    form.set(
+      'content',
+      RICH_TEXT_PREFIX +
+        JSON.stringify({
+          type: 'doc',
+          content: [
+            {
+              type: 'paragraph',
+              content: [
+                {
+                  type: 'text',
+                  text: 'Link',
+                  marks: [{ type: 'link', attrs: { href: 'javascript:alert(1)' } }],
+                },
+              ],
+            },
+          ],
+        }),
+    );
+    await expect(saveNewsAction(form)).rejects.toThrow('REDIRECT:');
+    expect(dependencies.rpc).not.toHaveBeenCalled();
   });
 });

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { ArticleContent } from '@/components/news/ArticleContent';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
 import { ModalProvider } from '@/components/providers/ModalProvider';
@@ -27,7 +28,6 @@ export async function generateMetadata({ params }: NewsPageProps): Promise<Metad
 export default async function NewsArticlePage({ params }: NewsPageProps) {
   const article = await loadArticle((await params).slug);
   if (!article) notFound();
-  const paragraphs = article.content.split(/\r?\n\r?\n/).filter(Boolean);
 
   return (
     <ModalProvider>
@@ -53,9 +53,7 @@ export default async function NewsArticlePage({ params }: NewsPageProps) {
               {article.excerpt}
             </p>
             <div className="mt-8 space-y-5 border-t border-slate-100 pt-8 text-sm leading-7 text-slate-700 sm:text-base">
-              {paragraphs.map((paragraph, index) => (
-                <p key={index}>{paragraph}</p>
-              ))}
+              <ArticleContent content={article.content} />
             </div>
           </article>
         </main>

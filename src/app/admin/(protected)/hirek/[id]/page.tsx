@@ -25,7 +25,7 @@ export default async function NewsItemPage({ params, searchParams }: NewsItemPag
   const [item, parameters] = await Promise.all([getNews(client, id), searchParams]);
   if (!item) notFound();
   return (
-    <section className="max-w-4xl">
+    <section className="mx-auto max-w-7xl">
       <Link href="/admin/hirek" className="text-sm font-bold text-blue-600">
         ← Hírek
       </Link>
@@ -38,8 +38,8 @@ export default async function NewsItemPage({ params, searchParams }: NewsItemPag
         </span>
       </div>
       <AdminFlash success={first(parameters.success)} error={first(parameters.error)} />
-      <div className="mt-6 rounded-2xl border border-[#E8ECF2] bg-white p-5 sm:p-6">
-        <NewsForm action={saveNewsAction} item={item} />
+      <div className="mt-6">
+        <NewsForm key={item.updated_at} action={saveNewsAction} item={item} />
       </div>
     </section>
   );
