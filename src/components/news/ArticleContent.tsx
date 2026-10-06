@@ -74,8 +74,8 @@ function renderNode(node: ArticleNode, key: number): ReactNode {
           <Image
             src={node.attrs!.src!}
             alt={node.attrs?.alt ?? ''}
-            width={1200}
-            height={800}
+            width={node.attrs?.width ?? 1200}
+            height={node.attrs?.height ?? 800}
             unoptimized
             className="h-auto w-full rounded-xl"
           />

@@ -2,18 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import {
-  ArrowUpRight,
-  Check,
-  CheckCircle2,
-  Clock3,
-  Eye,
-  FileText,
-  Globe2,
-  LoaderCircle,
-  PencilLine,
-  Save,
-} from 'lucide-react';
+import { ArrowUpRight, Clock3, Eye, Globe2, LoaderCircle, PencilLine, Save } from 'lucide-react';
 import type { AdminNewsItem } from '@/features/admin/control-center';
 import { formatPublicationTime } from '@/features/admin/news-publication';
 import {
@@ -44,6 +33,7 @@ export function NewsForm({ action, item }: NewsFormProps) {
   const [preview, setPreview] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [error, setError] = useState('');
+  const [uploading, setUploading] = useState(false);
   const text = articleText(articleDocument(content)).trim();
   const words = text ? text.split(/\s+/).length : 0;
   const minutes = Math.max(1, Math.ceil(words / 200));
@@ -54,11 +44,6 @@ export function NewsForm({ action, item }: NewsFormProps) {
     slug.length >= 2 &&
     Boolean(excerpt.trim()) &&
     contentValid;
-  const checklist = [
-    { label: 'Beszédes cím', complete: title.trim().length >= 2 },
-    { label: 'Rövid bevezető', complete: Boolean(excerpt.trim()) },
-    { label: 'Cikk szövege', complete: contentValid },
-  ];
 
   useEffect(() => {
     if (!dirty) return;
@@ -78,6 +63,11 @@ export function NewsForm({ action, item }: NewsFormProps) {
         setError('');
       }}
       onSubmit={(event) => {
+        if (uploading) {
+          event.preventDefault();
+          setError('Várd meg a kép feltöltését.');
+          return;
+        }
         if (!ready) {
           event.preventDefault();
           setError(
@@ -134,10 +124,6 @@ export function NewsForm({ action, item }: NewsFormProps) {
             className="overflow-clip rounded-2xl border border-slate-200 bg-white shadow-xs"
           >
             <div className="px-5 pt-7 pb-6 sm:px-10 sm:pt-9">
-              <div className="mb-6 flex items-center gap-2 text-[10px] font-extrabold tracking-[0.18em] text-blue-600 uppercase">
-                <FileText className="size-4" />
-                Egy történet, ami számít
-              </div>
               <label htmlFor="news-title" className="sr-only">
                 Cikk címe
               </label>
@@ -153,7 +139,7 @@ export function NewsForm({ action, item }: NewsFormProps) {
                   setTitle(event.target.value);
                   if (!customSlug) setSlug(slugFromTitle(event.target.value));
                 }}
-                placeholder="Adj címet a történetnek…"
+                placeholder="Cikk címe"
                 className="w-full resize-none border-0 bg-transparent text-3xl font-extrabold leading-tight tracking-tight text-slate-900 outline-none placeholder:text-slate-300 sm:text-4xl"
               />
               <div className="mt-2 flex justify-end text-[10px] tabular-nums text-slate-400">
@@ -170,7 +156,7 @@ export function NewsForm({ action, item }: NewsFormProps) {
                 rows={3}
                 value={excerpt}
                 onChange={(event) => setExcerpt(event.target.value)}
-                placeholder="Foglalj össze néhány mondatban, miről szól a cikk. Ez jelenik meg a főoldali hírkártyán is."
+                placeholder="Rövid kivonat a főoldali hírkártyához."
                 className="mt-2 w-full resize-y rounded-xl border border-slate-100 bg-slate-50/70 p-3 text-sm leading-6 text-slate-600 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-2 focus:ring-blue-50"
               />
               <div className="mt-1 text-right text-[10px] tabular-nums text-slate-400">
@@ -179,6 +165,7 @@ export function NewsForm({ action, item }: NewsFormProps) {
             </div>
             <NewsEditor
               initialContent={item?.content ?? ''}
+              onUploadChange={setUploading}
               onChange={(value) => {
                 setContent(value);
                 setDirty(true);
@@ -200,7 +187,7 @@ export function NewsForm({ action, item }: NewsFormProps) {
             <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs">
               <div className="flex items-center gap-2 border-b border-blue-100 bg-blue-50 px-5 py-3 text-xs font-medium text-blue-700">
                 <Eye className="size-4" />
-                Cikkelőnézet · a még nem mentett módosításokkal
+                Cikkelőnézet
               </div>
               <article className="px-5 py-8 sm:px-10 sm:py-12">
                 <div className="mb-4 flex items-center gap-3 text-xs font-semibold text-blue-600">
@@ -211,11 +198,9 @@ export function NewsForm({ action, item }: NewsFormProps) {
                 <h1 className="text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
                   {title || 'A cikk címe'}
                 </h1>
-                <p className="mt-5 text-base leading-7 text-slate-500">
-                  {excerpt || 'Itt jelenik meg a bevezető.'}
-                </p>
+                <p className="mt-5 text-base leading-7 text-slate-500">{excerpt || 'Kivonat'}</p>
                 <div className="mt-8 border-t border-slate-100 pt-8">
-                  {text ? (
+                  {contentValid ? (
                     <ArticleContent content={content} />
                   ) : (
                     <p className="text-sm text-slate-400">A cikk szövege még üres.</p>
@@ -236,15 +221,12 @@ export function NewsForm({ action, item }: NewsFormProps) {
             </p>
           )}
         </div>
-        <aside className="space-y-4 xl:sticky xl:top-24" aria-label="Cikk beállításai">
+        <aside className="min-w-0 space-y-4 xl:sticky xl:top-24" aria-label="Cikk beállításai">
           <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
             <h2 className="flex items-center gap-2 text-sm font-extrabold">
               <Globe2 className="size-4 text-blue-600" />
               Megjelenés
             </h2>
-            <p className="mt-2 text-xs leading-5 text-slate-500">
-              Te döntöd el, mikor osztod meg a történetet.
-            </p>
             <label
               className={`mt-5 flex cursor-pointer items-center justify-between gap-3 rounded-xl border p-3 ${published ? 'border-blue-200 bg-blue-50/60' : 'border-slate-200 bg-slate-50'}`}
             >
@@ -271,7 +253,7 @@ export function NewsForm({ action, item }: NewsFormProps) {
               type="datetime-local"
               value={date}
               onChange={(event) => setDate(event.target.value)}
-              className="field mt-2 text-xs"
+              className="field mt-2 min-w-0 max-w-full text-xs"
             />
             <div className="mt-2 flex items-start justify-between gap-2">
               <p className="text-[11px] leading-5 text-slate-500">
@@ -291,7 +273,7 @@ export function NewsForm({ action, item }: NewsFormProps) {
               )}
             </div>
             <div className="mt-5 border-t border-slate-100 pt-4">
-              <SaveButton published={published} date={date} />
+              <SaveButton published={published} date={date} uploading={uploading} />
               <p className="mt-2 text-center text-[10px] text-slate-400">
                 A változtatások mentés után érvényesek.
               </p>
@@ -347,7 +329,7 @@ export function NewsForm({ action, item }: NewsFormProps) {
                 {title || 'A cikk címe'}
               </p>
               <p className="mt-1 line-clamp-3 text-[11px] leading-5 text-slate-500">
-                {excerpt || 'A rövid bevezető segít az olvasóknak eldönteni, miről szól a cikk.'}
+                {excerpt || 'Kivonat'}
               </p>
             </div>
             {item?.published && (
@@ -362,39 +344,26 @@ export function NewsForm({ action, item }: NewsFormProps) {
               </a>
             )}
           </section>
-          <section className="rounded-2xl border border-slate-200/70 bg-slate-50 p-5">
-            <h2 className="flex items-center gap-2 text-xs font-extrabold text-slate-700">
-              <CheckCircle2 className="size-4" />
-              Készen áll a megjelenésre?
-            </h2>
-            <ul className="mt-4 space-y-3">
-              {checklist.map((entry) => (
-                <li key={entry.label} className="flex items-center gap-2.5 text-xs">
-                  <span
-                    className={`flex size-4 items-center justify-center rounded-full ${entry.complete ? 'bg-emerald-100 text-emerald-700' : 'border border-slate-300'}`}
-                  >
-                    {entry.complete && <Check className="size-3" />}
-                  </span>
-                  <span className={entry.complete ? 'text-slate-600' : 'text-slate-400'}>
-                    {entry.label}
-                  </span>
-                  <span className="sr-only">{entry.complete ? 'Kész' : 'Hiányzik'}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
         </aside>
       </div>
     </form>
   );
 }
 
-function SaveButton({ published, date }: { published: boolean; date: string }) {
+function SaveButton({
+  published,
+  date,
+  uploading,
+}: {
+  published: boolean;
+  date: string;
+  uploading: boolean;
+}) {
   const { pending } = useFormStatus();
   return (
     <button
       type="submit"
-      disabled={pending}
+      disabled={pending || uploading}
       className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 text-sm font-extrabold text-white shadow-sm shadow-blue-600/15 transition hover:bg-blue-700 disabled:cursor-wait disabled:opacity-60"
     >
       {pending ? <LoaderCircle className="size-4 animate-spin" /> : <Save className="size-4" />}

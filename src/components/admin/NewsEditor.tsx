@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import Image from 'next/image';
 import { EditorContent, useEditor, useEditorState } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import ImageExtension from '@tiptap/extension-image';
@@ -24,20 +25,28 @@ import {
   Undo2,
   Unlink,
   X,
+  Upload,
+  LoaderCircle,
 } from 'lucide-react';
 import { articleDocument, RICH_TEXT_PREFIX, safeArticleUrl } from '@/features/news/content';
+import { MAX_NEWS_IMAGE_BYTES, NEWS_IMAGE_TYPES } from '@/features/news/image-shared';
 
 interface NewsEditorProps {
   initialContent: string;
   onChange: (content: string) => void;
+  onUploadChange?: (uploading: boolean) => void;
 }
 
-export function NewsEditor({ initialContent, onChange }: NewsEditorProps) {
+export function NewsEditor({ initialContent, onChange, onUploadChange }: NewsEditorProps) {
   const [panel, setPanel] = useState<'link' | 'image' | null>(null);
   const [url, setUrl] = useState('');
   const [alt, setAlt] = useState('');
   const [caption, setCaption] = useState('');
   const [error, setError] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [imageSize, setImageSize] = useState<{ width: number; height: number } | null>(null);
+  const uploadController = useRef<AbortController | null>(null);
+  useEffect(() => () => uploadController.current?.abort(), []);
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -52,7 +61,7 @@ export function NewsEditor({ initialContent, onChange }: NewsEditorProps) {
       }),
       ImageExtension.configure({ allowBase64: false }),
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
-      Placeholder.configure({ placeholder: 'Itt kezdődik a történet…' }),
+      Placeholder.configure({ placeholder: 'Cikk szövege…' }),
     ],
     content: articleDocument(initialContent),
     editorProps: {
@@ -96,15 +105,69 @@ export function NewsEditor({ initialContent, onChange }: NewsEditorProps) {
   });
 
   function openPanel(next: 'link' | 'image') {
+    if (uploading) return;
     setPanel(panel === next ? null : next);
     setError('');
     setUrl(next === 'link' ? String(editor?.getAttributes('link').href ?? '') : '');
     setAlt('');
     setCaption('');
+    setImageSize(null);
+  }
+
+  async function uploadImage(file: File | undefined) {
+    if (!file || uploading) return;
+    setError('');
+    if (file.size > MAX_NEWS_IMAGE_BYTES) {
+      setError('A kép legfeljebb 4 MB lehet.');
+      return;
+    }
+    if (!(NEWS_IMAGE_TYPES as readonly string[]).includes(file.type)) {
+      setError('JPG, PNG vagy WebP képet válassz.');
+      return;
+    }
+    const controller = new AbortController();
+    uploadController.current = controller;
+    setUploading(true);
+    onUploadChange?.(true);
+    try {
+      const body = new FormData();
+      body.set('image', file);
+      const response = await fetch('/api/admin/news/images', {
+        method: 'POST',
+        body,
+        signal: controller.signal,
+      });
+      const result = (await response.json().catch(() => null)) as {
+        url?: string;
+        width?: number;
+        height?: number;
+        error?: string;
+      } | null;
+      if (!response.ok || !result?.url || !safeArticleUrl(result.url, true)) {
+        setError(
+          result?.error ||
+            (response.status === 413
+              ? 'A kép legfeljebb 4 MB lehet.'
+              : 'A képfeltöltés nem sikerült. Próbáld újra.'),
+        );
+        return;
+      }
+      setUrl(result.url);
+      setImageSize(
+        result.width && result.height ? { width: result.width, height: result.height } : null,
+      );
+    } catch {
+      if (!controller.signal.aborted) setError('A képfeltöltés nem sikerült. Próbáld újra.');
+    } finally {
+      if (!controller.signal.aborted) {
+        setUploading(false);
+        onUploadChange?.(false);
+      }
+    }
   }
 
   function insert() {
-    if (!editor || !panel) return;
+    if (!editor || !panel || uploading) return;
     const href = url.trim();
     if (!safeArticleUrl(href, panel === 'image')) {
       setError(
@@ -122,7 +185,7 @@ export function NewsEditor({ initialContent, onChange }: NewsEditorProps) {
       editor
         .chain()
         .focus()
-        .setImage({ src: href, alt: alt.trim(), title: caption.trim() || undefined })
+        .setImage({ src: href, alt: alt.trim(), title: caption.trim() || undefined, ...imageSize })
         .run();
     } else if (editor.state.selection.empty && !editor.isActive('link')) {
       editor
@@ -264,10 +327,11 @@ export function NewsEditor({ initialContent, onChange }: NewsEditorProps) {
         <Tool
           label="Kép beszúrása"
           active={panel === 'image'}
-          disabled={!editor}
+          disabled={!editor || uploading}
           onClick={() => openPanel('image')}
         >
           <ImagePlus />
+          <span className="ml-1 text-xs font-semibold">Kép</span>
         </Tool>
         <Tool
           label="Elválasztó vonal"
@@ -299,7 +363,7 @@ export function NewsEditor({ initialContent, onChange }: NewsEditorProps) {
           role="group"
           aria-label={panel === 'image' ? 'Kép beállításai' : 'Hivatkozás beállításai'}
           onKeyDown={(event) => {
-            if (event.key === 'Escape') {
+            if (event.key === 'Escape' && !uploading) {
               setPanel(null);
               editor?.commands.focus();
             }
@@ -313,17 +377,61 @@ export function NewsEditor({ initialContent, onChange }: NewsEditorProps) {
             <strong className="text-sm">
               {panel === 'image' ? 'Kép hozzáadása' : 'Hivatkozás hozzáadása'}
             </strong>
-            <Tool label="Beszúrás bezárása" onClick={() => setPanel(null)}>
+            <Tool label="Beszúrás bezárása" disabled={uploading} onClick={() => setPanel(null)}>
               <X />
             </Tool>
           </div>
+          {panel === 'image' && (
+            <div className="mb-4 min-w-0">
+              <label
+                className={`flex min-h-20 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-blue-300 bg-white p-4 text-center text-sm font-semibold text-blue-700 ${uploading ? 'opacity-60' : 'cursor-pointer hover:bg-blue-50'} focus-within:outline-2 focus-within:outline-blue-500`}
+              >
+                {uploading ? (
+                  <LoaderCircle className="size-5 animate-spin" />
+                ) : (
+                  <Upload className="size-5" />
+                )}
+                <span>{uploading ? 'Feltöltés…' : 'Kép feltöltése'}</span>
+                <input
+                  type="file"
+                  accept={NEWS_IMAGE_TYPES.join(',')}
+                  disabled={uploading}
+                  className="sr-only"
+                  aria-label="Kép feltöltése"
+                  onChange={(event) => {
+                    void uploadImage(event.target.files?.[0]);
+                    event.target.value = '';
+                  }}
+                />
+                <span className="text-xs font-normal text-slate-500">
+                  JPG, PNG, WebP · legfeljebb 4 MB
+                </span>
+              </label>
+              {url && safeArticleUrl(url, true) && (
+                <div className="mt-3 overflow-hidden rounded-lg bg-slate-100">
+                  <Image
+                    src={url}
+                    alt={alt || 'Kép előnézete'}
+                    width={imageSize?.width ?? 800}
+                    height={imageSize?.height ?? 500}
+                    unoptimized
+                    className="mx-auto max-h-52 w-auto max-w-full object-contain"
+                  />
+                </div>
+              )}
+            </div>
+          )}
           <label className="block text-xs font-semibold">
-            {panel === 'image' ? 'Kép webcíme' : 'Hivatkozás címe'}
+            {panel === 'image' ? 'Vagy kép webcíme' : 'Hivatkozás címe'}
             <input
-              autoFocus
+              autoFocus={panel === 'link'}
+              disabled={uploading}
               type="url"
               value={url}
-              onChange={(event) => setUrl(event.target.value)}
+              onChange={(event) => {
+                setUrl(event.target.value);
+                setImageSize(null);
+              }}
               placeholder="https://…"
               className="field mt-1"
             />
@@ -353,15 +461,11 @@ export function NewsEditor({ initialContent, onChange }: NewsEditorProps) {
             </div>
           )}
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-            <p className="max-w-md text-xs leading-5 text-slate-500">
-              {panel === 'image'
-                ? 'Nyilvánosan elérhető kép közvetlen linkjét illeszd be. A leírás segíti a képernyőolvasót használókat.'
-                : 'Jelölj ki szöveget a hivatkozáshoz, vagy illeszd be önálló linkként.'}
-            </p>
             <button
               type="button"
               onClick={insert}
-              className="min-h-10 rounded-lg bg-blue-600 px-4 text-xs font-bold text-white hover:bg-blue-700"
+              disabled={uploading}
+              className="ml-auto min-h-10 rounded-lg bg-blue-600 px-4 text-xs font-bold text-white hover:bg-blue-700 disabled:opacity-50"
             >
               Beszúrás
             </button>
@@ -408,7 +512,7 @@ function Tool({
       aria-pressed={active}
       disabled={disabled}
       onClick={onClick}
-      className={`inline-flex size-10 shrink-0 items-center justify-center rounded-lg transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 disabled:cursor-not-allowed disabled:opacity-30 [&_svg]:size-4 ${active ? 'bg-blue-100 text-blue-700' : 'text-slate-600 hover:bg-white hover:text-slate-950'}`}
+      className={`inline-flex h-10 min-w-10 shrink-0 items-center justify-center rounded-lg px-2 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 disabled:cursor-not-allowed disabled:opacity-30 [&_svg]:size-4 ${active ? 'bg-blue-100 text-blue-700' : 'text-slate-600 hover:bg-white hover:text-slate-950'}`}
     >
       {children}
     </button>

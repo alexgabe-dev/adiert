@@ -42,6 +42,8 @@ export interface ArticleNode {
     src?: string;
     alt?: string | null;
     title?: string | null;
+    width?: number | null;
+    height?: number | null;
   };
   marks?: z.infer<typeof markSchema>[];
   content?: ArticleNode[];
@@ -75,6 +77,8 @@ const nodeSchema: z.ZodType<ArticleNode> = z.lazy(() =>
             .optional(),
           alt: z.string().max(500).nullable().optional(),
           title: z.string().max(500).nullable().optional(),
+          width: z.number().int().positive().max(40000).nullable().optional(),
+          height: z.number().int().positive().max(40000).nullable().optional(),
         })
         .optional(),
       marks: z.array(markSchema).max(6).optional(),
@@ -169,7 +173,16 @@ export function articleText(node: ArticleNode): string {
 export function validArticleContent(value: string): boolean {
   if (!value.startsWith(RICH_TEXT_PREFIX)) return value.trim().length > 0;
   const doc = parseRichContent(value);
-  return Boolean(doc && articleText(doc).trim());
+  return Boolean(doc && (articleText(doc).trim() || firstArticleImage(doc)));
+}
+
+export function firstArticleImage(node: ArticleNode): ArticleNode['attrs'] | undefined {
+  if (node.type === 'image') return node.attrs;
+  for (const child of node.content ?? []) {
+    const image = firstArticleImage(child);
+    if (image) return image;
+  }
+  return undefined;
 }
 
 export function slugFromTitle(value: string): string {

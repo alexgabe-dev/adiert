@@ -3,6 +3,9 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { ArticleContent } from '@/components/news/ArticleContent';
+import { ArticleShare } from '@/components/news/ArticleShare';
+import { articleDocument, firstArticleImage } from '@/features/news/content';
+import { environment } from '@/lib/env';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
 import { ModalProvider } from '@/components/providers/ModalProvider';
@@ -20,9 +23,42 @@ async function loadArticle(slug: string) {
 
 export async function generateMetadata({ params }: NewsPageProps): Promise<Metadata> {
   const article = await loadArticle((await params).slug);
-  return article
-    ? { title: article.title, description: article.excerpt }
-    : { title: 'Hír nem található' };
+  if (!article) return { title: 'Hír nem található' };
+  const url = new URL(
+    `/hirek/${encodeURIComponent(article.slug)}`,
+    environment.SITE_URL,
+  ).toString();
+  const image = firstArticleImage(articleDocument(article.content));
+  const images = image?.src
+    ? [
+        {
+          url: image.src,
+          alt: image.alt ?? article.title,
+          width: image.width ?? undefined,
+          height: image.height ?? undefined,
+        },
+      ]
+    : [];
+  return {
+    title: article.title,
+    description: article.excerpt,
+    alternates: { canonical: url },
+    openGraph: {
+      type: 'article',
+      title: article.title,
+      description: article.excerpt,
+      url,
+      publishedTime: article.publishedAt,
+      locale: 'hu_HU',
+      images,
+    },
+    twitter: {
+      card: images.length ? 'summary_large_image' : 'summary',
+      title: article.title,
+      description: article.excerpt,
+      images,
+    },
+  };
 }
 
 export default async function NewsArticlePage({ params }: NewsPageProps) {
@@ -55,6 +91,13 @@ export default async function NewsArticlePage({ params }: NewsPageProps) {
             <div className="mt-8 space-y-5 border-t border-slate-100 pt-8 text-sm leading-7 text-slate-700 sm:text-base">
               <ArticleContent content={article.content} />
             </div>
+            <ArticleShare
+              title={article.title}
+              url={new URL(
+                `/hirek/${encodeURIComponent(article.slug)}`,
+                environment.SITE_URL,
+              ).toString()}
+            />
           </article>
         </main>
         <Footer />
