@@ -256,9 +256,6 @@ export function NewsForm({ action, item }: NewsFormProps) {
               className="field mt-2 min-w-0 max-w-full text-xs"
             />
             <div className="mt-2 flex items-start justify-between gap-2">
-              <p className="text-[11px] leading-5 text-slate-500">
-                Budapesti idő. Üresen hagyva azonnal megjelenik, ha nyilvános.
-              </p>
               {date && (
                 <button
                   type="button"
