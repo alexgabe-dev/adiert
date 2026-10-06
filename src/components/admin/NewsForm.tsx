@@ -1,4 +1,5 @@
 import type { AdminNewsItem } from '@/features/admin/control-center';
+import { formatPublicationTime } from '@/features/admin/news-publication';
 
 interface NewsFormProps {
   action: (formData: FormData) => void | Promise<void>;
@@ -55,13 +56,17 @@ export function NewsForm({ action, item }: NewsFormProps) {
           Közzétéve
         </label>
         <Field
-          label="Publikálás időpontja"
+          label="Publikálás időpontja (budapesti idő)"
           name="published_at"
           type="datetime-local"
-          defaultValue={item?.published_at ? item.published_at.slice(0, 16) : ''}
+          defaultValue={item?.published_at ? formatPublicationTime(item.published_at) : ''}
           required={false}
         />
       </div>
+      <p className="text-xs text-[#667085]">
+        Üres időponttal a közzététel azonnali. Jövőbeli időponttal a hír csak a megadott időpont
+        után jelenik meg.
+      </p>
       <button
         type="submit"
         className="min-h-11 rounded-xl bg-blue-600 px-5 text-sm font-extrabold text-white hover:bg-blue-700"

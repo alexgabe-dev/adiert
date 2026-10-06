@@ -8,7 +8,12 @@ vi.mock('next/cache', () => ({
   unstable_cache: (callback: unknown) => callback,
 }));
 
+import { createPrivilegedSupabaseClient } from '@/lib/supabase/admin';
+
+vi.mock('@/lib/supabase/admin', () => ({ createPrivilegedSupabaseClient: vi.fn() }));
+
 import {
+  getPublicHomeData,
   queryCampaignSummary,
   queryLeaderboard,
   querySchoolProfile,
@@ -113,4 +118,31 @@ describe('public data repository boundaries', () => {
     expect(profile).toMatchObject({ rank: 0, approvedAmount: 0, approvedBottleCount: 0 });
     expect(JSON.stringify(profile)).not.toMatch(/receipt|identifier|detected|reviewer/i);
   });
+});
+
+it('keeps published news visible when campaign data fails', async () => {
+  const row = {
+    id: '11111111-1111-4111-8111-111111111111',
+    title: 'Hír',
+    slug: 'hir',
+    excerpt: 'Kivonat',
+    content: 'Tartalom',
+    published_at: '2026-01-01T00:00:00Z',
+  };
+  const query = {
+    select: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+    lte: vi.fn().mockReturnThis(),
+    order: vi.fn().mockReturnThis(),
+    limit: vi.fn().mockResolvedValue({ data: [row], error: null }),
+  };
+  vi.mocked(createPrivilegedSupabaseClient).mockReturnValue({
+    rpc: vi.fn().mockResolvedValue({ data: null, error: new Error('Campaign unavailable') }),
+    from: vi.fn().mockReturnValue(query),
+  } as unknown as SupabaseClient);
+  const data = await getPublicHomeData();
+  expect(data.available).toBe(false);
+  expect(data.news).toEqual([expect.objectContaining({ title: 'Hír', slug: 'hir' })]);
+  expect(query.eq).toHaveBeenCalledWith('published', true);
+  expect(query.lte).toHaveBeenCalledWith('published_at', expect.any(String));
 });

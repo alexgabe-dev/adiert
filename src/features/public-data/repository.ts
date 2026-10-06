@@ -250,18 +250,22 @@ export async function querySchoolProfile(
 export async function getPublicHomeData(): Promise<PublicHomeData> {
   const client = createPrivilegedSupabaseClient();
   if (!client) return { available: false, campaign: null, leaderboard: [], news: [] };
-  try {
-    const campaign = await queryCampaignSummary(client);
-    const [leaderboard, news] = await Promise.all([
-      campaign
-        ? queryLeaderboard(client, campaign.id, { page: 1, pageSize: 7 })
-        : Promise.resolve({ schools: [], totalCount: 0, page: 1, pageSize: 7 }),
-      queryPublishedNews(client),
-    ]);
-    return { available: true, campaign, leaderboard: leaderboard.schools, news };
-  } catch {
-    return { available: false, campaign: null, leaderboard: [], news: [] };
-  }
+  const [campaignData, newsData] = await Promise.allSettled([
+    (async () => {
+      const campaign = await queryCampaignSummary(client);
+      const leaderboard = campaign
+        ? await queryLeaderboard(client, campaign.id, { page: 1, pageSize: 7 })
+        : { schools: [] };
+      return { campaign, leaderboard: leaderboard.schools };
+    })(),
+    queryPublishedNews(client),
+  ]);
+  return {
+    available: campaignData.status === 'fulfilled',
+    campaign: campaignData.status === 'fulfilled' ? campaignData.value.campaign : null,
+    leaderboard: campaignData.status === 'fulfilled' ? campaignData.value.leaderboard : [],
+    news: newsData.status === 'fulfilled' ? newsData.value : [],
+  };
 }
 
 export const getCachedPublicHomeData = unstable_cache(getPublicHomeData, ['public-home-v1'], {

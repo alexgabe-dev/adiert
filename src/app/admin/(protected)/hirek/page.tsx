@@ -1,3 +1,4 @@
+import { newsPublicationLabel } from '@/features/admin/news-publication';
 import Link from 'next/link';
 
 import { listNews } from '@/features/admin/control-center';
@@ -44,7 +45,7 @@ export default async function NewsPage() {
                       <span
                         className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${item.published ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}
                       >
-                        {item.published ? 'Publikált' : 'Piszkozat'}
+                        {newsPublicationLabel(item)}
                       </span>
                     </div>
                     <p className="mt-1 truncate text-xs text-[#667085]">{item.excerpt}</p>

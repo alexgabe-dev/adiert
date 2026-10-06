@@ -11,6 +11,7 @@ const dependencies = vi.hoisted(() => ({
   }),
   revalidatePath: vi.fn(),
   revalidateTag: vi.fn(),
+  updateTag: vi.fn(),
   requireAdministratorRole: vi.fn(),
   createServerSupabaseClient: vi.fn(),
   createPrivilegedSupabaseClient: vi.fn(),
@@ -25,6 +26,7 @@ vi.mock('next/navigation', () => ({ redirect: dependencies.redirect }));
 vi.mock('next/cache', () => ({
   revalidatePath: dependencies.revalidatePath,
   revalidateTag: dependencies.revalidateTag,
+  updateTag: dependencies.updateTag,
 }));
 vi.mock('@/lib/auth/authorization', () => ({
   requireAdministratorRole: dependencies.requireAdministratorRole,
@@ -40,6 +42,7 @@ import {
   inviteAdministratorAction,
   manageAdministratorAction,
   saveCampaignAction,
+  saveNewsAction,
   setSchoolActiveAction,
 } from '@/features/admin/control-actions';
 
@@ -281,5 +284,55 @@ describe('admin control actions', () => {
     );
     expect(dependencies.inviteUserByEmail).toHaveBeenCalled();
     expect(dependencies.deleteUser).toHaveBeenCalledWith(userId);
+  });
+});
+
+function newsForm(date = '') {
+  const data = new FormData();
+  data.set('news_id', '');
+  data.set('title', 'Új hír');
+  data.set('slug', 'uj-hir');
+  data.set('excerpt', 'Kivonat');
+  data.set('content', 'Tartalom');
+  data.set('published', 'on');
+  data.set('published_at', date);
+  return data;
+}
+
+describe('news publication', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    dependencies.requestHeaders = new Headers({
+      origin: 'https://adiert.example',
+      host: 'adiert.example',
+    });
+    dependencies.requireAdministratorRole.mockResolvedValue({ role: 'admin' });
+    dependencies.rpc.mockResolvedValue({ data: campaignId, error: null });
+    dependencies.createServerSupabaseClient.mockResolvedValue({ rpc: dependencies.rpc });
+  });
+
+  it('publishes immediately without a date and expires public caches', async () => {
+    const before = Date.now();
+    await expect(saveNewsAction(newsForm())).rejects.toThrow('REDIRECT:/admin/hirek/');
+    const args = dependencies.rpc.mock.calls[0]?.[1];
+    expect(args.requested_published).toBe(true);
+    expect(Date.parse(args.requested_published_at)).toBeGreaterThanOrEqual(before);
+    expect(Date.parse(args.requested_published_at)).toBeLessThanOrEqual(Date.now());
+    expect(dependencies.updateTag).toHaveBeenCalledWith('public-news');
+  });
+
+  it('stores Budapest local time as the correct UTC instant', async () => {
+    await expect(saveNewsAction(newsForm('2026-10-06T12:30'))).rejects.toThrow(
+      'REDIRECT:/admin/hirek/',
+    );
+    expect(dependencies.rpc.mock.calls[0]?.[1].requested_published_at).toBe(
+      '2026-10-06T10:30:00.000Z',
+    );
+  });
+
+  it('rejects invalid publication dates without saving', async () => {
+    await expect(saveNewsAction(newsForm('2026-02-30T12:30'))).rejects.toThrow('REDIRECT:');
+    expect(dependencies.rpc).not.toHaveBeenCalled();
+    expect(dependencies.updateTag).not.toHaveBeenCalled();
   });
 });

@@ -1,3 +1,4 @@
+import { newsPublicationLabel } from '@/features/admin/news-publication';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { z } from 'zod';
@@ -33,7 +34,7 @@ export default async function NewsItemPage({ params, searchParams }: NewsItemPag
         <span
           className={`rounded-full px-2.5 py-1 text-xs font-bold ${item.published ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}
         >
-          {item.published ? 'Publikált' : 'Piszkozat'}
+          {newsPublicationLabel(item)}
         </span>
       </div>
       <AdminFlash success={first(parameters.success)} error={first(parameters.error)} />

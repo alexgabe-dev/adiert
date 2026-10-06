@@ -1,11 +1,12 @@
 'use server';
 
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePath, revalidateTag, updateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 import type { Route } from 'next';
 import { z } from 'zod';
 
 import { schoolTypes } from '@/features/admin/control-center';
+import { parsePublicationTime } from '@/features/admin/news-publication';
 import { environment } from '@/lib/env';
 import { requireAdministratorRole } from '@/lib/auth/authorization';
 import { administratorRoles } from '@/lib/auth/roles';
@@ -308,10 +309,13 @@ export async function saveNewsAction(formData: FormData) {
   });
   const fallback =
     parsed.success && parsed.data.id ? `/admin/hirek/${parsed.data.id}` : '/admin/hirek';
-  if (!parsed.success || (parsed.data.published && !parsed.data.publishedAt))
-    redirectWith(fallback, 'error', 'Ellenőrizd a hír kötelező mezőit.');
-  const publishedAt = parsed.data.publishedAt ? new Date(parsed.data.publishedAt) : null;
-  if (publishedAt && Number.isNaN(publishedAt.getTime()))
+  if (!parsed.success) redirectWith(fallback, 'error', 'Ellenőrizd a hír kötelező mezőit.');
+  const publishedAt = parsed.data.publishedAt
+    ? parsePublicationTime(parsed.data.publishedAt)
+    : parsed.data.published
+      ? new Date()
+      : null;
+  if (parsed.data.publishedAt && !publishedAt)
     redirectWith(fallback, 'error', 'Érvénytelen publikálási dátum.');
   const client = await mutationClient('admin');
   if (!client) redirectWith(fallback, 'error', 'Érvénytelen kérés.');
@@ -331,7 +335,7 @@ export async function saveNewsAction(formData: FormData) {
       'error',
       error?.code === '23505' ? 'Ez a slug már használatban van.' : 'A hír nem menthető.',
     );
-  revalidateTag('public-news', 'max');
+  updateTag('public-news');
   revalidatePath('/');
   revalidatePath('/admin/hirek');
   revalidatePath(`/admin/hirek/${id.data}`);
